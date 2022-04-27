@@ -1,0 +1,94 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Telegram Bot",
+            "type": "python",
+            "request": "launch",
+            "module": "app.bot.main",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: VK Callback receiver",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "app.main:app",
+                "--log-config",
+                "app/logging_config.yaml",
+                "--log-level",
+                "debug",
+            ],
+            "jinja": true,
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Wall worker",
+            "type": "python",
+            "request": "launch",
+            "module": "celery",
+            "console": "integratedTerminal",
+            "args": [
+                "-A",
+                "app.celery_worker",
+                "worker",
+                "-Q",
+                "vtt-wall",
+                "-l",
+                "info",
+                "-P",
+                "solo",
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Playlist worker",
+            "type": "python",
+            "request": "launch",
+            "module": "celery",
+            "console": "integratedTerminal",
+            "args": [
+                "-A",
+                "app.celery_worker",
+                "worker",
+                "-Q",
+                "vtt-playlist",
+                "-l",
+                "info",
+                "-P",
+                "solo",
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "Python: DB cleanup scheduler",
+            "type": "python",
+            "request": "launch",
+            "module": "celery",
+            "console": "integratedTerminal",
+            "args": [
+                "-A",
+                "app.celery_worker",
+                "beat",
+                "-l",
+                "debug",
+            ],
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"
+            },
+            "justMyCode": false
+        },
+    ]
+}

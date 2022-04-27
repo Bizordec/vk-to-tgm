@@ -1,0 +1,15 @@
+[Unit]
+Description=VK callback reciever for VK to Telegram forwarding
+After=network.target
+After=rabbitmq-server.service
+Wants=rabbitmq-server.service
+
+[Service]
+User=vtt-user
+Group=vtt-user
+WorkingDirectory=/srv/vk-to-tgm
+Environment="VTT_VENV=/srv/vk-to-tgm/.venv"
+ExecStart=/bin/sh -c '${VTT_VENV}/bin/gunicorn -w 1 -k app.gunicorn_worker.MyUvicornWorker app.main:app'
+
+[Install]
+WantedBy=multi-user.target

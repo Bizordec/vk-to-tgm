@@ -1,0 +1,179 @@
+# Russian translations for PROJECT.
+# Copyright (C) 2022 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-04-27 02:39+0300\n"
+"PO-Revision-Date: 2022-04-22 21:41+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.1\n"
+
+#: app/bot/plugins/__init__.py:15
+msgid "INCORRECT_LINK"
+msgstr ""
+"Неверная ссылка. Пожалуйста, попробуйте еще раз в одном из следующих "
+"форматов"
+
+#: app/bot/plugins/common.py:16
+msgid "HELLO"
+msgstr "Привет!"
+
+#: app/bot/plugins/common.py:17
+msgid "PERMISSION_CHECK_FAILED"
+msgstr ""
+"Не удалось проверить разрешения. Что-то не так на стороне Telegram.\n"
+"Попробуйте еще раз позже."
+
+#: app/bot/plugins/common.py:18
+msgid "NO_PERMISSION"
+msgstr ""
+"К сожалению, у вас нет необходимых разрешений для использования этого "
+"бота :("
+
+#: app/bot/plugins/common.py:19
+msgid "WAITING_FOR_LINK"
+msgstr "Пришлите мне VK ссылку!"
+
+#: app/bot/plugins/common.py:20
+msgid "CANCELLED"
+msgstr "Операция отменена."
+
+#: app/bot/plugins/common.py:21
+msgid "CLICK_BUTTON"
+msgstr "Пожалуйста, нажмите одну из кнопок!"
+
+#: app/bot/plugins/playlist.py:22
+msgid "PL_NOT_READY"
+msgstr "Плейлист еще не готов!"
+
+#: app/bot/plugins/playlist.py:23
+msgid "PL_SEARCHING"
+msgstr "Поиск..."
+
+#: app/bot/plugins/playlist.py:24
+msgid "PL_NOT_FOUND_IN_VK"
+msgstr ""
+"Не удалось найти такой плейлист в VK! Либо неверная ссылка, либо плейлист"
+" является приватным. Пожалуйста, попробуйте другую ссылку."
+
+#: app/bot/plugins/playlist.py:25
+msgid "PL_ALREADY_IN_THE_QUEUE"
+msgstr "Этот плейлист уже в очереди! Отправить еще раз?"
+
+#: app/bot/plugins/playlist.py:26
+msgid "PL_ALREADY_STARTED"
+msgstr "Этот плейлист уже обрабатывается! Отправить еще раз?"
+
+#: app/bot/plugins/playlist.py:27
+msgid "PL_FOUND_IN_TGM"
+msgstr "Плейлист найден! Отправить еще раз?"
+
+#: app/bot/plugins/playlist.py:28
+msgid "PL_NOT_FOUND_IN_TGM"
+msgstr "В Telegram канале такой плейлист не найден! Отправить?"
+
+#: app/bot/plugins/playlist.py:29
+msgid "PL_ADDED_TO_THE_QUEUE"
+msgstr "Плейлист добавлен в очередь!"
+
+#: app/bot/plugins/playlist.py:30
+msgid "PL_UNKNOWN_CHANNEL"
+msgstr ""
+"Ошибка. Данный бот не является администратором в указанном Telegram "
+"канале."
+
+#: app/bot/plugins/playlist.py:31
+msgid "PL_YES"
+msgstr "Да"
+
+#: app/bot/plugins/playlist.py:32
+msgid "PL_CANCEL"
+msgstr "Отмена"
+
+#: app/bot/plugins/wall.py:22
+msgid "WALL_SEARCHING"
+msgstr "Поиск..."
+
+#: app/bot/plugins/wall.py:23
+msgid "WALL_NOT_FOUND_IN_VK"
+msgstr ""
+"Не удалось найти пост в VK! Либо неверная ссылка, либо пост является "
+"приватным. Пожалуйста, попробуйте другую ссылку."
+
+#: app/bot/plugins/wall.py:24
+msgid "WALL_ALREADY_IN_THE_QUEUE"
+msgstr "Этот пост уже в очереди! Отправить еще раз?"
+
+#: app/bot/plugins/wall.py:25
+msgid "WALL_ALREADY_STARTED"
+msgstr "Этот пост уже обрабатывается! Отправить еще раз?"
+
+#: app/bot/plugins/wall.py:26
+msgid "WALL_FOUND_IN_TGM"
+msgstr "Пост найден! Отправить еще раз?"
+
+#: app/bot/plugins/wall.py:27
+msgid "WALL_NOT_FOUND_IN_TGM"
+msgstr "В Telegram канале такой пост не найден! Отправить?"
+
+#: app/bot/plugins/wall.py:28
+msgid "WALL_ADDED_TO_THE_QUEUE"
+msgstr "Пост добавлен в очередь!"
+
+#: app/bot/plugins/wall.py:29
+msgid "WALL_UNKNOWN_CHANNEL"
+msgstr ""
+"Ошибка. Данный бот не является администратором в указанном Telegram "
+"канале."
+
+#: app/bot/plugins/wall.py:30
+msgid "WALL_YES"
+msgstr "Да"
+
+#: app/bot/plugins/wall.py:31
+msgid "WALL_CANCEL"
+msgstr "Отмена"
+
+#: app/handlers/playlist.py:21
+msgid "PL_READY"
+msgstr "Слушать плейлист"
+
+#: app/handlers/playlist.py:22
+msgid "PL_GO_TO_WALL"
+msgstr "Перейти к посту"
+
+#: app/handlers/playlist.py:23
+msgid "PL_OF"
+msgstr "из"
+
+#: app/handlers/text.py:17
+msgid "SOURCE"
+msgstr "Источник"
+
+#: app/handlers/text.py:18
+msgid "VK_POST"
+msgstr "Пост в VK"
+
+#: app/handlers/text.py:19
+msgid "VK_REPOST"
+msgstr "Репост в VK"
+
+#: app/handlers/text.py:20
+msgid "VK_PLAYLIST"
+msgstr "Плейлист в VK"
+
+#: app/handlers/wall.py:32
+msgid "PL_SOON"
+msgstr "Ссылка на плейлист скоро появится..."
+

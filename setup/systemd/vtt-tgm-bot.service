@@ -1,0 +1,15 @@
+[Unit]
+Description=Telegram bot for forwarding wall posts and playlists from VK
+After=network.target
+After=rabbitmq-server.service
+Wants=rabbitmq-server.service
+
+[Service]
+User=vtt-user
+Group=vtt-user
+WorkingDirectory=/srv/vk-to-tgm
+Environment="VTT_VENV=/srv/vk-to-tgm/.venv"
+ExecStart=/bin/sh -c '${VTT_VENV}/bin/python -m app.bot.main'
+
+[Install]
+WantedBy=multi-user.target

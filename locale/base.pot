@@ -1,0 +1,163 @@
+# Translations template for PROJECT.
+# Copyright (C) 2022 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-04-27 02:39+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.1\n"
+
+#: app/bot/plugins/__init__.py:15
+msgid "INCORRECT_LINK"
+msgstr ""
+
+#: app/bot/plugins/common.py:16
+msgid "HELLO"
+msgstr ""
+
+#: app/bot/plugins/common.py:17
+msgid "PERMISSION_CHECK_FAILED"
+msgstr ""
+
+#: app/bot/plugins/common.py:18
+msgid "NO_PERMISSION"
+msgstr ""
+
+#: app/bot/plugins/common.py:19
+msgid "WAITING_FOR_LINK"
+msgstr ""
+
+#: app/bot/plugins/common.py:20
+msgid "CANCELLED"
+msgstr ""
+
+#: app/bot/plugins/common.py:21
+msgid "CLICK_BUTTON"
+msgstr ""
+
+#: app/bot/plugins/playlist.py:22
+msgid "PL_NOT_READY"
+msgstr ""
+
+#: app/bot/plugins/playlist.py:23
+msgid "PL_SEARCHING"
+msgstr ""
+
+#: app/bot/plugins/playlist.py:24
+msgid "PL_NOT_FOUND_IN_VK"
+msgstr ""
+
+#: app/bot/plugins/playlist.py:25
+msgid "PL_ALREADY_IN_THE_QUEUE"
+msgstr ""
+
+#: app/bot/plugins/playlist.py:26
+msgid "PL_ALREADY_STARTED"
+msgstr ""
+
+#: app/bot/plugins/playlist.py:27
+msgid "PL_FOUND_IN_TGM"
+msgstr ""
+
+#: app/bot/plugins/playlist.py:28
+msgid "PL_NOT_FOUND_IN_TGM"
+msgstr ""
+
+#: app/bot/plugins/playlist.py:29
+msgid "PL_ADDED_TO_THE_QUEUE"
+msgstr ""
+
+#: app/bot/plugins/playlist.py:30
+msgid "PL_UNKNOWN_CHANNEL"
+msgstr ""
+
+#: app/bot/plugins/playlist.py:31
+msgid "PL_YES"
+msgstr ""
+
+#: app/bot/plugins/playlist.py:32
+msgid "PL_CANCEL"
+msgstr ""
+
+#: app/bot/plugins/wall.py:22
+msgid "WALL_SEARCHING"
+msgstr ""
+
+#: app/bot/plugins/wall.py:23
+msgid "WALL_NOT_FOUND_IN_VK"
+msgstr ""
+
+#: app/bot/plugins/wall.py:24
+msgid "WALL_ALREADY_IN_THE_QUEUE"
+msgstr ""
+
+#: app/bot/plugins/wall.py:25
+msgid "WALL_ALREADY_STARTED"
+msgstr ""
+
+#: app/bot/plugins/wall.py:26
+msgid "WALL_FOUND_IN_TGM"
+msgstr ""
+
+#: app/bot/plugins/wall.py:27
+msgid "WALL_NOT_FOUND_IN_TGM"
+msgstr ""
+
+#: app/bot/plugins/wall.py:28
+msgid "WALL_ADDED_TO_THE_QUEUE"
+msgstr ""
+
+#: app/bot/plugins/wall.py:29
+msgid "WALL_UNKNOWN_CHANNEL"
+msgstr ""
+
+#: app/bot/plugins/wall.py:30
+msgid "WALL_YES"
+msgstr ""
+
+#: app/bot/plugins/wall.py:31
+msgid "WALL_CANCEL"
+msgstr ""
+
+#: app/handlers/playlist.py:21
+msgid "PL_READY"
+msgstr ""
+
+#: app/handlers/playlist.py:22
+msgid "PL_GO_TO_WALL"
+msgstr ""
+
+#: app/handlers/playlist.py:23
+msgid "PL_OF"
+msgstr ""
+
+#: app/handlers/text.py:17
+msgid "SOURCE"
+msgstr ""
+
+#: app/handlers/text.py:18
+msgid "VK_POST"
+msgstr ""
+
+#: app/handlers/text.py:19
+msgid "VK_REPOST"
+msgstr ""
+
+#: app/handlers/text.py:20
+msgid "VK_PLAYLIST"
+msgstr ""
+
+#: app/handlers/wall.py:32
+msgid "PL_SOON"
+msgstr ""
+

@@ -1,0 +1,12 @@
+venv
+.venv
+__pycache__
+vk_config.v2.json
+celeryconfig.py
+.env*
+!.env.example
+node_modules
+*.db
+*.session
+*.session-journal
+celerybeat-*

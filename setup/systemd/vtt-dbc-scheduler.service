@@ -1,0 +1,17 @@
+[Unit]
+Description=VK to Telegram database cleanup scheduler service
+After=network.target
+
+[Service]
+Type=simple
+User=vtt-user
+Group=vtt-user
+EnvironmentFile=/etc/default/vtt-celery.conf
+WorkingDirectory=/srv/vk-to-tgm
+ExecStart=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} beat \
+    --pidfile=${CELERYBEAT_PID_FILE} \
+    --logfile=${CELERYBEAT_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL}'
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
