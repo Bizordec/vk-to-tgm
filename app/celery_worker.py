@@ -48,17 +48,17 @@ def set_state_on_task_call(
 
     if short_task_name == "forward_wall":
         vk_type = VttTaskType.wall
-        vk_id = kwargs.get("wall_id")
+        vk_id = _kwargs.get("wall_id")
     elif short_task_name == "forward_playlist":
         vk_type = VttTaskType.playlist
-        vk_id = kwargs.get("playlist_id")
+        vk_id = _kwargs.get("playlist_id")
     else:
         vk_type = VttTaskType.unknown
         vk_id = 0
 
     vtt_store_result(
         vk_type=vk_type,
-        vk_owner_id=kwargs["owner_id"],
+        vk_owner_id=_kwargs["owner_id"],
         vk_id=vk_id,
         task_uuid=task_id,
         result=None,
