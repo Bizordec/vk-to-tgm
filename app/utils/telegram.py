@@ -31,7 +31,7 @@ def split_text(header_text: str, footer_text: str = "", is_caption=False) -> Lis
             telethon_split_text(p_header_text, p_header_entities, limit=strip_len),
             ("", None),
         )
-        if s_header_text and s_header_entities:
+        if s_header_text and s_header_entities is not None:
             main_text = html.unparse(s_header_text, s_header_entities)
             main_text_offset = len(main_text)
             p_rest_text, p_rest_entities = html.parse(header_text[main_text_offset:])

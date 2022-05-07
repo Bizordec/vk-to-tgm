@@ -370,7 +370,6 @@ class WallHandler:
         wall: WallWallpostFull,
         attachments: Attachments,
         main_message_id: int,
-        wall_text: WallTextHandler,
     ) -> None:
         if wall.geo:
             logger.info("Sending geo location...")
@@ -411,18 +410,6 @@ class WallHandler:
                     reply_to=main_message_id,
                 )
             logger.info("Documents sent successfully.")
-
-        # Send rest messages
-        rest_messages = wall_text.caption[1:]
-        for text, entities in rest_messages:
-            await self.tgm_bot.send_message(
-                self.channel_id,
-                message=text,
-                formatting_entities=entities,
-                link_preview=False,
-                reply_to=main_message_id,
-            )
-
         if attachments.audio_playlist:
             logger.info("Sending playlist...")
             playlist = attachments.audio_playlist
@@ -482,7 +469,7 @@ class WallHandler:
         if not wall.copy_history:
             main_message = await self.send_main_message(main_text, main_attachments)
             reply_id = main_message.id
-            await self.send_replies(wall, main_attachments, reply_id, main_text)
+            await self.send_replies(wall, main_attachments, reply_id)
         else:
             reversed_posts = wall.copy_history[::-1]
             reply_id = None
@@ -501,7 +488,7 @@ class WallHandler:
                     reply_to_message_id=reply_id,
                 )
                 reply_id = repost_message.id
-                await self.send_replies(repost, repost_attachments, reply_id, repost_text)
+                await self.send_replies(repost, repost_attachments, reply_id)
 
             repost = reversed_posts[-1]
             repost_attachments = await self.collect_attachments(repost)
@@ -520,7 +507,7 @@ class WallHandler:
                 reply_to_message_id=reply_id,
             )
             reply_id = main_message.id
-            await self.send_replies(repost, repost_attachments, reply_id, repost_text)
+            await self.send_replies(repost, repost_attachments, reply_id)
 
             if main_text.header:
                 await self.send_main_message(
