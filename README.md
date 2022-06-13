@@ -48,13 +48,38 @@ Consists of following services:
 
 Working example: https://t.me/mashup_vk
 
-## Install
-Clone this repository and run `install.sh` script.
+## Installation
+Run `install.sh` script.
+
+### Docker installation
+1. Set environment variables manually in `.env` file or by running 
+```sh
+./vtt-cli.sh set_env
+```
+2. Install Nginx and run command
+```sh
+./vtt-cli.sh setup_nginx
+```
+3. Sign in VK and Telegram
+```sh
+docker compose run --rm -it sign_in
+```
+4. Start the app
+```sh
+docker compose up
+
+# Or, if you also want to handle playlists
+docker compose --profile with_pl up
+```
 
 If you want to install client SSL certificate, read [here](setup/ssl/README.md).
 
-## Uninstall
+## Uninstallation
 Run `uninstall.sh` script.
+### Docker uninstallation
+```sh
+docker compose down -v --rmi all --remove-orphans
+```
 
 ## Logs
 You can check logs in the `logs/` directory.

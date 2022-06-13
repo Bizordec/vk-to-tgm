@@ -1,0 +1,100 @@
+version: "3.8"
+volumes:
+  vtt:
+networks:
+  net_vtt:
+services:
+  sign_in:
+    build: .
+    volumes:
+      - vtt:/vk-to-tgm/tgm_sessions/
+      - ./.env:/vk-to-tgm/.env
+    profiles:
+      - sign_in
+    command: python -m app.sign_in
+  rabbitmq:
+    image: rabbitmq:3.10.5-alpine
+    networks:
+      - net_vtt
+  cb-receiver:
+    build: .
+    restart: always
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    volumes:
+      - vtt:/vk-to-tgm/tgm_sessions/
+      - ./.env:/vk-to-tgm/.env
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-config app/logging_config.yaml
+    depends_on:
+      - rabbitmq
+    networks:
+      - net_vtt
+    ports:
+      - "127.0.0.1:8000:8000"
+  tgm-bot:
+    build: .
+    restart: always
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    volumes:
+      - vtt:/vk-to-tgm/tgm_sessions/
+      - ./.env:/vk-to-tgm/.env
+    command: python3 -m app.bot.main
+    depends_on:
+      - rabbitmq
+    networks:
+      - net_vtt
+  worker-wall:
+    build: .
+    restart: always
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    volumes:
+      - vtt:/vk-to-tgm/tgm_sessions/
+      - ./.env:/vk-to-tgm/.env
+    command: celery -A app.celery_worker worker -n vtt-worker-wall@%%h -Q vtt-wall --pool=solo --loglevel=INFO
+    depends_on:
+      - rabbitmq
+    networks:
+      - net_vtt
+  worker-pl:
+    build: .
+    restart: always
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    volumes:
+      - vtt:/vk-to-tgm/tgm_sessions/
+      - ./.env:/vk-to-tgm/.env
+    command: celery -A app.celery_worker worker -n vtt-worker-pl@%%h -Q vtt-playlist --pool=solo --loglevel=INFO
+    depends_on:
+      - rabbitmq
+    networks:
+      - net_vtt
+    profiles:
+      - with_pl
+  worker-dbc:
+    build: .
+    restart: always
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    volumes:
+      - vtt:/vk-to-tgm/tgm_sessions/
+      - ./.env:/vk-to-tgm/.env
+    command: celery -A app.celery_worker worker -n vtt-worker-dbc@%%h -Q celery --pool=solo --loglevel=INFO
+    depends_on:
+      - rabbitmq
+    networks:
+      - net_vtt
+  dbc-scheduler:
+    build: .
+    restart: always
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    volumes:
+      - vtt:/vk-to-tgm/tgm_sessions/
+      - ./.env:/vk-to-tgm/.env
+    command: celery -A app.celery_worker beat --loglevel=INFO --logfile=logs/vtt-dbc-scheduler.log
+    depends_on:
+      - rabbitmq
+    networks:
+      - net_vtt

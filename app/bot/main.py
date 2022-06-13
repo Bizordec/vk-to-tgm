@@ -37,10 +37,10 @@ async def main():
     )
     vk_api.request_validators.append(VkLangRequestValidator())
 
-    client = TelegramClient("tgm_search_client", settings.TGM_API_ID, settings.TGM_API_HASH)
+    client = TelegramClient("tgm_sessions/tgm_search_client", settings.TGM_API_ID, settings.TGM_API_HASH)
     await client.start(phone=lambda: settings.TGM_CLIENT_PHONE)
 
-    bot = TelegramClient("tgm_bot", settings.TGM_API_ID, settings.TGM_API_HASH)
+    bot = TelegramClient("tgm_sessions/tgm_bot", settings.TGM_API_ID, settings.TGM_API_HASH)
     await bot.start(bot_token=settings.TGM_BOT_TOKEN)
 
     async with client:

@@ -27,7 +27,7 @@ class BaseTextHandler:
         title: str = groupdict.get("title")
 
         if vk_id_pattern.fullmatch(url):
-            url = "https://vk.com/" + url
+            url = f"https://vk.com/{url}"
 
         if vk_link_pattern.fullmatch(url):
             return f'<a href="{url}">{title}</a>'

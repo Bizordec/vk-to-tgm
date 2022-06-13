@@ -21,9 +21,7 @@ def split_text(header_text: str, footer_text: str = "", is_caption=False) -> Lis
     main_text = header_text
     rest_texts = []
 
-    newline_offset = 0
-    if footer_text.startswith("\n\n"):
-        newline_offset = 2
+    newline_offset = 2 if footer_text.startswith("\n\n") else 0
 
     strip_len = tgm_limit - newline_offset - len(p_footer_text)
     if len(p_header_text) > strip_len:
@@ -38,8 +36,7 @@ def split_text(header_text: str, footer_text: str = "", is_caption=False) -> Lis
             rest_texts = list(telethon_split_text(p_rest_text, p_rest_entities))
 
     main_text += footer_text
-    all_text = [html.parse(main_text)] + rest_texts
-    return all_text
+    return [html.parse(main_text)] + rest_texts
 
 
 def get_html_link(href: str, title: str):
@@ -52,8 +49,7 @@ def get_message_link(entity: Entity, message_id) -> str:
     channel = entity.username
     if channel is None:
         channel = f"c/{entity.id}"
-    message_link = f"https://t.me/{channel}/{message_id}"
-    return message_link
+    return f"https://t.me/{channel}/{message_id}"
 
 
 async def get_entity_by_username(

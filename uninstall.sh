@@ -1,27 +1,6 @@
 #!/bin/bash
 
-function prompt_text {
-    local prompt=$1
-    local regex=$2
-    local default=$3
-
-    if [ -n "$default" ]; then
-        prompt="$prompt [$default]"
-    fi
-    
-    while true; do
-        read -rp "-> $prompt: " ANSWER
-        if echo "$ANSWER" | grep -qP "$regex"; then
-            ret_val=$ANSWER
-            break
-        elif [ "$ANSWER" == "" ] && [ -n "$default" ]; then
-            ret_val=$default
-            break
-        else
-            echo Invalid input, try again...
-        fi
-    done
-}
+source functions.sh
 
 prompt_text "Enter installation path to delete" "^/.+$" "/srv/vk-to-tgm"
 INSTALL_PATH=$ret_val

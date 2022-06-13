@@ -20,6 +20,8 @@ asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 worker = Celery("vk-to-tgm")
 worker.config_from_object(celeryconfig)
+worker.conf.broker_url = settings.CELERY_BROKER_URL
+worker.conf.result_backend = settings.CELERY_RESULT_BACKEND
 
 
 @before_task_publish.connect
@@ -75,7 +77,7 @@ async def aio_forward_wall(
     wall_url = f"https://vk.com/wall{owner_id}_{wall_id}"
     logger.info(f"Handling wall task ({wall_url})...")
 
-    tgm_bot = TelegramClient("worker_bot", settings.TGM_API_ID, settings.TGM_API_HASH)
+    tgm_bot = TelegramClient("tgm_sessions/worker_bot", settings.TGM_API_ID, settings.TGM_API_HASH)
     tgm_bot.parse_mode = "html"
 
     async with await tgm_bot.start(bot_token=settings.TGM_BOT_TOKEN):
@@ -102,7 +104,7 @@ async def aio_forward_playlist(
     pl_url = f"https://vk.com/music/playlist/{owner_id}_{playlist_id}_{access_key}"
     logger.info(f"Handling task for forwarding playlist {pl_url}...")
 
-    tgm_bot = TelegramClient("worker_pl_bot", settings.TGM_API_ID, settings.TGM_API_HASH)
+    tgm_bot = TelegramClient("tgm_sessions/worker_pl_bot", settings.TGM_API_ID, settings.TGM_API_HASH)
     tgm_bot.parse_mode = "html"
 
     async with await tgm_bot.start(bot_token=settings.TGM_BOT_TOKEN):
@@ -128,13 +130,12 @@ def forward_wall(
     owner_id: int,
     wall_id: int,
 ):
-    result = asyncio.run(
+    return asyncio.run(
         aio_forward_wall(
             owner_id=owner_id,
             wall_id=wall_id,
         )
     )
-    return result
 
 
 @worker.task()
@@ -146,7 +147,7 @@ def forward_playlist(
     reply_channel_id: Optional[int] = None,
     reply_message_id: Optional[int] = None,
 ):
-    result = asyncio.run(
+    return asyncio.run(
         aio_forward_playlist(
             owner_id=owner_id,
             playlist_id=playlist_id,
@@ -155,4 +156,3 @@ def forward_playlist(
             reply_message_id=reply_message_id,
         )
     )
-    return result

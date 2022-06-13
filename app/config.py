@@ -4,6 +4,7 @@ import logging
 import re
 import secrets
 import sys
+from typing import Callable
 
 from aiohttp import ClientSession
 from dotenv.main import set_key
@@ -34,76 +35,84 @@ async def get_tgm_channel_id(client: TelegramClient, key_to_set: str, channel_us
     return channel_id
 
 
-async def get_vk_token(
+def handle_2fa(
+    user_agent: str,
+    t_name: str,
+    validation_sid: str,
+) -> str:
+    params = CommonParams(user_agent)
+    try:
+        TwoFAHelper(params).validate_phone(validation_sid)
+        logger.warning("SMS should be sent")
+    except TokenException as error:
+        error_extra: dict = error.extra or {}
+        error_obj: dict = error_extra.get("error", {})
+        error_code = error_obj.get("error_code") if error_obj else None
+        if error_code is None or error_code != 103:
+            raise
+    while True:
+        try:
+            return str(int(input(f"[{t_name}] Enter auth code: ")))
+        except ValueError:
+            logger.warning("Please enter integer code.")
+
+
+def get_new_vk_token(
     login: str,
     password: str,
+    user_agent: str,
+    get_token: Callable[[str, str, str, str, str], str],
+    t_name: str,
+):
+    if not login and not password:
+        logger.critical("Environment variables VK_LOGIN and VK_PASSWORD are required.")
+        sys.exit(1)
+    logger.info(f"[{t_name}] Getting new token...")
+    auth_code = "GET_CODE"
+    captcha_sid = None
+    captcha_key = None
+    while True:
+        try:
+            current_token = get_token(
+                login,
+                password,
+                auth_code=auth_code,
+                captcha_sid=captcha_sid,
+                captcha_key=captcha_key,
+            )["token"]
+            if current_token:
+                set_key(".env", t_name, current_token)
+                break
+        except TokenException as err:
+            err_code: int = err.code
+            err_extra: dict = err.extra or {}
+            if err_code == TokenException.TOKEN_NOT_RECEIVED:
+                auth_code = "GET_CODE"
+                captcha_sid = None
+                captcha_key = None
+                continue
+            if err_code == TokenException.CAPTCHA_REQ and "captcha_sid" in err_extra:
+                captcha_sid = err_extra["captcha_sid"]
+                captcha_key = input("Enter captcha key from image (" + err_extra["captcha_img"] + "): ")
+                continue
+            if err_code == TokenException.TWOFA_REQ and "validation_sid" in err_extra:
+                auth_code = handle_2fa(user_agent, t_name, err_extra["validation_sid"])
+            else:
+                raise
+    return current_token
+
+
+async def get_validated_vk_token(
+    login: str,
+    password: str,
+    user_agent: str,
+    t_name: str,
     current_token: str = "",
     exit_on_error: bool = False,
     is_kate: bool = True,
-):
-    new_token: str = current_token
-    if is_kate:
-        user_agent = supported_clients.KATE.user_agent
-        get_token = get_kate_token
-        t_name = "KATE_TOKEN"
-    else:
-        user_agent = supported_clients.VK_OFFICIAL.user_agent
-        get_token = get_vk_official_token
-        t_name = "VK_OFFICIAL_TOKEN"
-    if not current_token:
-        if not login and not password:
-            logger.critical("Environment variables VK_LOGIN and VK_PASSWORD are required.")
-            sys.exit(1)
-        logger.info(f"[{t_name}] Getting new token...")
-        auth_code = "GET_CODE"
-        captcha_sid = None
-        captcha_key = None
-        while True:
-            try:
-                new_token = get_token(
-                    login,
-                    password,
-                    auth_code=auth_code,
-                    captcha_sid=captcha_sid,
-                    captcha_key=captcha_key,
-                )["token"]
-                if new_token:
-                    set_key(".env", t_name, new_token)
-                    break
-            except TokenException as err:
-                err_code: int = err.code
-                err_extra: dict = err.extra or {}
-                if err_code == TokenException.TOKEN_NOT_RECEIVED:
-                    auth_code = "GET_CODE"
-                    captcha_sid = None
-                    captcha_key = None
-                    continue
-                if err_code == TokenException.CAPTCHA_REQ and "captcha_sid" in err_extra:
-                    captcha_sid = err_extra["captcha_sid"]
-                    captcha_key = input("Enter captcha key from image (" + err_extra["captcha_img"] + "): ")
-                    continue
-                if err_code == TokenException.TWOFA_REQ and "validation_sid" in err_extra:
-                    params = CommonParams(user_agent)
-                    try:
-                        TwoFAHelper(params).validate_phone(err_extra["validation_sid"])
-                        logger.warning("SMS should be sent")
-                    except TokenException as error:
-                        error_extra: dict = error.extra or {}
-                        error_obj: dict = error_extra.get("error", {})
-                        error_code = error_obj.get("error_code") if error_obj else None
-                        if error_code is None or error_code != 103:
-                            raise
-                    while True:
-                        try:
-                            auth_code = str(int(input(f"[{t_name}] Enter auth code: ")))
-                            break
-                        except ValueError:
-                            logger.warning("Please enter integer code.")
-                else:
-                    raise
-
+) -> str:
     vk_user = API(
-        token=new_token,
+        token=current_token,
         http_client=AiohttpClient(session=ClientSession(headers={"User-agent": user_agent})),
     )
     try:
@@ -116,10 +125,39 @@ async def get_vk_token(
         if exit_on_error:
             sys.exit(err_msg)
         else:
-            new_token = await get_vk_token("", login, password, exit_on_error=True, is_kate=is_kate)
+            current_token = await get_vk_token("", login, password, exit_on_error=True, is_kate=is_kate)
     finally:
         await vk_user.http_client.close()
-    return new_token
+    return current_token
+
+
+async def get_vk_token(
+    login: str,
+    password: str,
+    current_token: str = "",
+    exit_on_error: bool = False,
+    is_kate: bool = True,
+):
+    if is_kate:
+        user_agent = supported_clients.KATE.user_agent
+        get_token = get_kate_token
+        t_name = "KATE_TOKEN"
+    else:
+        user_agent = supported_clients.VK_OFFICIAL.user_agent
+        get_token = get_vk_official_token
+        t_name = "VK_OFFICIAL_TOKEN"
+    if not current_token:
+        current_token = get_new_vk_token(user_agent, get_token, t_name)
+
+    return await get_validated_vk_token(
+        login,
+        password,
+        user_agent,
+        t_name,
+        current_token,
+        exit_on_error,
+        is_kate,
+    )
 
 
 class Settings(BaseSettings):
@@ -151,6 +189,9 @@ class Settings(BaseSettings):
 
     VTT_LANGUAGE: str = "en"
     VK_API_LANGUAGE: str = ""
+
+    CELERY_BROKER_URL: str = "amqp://guest:guest@localhost:5672//"
+    CELERY_RESULT_BACKEND: str = "db+sqlite:///celery-results.db"
 
     @validator("VK_SERVER_TITLE")
     def check_vk_server_title(cls, value: str):
@@ -211,11 +252,11 @@ class Settings(BaseSettings):
                         channel_username=TGM_PL_CHANNEL_USERNAME,
                     )
 
-        VK_LOGIN: str = values["VK_LOGIN"]
-        VK_PASSWORD: str = values["VK_PASSWORD"]
         KATE_TOKEN: str = values["KATE_TOKEN"]
         VK_OFFICIAL_TOKEN: str = values["VK_OFFICIAL_TOKEN"]
         if not KATE_TOKEN or not VK_OFFICIAL_TOKEN:
+            VK_LOGIN: str = values["VK_LOGIN"]
+            VK_PASSWORD: str = values["VK_PASSWORD"]
             if not VK_LOGIN or not VK_PASSWORD:
                 raise ValueError("Either VK_LOGIN and VK_PASSWORD or KATE_TOKEN and VK_OFFICIAL_TOKEN are required.")
             values["KATE_TOKEN"] = await get_vk_token(

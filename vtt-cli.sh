@@ -6,14 +6,16 @@ cli_help() {
 vk-to-tgm CLI
 Usage: ./$cli_name [command]
 Commands:
+  set_env, se               Set .env file
   receiver, r               Run callback receiver
   bot, b                    Run Telegram bot
   wall_worker, ww           Run Celery wall worker
   playlist_worker, pw       Run Celery playlist worker
   dbcleanup_worker, dw      Run Celery db cleanup worker
   local_tunnel, lt          Run local tunnel
-  sign_in, s                Create VK tokens and Telegram sessions
+  sign_in, si               Create VK tokens and Telegram sessions
   upd_locale, ul            Update locales
+  setup_nginx, su           Setup Nginx config
   *                         Help
 "
     exit 1
@@ -22,7 +24,6 @@ Commands:
 venv() {
     if [ -d .venv ]; then
         if command -v python3 &> /dev/null; then
-            # shellcheck source=/dev/null
             source .venv/bin/activate
         else
             echo "Python3 not installed!" || exit 1
@@ -30,11 +31,9 @@ venv() {
     else
         if command -v poetry &> /dev/null; then
             poetry install
-            # shellcheck source=/dev/null
             source .venv/bin/activate
         elif command -v python3 &> /dev/null; then
             python3 -m venv .venv
-            # shellcheck source=/dev/null
             source .venv/bin/activate
             python3 -m pip install wheel
             python3 -m pip install -r requirements.txt
@@ -45,6 +44,10 @@ venv() {
 }
 
 case $1 in
+    set_env|fe)
+        source functions.sh
+        set_env
+        ;;
     receiver|r)
         venv
         uvicorn app.main:app --port 8000 --reload --log-config app/logging_config.yaml
@@ -70,9 +73,10 @@ case $1 in
         if [ ! -f node_modules/localtunnel/localtunnel.js ]; then
             npm install
         fi
-        npm start
+        port=$2
+        npm start "$port"
         ;;
-    sign_in|s)
+    sign_in|si)
         venv
         python3 -m app.sign_in
         ;;
@@ -82,6 +86,11 @@ case $1 in
         pybabel update -l en -i locale/base.pot -D vtt -d locale/
         pybabel update -l ru -i locale/base.pot -D vtt -d locale/
         pybabel compile -D vtt -d locale/
+        ;;
+    setup_nginx|su)
+        source .env
+        source functions.sh
+        setup_nginx
         ;;
     *)
         cli_help

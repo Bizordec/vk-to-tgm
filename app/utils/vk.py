@@ -140,7 +140,7 @@ async def get_playlist(
             )
         )["response"]["items"]
         playlist_audios = [AudioAudio(**audio) for audio in playlist_audios if audio.get("url")]
-    playlist = AudioPlaylist(
+    return AudioPlaylist(
         id=playlist_id,
         owner_id=owner_id,
         access_key=access_key,
@@ -150,7 +150,6 @@ async def get_playlist(
         photo=playlist_photo,
         audios=playlist_audios,
     )
-    return playlist
 
 
 async def get_extended_wall(
