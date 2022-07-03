@@ -1,6 +1,6 @@
 FROM python:3.8.13-slim as build-stage
 
-RUN apt-get update && apt-get install -y git python3-venv
+RUN apt-get update && apt-get install -y git build-essential
 
 WORKDIR /vk-to-tgm
 
