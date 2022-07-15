@@ -94,7 +94,7 @@ set_env() {
         fi
     fi
 
-    if [ -z "$TGM_PL_CHANNEL_USERNAME" ] && [ -z "$TGM_PL_CHANNEL_ID" ]; then
+    if [[ -z "$TGM_PL_CHANNEL_USERNAME" && -z "$TGM_PL_CHANNEL_ID" ]]; then
         prompt_yn "Do you want to forward audio playlists (additional Telegram channel required)?"
         HAS_PL=$ret_val
         if [[ "$HAS_PL" -eq 1 ]]; then
@@ -167,8 +167,13 @@ set_env() {
     set_setting ".env" "VTT_LANGUAGE" "$VTT_LANGUAGE" "y"
     set_setting ".env" "TGM_CHANNEL_USERNAME" "$TGM_CHANNEL_USERNAME" "y"
     set_setting ".env" "TGM_CHANNEL_ID" "$TGM_CHANNEL_ID" "y"
-    set_setting ".env" "TGM_PL_CHANNEL_USERNAME" "$TGM_PL_CHANNEL_USERNAME" "y"
-    set_setting ".env" "TGM_PL_CHANNEL_ID" "$TGM_PL_CHANNEL_ID" "y"
+    if [[ "$HAS_PL" -eq 1 ]]; then
+        if [[ "$IS_PL_PUBLIC" -eq 1 ]]; then
+            set_setting ".env" "TGM_PL_CHANNEL_USERNAME" "$TGM_PL_CHANNEL_USERNAME" "y"
+        else
+            set_setting ".env" "TGM_PL_CHANNEL_ID" "$TGM_PL_CHANNEL_ID" "y"
+        fi
+    fi
     set_setting ".env" "SERVER_URL" "$SERVER_URL" "y"
     set_setting ".env" "VK_COMMUNITY_ID" "$VK_COMMUNITY_ID" "y"
     set_setting ".env" "VK_COMMUNITY_TOKEN" "$VK_COMMUNITY_TOKEN" "y"
