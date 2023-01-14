@@ -165,8 +165,12 @@ set_env() {
         touch .env
     fi
     set_setting ".env" "VTT_LANGUAGE" "$VTT_LANGUAGE" "y"
-    set_setting ".env" "TGM_CHANNEL_USERNAME" "$TGM_CHANNEL_USERNAME" "y"
-    set_setting ".env" "TGM_CHANNEL_ID" "$TGM_CHANNEL_ID" "y"
+    if [ -z "$TGM_CHANNEL_USERNAME" ]; then
+    	set_setting ".env" "TGM_CHANNEL_USERNAME" "$TGM_CHANNEL_USERNAME" "y"
+    fi
+    if [ -z "$TGM_CHANNEL_ID" ]; then
+    	set_setting ".env" "TGM_CHANNEL_ID" "$TGM_CHANNEL_ID" "y"
+    fi
     if [[ "$HAS_PL" -eq 1 ]]; then
         if [[ "$IS_PL_PUBLIC" -eq 1 ]]; then
             set_setting ".env" "TGM_PL_CHANNEL_USERNAME" "$TGM_PL_CHANNEL_USERNAME" "y"
