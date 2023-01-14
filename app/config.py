@@ -125,7 +125,7 @@ async def get_validated_vk_token(
         if exit_on_error:
             sys.exit(err_msg)
         else:
-            current_token = await get_vk_token("", login, password, exit_on_error=True, is_kate=is_kate)
+            current_token = await get_vk_token(login, password, "", exit_on_error=True, is_kate=is_kate)
     finally:
         await vk_user.http_client.close()
     return current_token
