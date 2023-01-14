@@ -27,5 +27,6 @@ COPY --from=build-stage /vk-to-tgm/.venv/ $VIRTUAL_ENV
 RUN mkdir logs/
 
 COPY app/ ./app
+COPY app/celeryconfig.py.example ./app/celeryconfig.py
 COPY locale/ ./locale
 COPY vtt-cli.sh functions.sh ./
