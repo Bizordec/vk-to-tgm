@@ -202,12 +202,15 @@ setup_nginx() {
     fi
 
     echo "Setting up Nginx config..."
+
+    sudo mkdir -p /etc/nginx/sites-available
     sudo cp -f "setup/nginx/vtt-cb-receiver.conf" "/etc/nginx/sites-available/"
     
     if ! grep -qx "\s*server_name\s*$NGINX_HOST;" "/etc/nginx/sites-available/vtt-cb-receiver.conf"; then
         sudo sed -i "/^\s*server {/a \ \ \ \ server_name $NGINX_HOST;" "/etc/nginx/sites-available/vtt-cb-receiver.conf"
     fi
 
+    sudo mkdir -p /etc/nginx/sites-enabled
     sudo ln -sf "/etc/nginx/sites-available/vtt-cb-receiver.conf" "/etc/nginx/sites-enabled/"
     
     echo "Reloading Nginx..."
