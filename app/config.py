@@ -147,7 +147,7 @@ async def get_vk_token(
         get_token = get_vk_official_token
         t_name = "VK_OFFICIAL_TOKEN"
     if not current_token:
-        current_token = get_new_vk_token(user_agent, get_token, t_name)
+        current_token = get_new_vk_token(login, password, user_agent, get_token, t_name)
 
     return await get_validated_vk_token(
         login,
