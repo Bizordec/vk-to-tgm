@@ -34,6 +34,9 @@ def read_vk(req: VkCallback, bg: BackgroundTasks):
         return Response(confirmation_token)
     if req_type == CallbackType.WALL_POST_NEW:
         post = WallWallpostFull(**req.object)
+        if post.marked_as_ads and settings.VK_IGNORE_ADS:
+            logger.info('[VK] Response with "ok" string has been sent.')
+            return Response("ok")
         if post.post_type in [
             WallPostType.POST,
             WallPostType.REPLY,
@@ -41,15 +44,15 @@ def read_vk(req: VkCallback, bg: BackgroundTasks):
             WallPostType.VIDEO,
         ] and not (post.donut and post.donut.is_donut):
             owner_id = post.owner_id
-            id = post.id
-            if owner_id and id:
-                logger.info(f"[VK] New post ({owner_id}_{id}).")
-                if get_queued_task(owner_id, id, VttTaskType.wall):
-                    logger.warning(f"[VK] Post {owner_id}_{id} already exists.")
+            post_id = post.id
+            if owner_id and post_id:
+                logger.info(f"[VK] New post ({owner_id}_{post_id}).")
+                if get_queued_task(owner_id, post_id, VttTaskType.wall):
+                    logger.warning(f"[VK] Post {owner_id}_{post_id} already exists.")
                 else:
                     forward_wall.delay(
                         owner_id=owner_id,
-                        wall_id=id,
+                        wall_id=post_id,
                     )
     logger.info('[VK] Response with "ok" string has been sent.')
     return Response("ok")

@@ -190,6 +190,8 @@ class Settings(BaseSettings):
     VTT_LANGUAGE: str = "en"
     VK_API_LANGUAGE: str = ""
 
+    VK_IGNORE_ADS: bool = True
+
     CELERY_BROKER_URL: str = "amqp://guest:guest@localhost:5672//"
     CELERY_RESULT_BACKEND: str = "db+sqlite:///celery-results.db"
 
