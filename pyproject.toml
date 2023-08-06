@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vk-to-tgm"
-version = "1.0.0"
+version = "1.1.3"
 description = "An application that forwards wall posts and playlists from VK community to Telegram channel"
 license = "GPL-3.0-or-later"
 authors = ["Ilia Boyazitov"]
@@ -35,6 +35,9 @@ sqlalchemy2-stubs = "^0.0.2-alpha.22"
 bandit = "^1.7.4"
 Babel = "^2.10.1"
 
+[tool.poetry.group.dev.dependencies]
+commitizen = "^3.6.0"
+
 [tool.black]
 line-length = 120
 
@@ -43,6 +46,13 @@ profile = "black"
 line_length = 120
 multi_line_output = 3
 include_trailing_comma = true
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "semver"
+version_provider = "poetry"
+update_changelog_on_bump = true
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
