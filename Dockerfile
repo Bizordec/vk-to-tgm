@@ -1,28 +1,29 @@
-FROM python:3.8.13-slim as build-stage
-
-RUN apt-get update && apt-get install -y git build-essential
+FROM python:3.10.12-bullseye as build-stage
 
 WORKDIR /vk-to-tgm
 
-ENV VIRTUAL_ENV=/vk-to-tgm/.venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_DEFAULT_TIMEOUT=100 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1
 
-RUN pip install poetry==1.1.13 \
-    && python -m venv $VIRTUAL_ENV
+RUN pip install poetry==1.5.1
 
 COPY ./pyproject.toml ./poetry.lock* /vk-to-tgm/
-RUN poetry export -f requirements.txt --output requirements.txt --without-hashes \
-    && pip install --no-cache-dir -r requirements.txt
+RUN poetry install --no-root --without=dev --no-interaction --no-ansi
 
 
-FROM python:3.8.13-slim
+FROM python:3.10.12-slim-bullseye
 
 WORKDIR /vk-to-tgm
 
-ENV VIRTUAL_ENV=/vk-to-tgm/.venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/vk-to-tgm/.venv/bin:$PATH"
 
-COPY --from=build-stage /vk-to-tgm/.venv/ $VIRTUAL_ENV
+COPY --from=build-stage /vk-to-tgm/.venv/ /vk-to-tgm/.venv
 
 RUN mkdir logs/
 
