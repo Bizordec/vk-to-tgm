@@ -5,6 +5,9 @@
         },
         {
             "path": "projects/env_helper"
+        },
+        {
+            "path": "projects/env_validator"
         }
-    ]
+    ],
 }
