@@ -1,10 +1,12 @@
 {
-    "[python]": {
-        "editor.codeActionsOnSave": {
-            "source.organizeImports": true,
-        },
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "ms-python.black-formatter",
-    },
-    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python3"
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/.ruby-lsp": true,
+        "projects": true,
+    }
 }

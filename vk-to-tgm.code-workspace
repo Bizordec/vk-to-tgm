@@ -8,6 +8,9 @@
         },
         {
             "path": "projects/env_validator"
+        },
+        {
+            "path": "projects/cb_receiver"
         }
     ],
 }
