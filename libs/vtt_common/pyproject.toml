@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "vtt_common"
+version = "0.1.0"
+description = ""
+authors = ["Ilia Boyazitov"]
+license = "GPL-3.0-or-later"
+packages = [
+    {include = "vtt_common"},
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
