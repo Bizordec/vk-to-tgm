@@ -1,10 +1,8 @@
 .SHELLFLAGS := -ec
 .SILENT:
-.PHONY: venv run pre-commit
+.PHONY: venv run
 
 .DEFAULT_GOAL := run
-
-PRECOMMIT_VERSION := 3.4.0
 
 .venv/bin/activate: pyproject.toml
 	if ! [ -x "$$(command -v poetry)" ]; then \
@@ -26,12 +24,6 @@ venv: .venv/bin/activate
 
 run: .venv/bin/activate
 	.venv/bin/python3 -m app.main
-
-pre-commit:
-	wget -O pre-commit.pyz "https://github.com/pre-commit/pre-commit/releases/download/v${PRECOMMIT_VERSION}/pre-commit-${PRECOMMIT_VERSION}.pyz"
-	python3 pre-commit.pyz install
-	python3 pre-commit.pyz install --hook-type commit-msg
-	trap "rm -f pre-commit.pyz" EXIT
 
 clean:
 	rm -rf .venv
