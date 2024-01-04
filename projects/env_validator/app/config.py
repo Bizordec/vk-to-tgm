@@ -182,22 +182,22 @@ class Settings(BaseSettings):
             loop.run_until_complete(check_func(values))
         return values
 
-    @root_validator()
+    @root_validator(skip_on_failure=True)
     @classmethod
     def check_vk_user_tokens(cls, values: dict) -> dict:
         return cls._check_async(cls._async_check_vk_user_tokens, values)
 
-    @root_validator()
+    @root_validator(skip_on_failure=True)
     @classmethod
     def check_vk_community_token(cls, values: dict) -> dict:
         return cls._check_async(cls._async_check_vk_community_token, values)
 
-    @root_validator()
+    @root_validator(skip_on_failure=True)
     @classmethod
     def check_tgm_bot(cls, values: dict) -> dict:
         return cls._check_async(cls._async_check_tgm_bot, values)
 
-    @root_validator()
+    @root_validator(skip_on_failure=True)
     @classmethod
     def check_tgm_user(cls, values: dict) -> dict:
         return cls._check_async(cls._async_check_tgm_user, values)
