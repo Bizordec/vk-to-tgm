@@ -155,5 +155,5 @@ if __name__ == "__main__":
 
     logger.disable("vkbottle")
 
-    with logger.catch():
+    with logger.catch(onerror=lambda _: sys.exit(1)):
         sys.exit(asyncio.run(main()))
