@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  env_validator:
+    build:
+      context: ./projects/env_validator
+    env_file: .env
+  cb_receiver:
+    build:
+      context: ./projects/cb_receiver
+      additional_contexts:
+        - libs=./libs
+    env_file: .env
+    depends_on:
+      env_validator:
+        condition: service_completed_successfully
