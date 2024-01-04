@@ -1,6 +1,6 @@
 .SHELLFLAGS := -ec
 .SILENT:
-.PHONY: venv run tunnel
+.PHONY: venv run build-image tunnel
 
 .DEFAULT_GOAL := run
 
@@ -24,6 +24,11 @@ venv: .venv/bin/activate
 
 run: .venv/bin/activate
 	.venv/bin/python3 -m uvicorn app.main:app
+
+############
+
+build-image:
+	docker build -t cb_receiver --build-context libs=../../libs $(OPTS) .
 
 ############
 
