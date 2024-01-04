@@ -25,5 +25,12 @@ venv: .venv/bin/activate
 run: .venv/bin/activate
 	.venv/bin/python3 -m app.main
 
+############
+
+build-image:
+	docker build -t env_validator $(OPTS) .
+
+############
+
 clean:
 	rm -rf .venv
