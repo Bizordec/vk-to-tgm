@@ -7,7 +7,7 @@ license = "GPL-3.0-or-later"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 rich = "^13.5.2"
 telethon = "^1.29.3"
 vkaudiotoken = {git = "https://github.com/Bizordec/vkaudiotoken-python.git"}
@@ -16,6 +16,7 @@ aiohttp = "^3.8.5"
 pydantic = "<2.0.0"
 python-dotenv = "^1.0.0"
 loguru = "^0.7.0"
+uvloop = "^0.19.0"
 
 
 [tool.poetry.group.dev.dependencies]

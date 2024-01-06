@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
+import uvloop
 from aiohttp import ClientSession
 from rich.prompt import Prompt
 from vkaudiotoken import (
@@ -86,7 +87,7 @@ class Auth(ABC):
                 return password
             console.print("[prompt.invalid]VK password must not be empty")
 
-    async def is_valid_token(self, token: str) -> bool:
+    async def _is_valid_token(self, token: str) -> bool:
         if not token:
             return False
 
@@ -109,7 +110,10 @@ class Auth(ABC):
             return True
         return False
 
-    async def get_new_token(self) -> str:
+    def is_valid_token(self, token: str) -> bool:
+        return uvloop.run(self._is_valid_token(token=token))
+
+    def get_new_token(self) -> str:
         params = AuthParams(auth_code="GET_CODE", need_creds=self._need_creds)
         while True:
             if params.need_creds:
@@ -131,14 +135,14 @@ class Auth(ABC):
 
                 params = handle_token_exception(user_agent=self.user_agent, error=error)
                 token = params.token
-                if await self.is_valid_token(token=token):
+                if self.is_valid_token(token=token):
                     return token
 
-    async def prompt_all(self) -> None:
-        if await self.is_valid_token(token=self._token):
+    def prompt_all(self) -> None:
+        if self.is_valid_token(token=self._token):
             return
 
-        self._token = await self.get_new_token()
+        self._token = self.get_new_token()
 
 
 class OfficialAuth(Auth):

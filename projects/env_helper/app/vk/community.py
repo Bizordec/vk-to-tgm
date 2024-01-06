@@ -1,3 +1,4 @@
+import uvloop
 from vkbottle import API, AiohttpClient, VKAPIError
 
 from app.config import DIGITS_PATTERN, SERVER_URL_PATTERN
@@ -35,7 +36,7 @@ class Community:
         return self._server_url
 
     @staticmethod
-    async def is_valid_token(token: str) -> bool:
+    async def _is_valid_token(token: str) -> bool:
         if not token:
             return False
 
@@ -58,7 +59,10 @@ class Community:
             return False
         return True
 
-    async def is_valid_id(self, community_id: str) -> bool:
+    def is_valid_token(self, token: str) -> bool:
+        return uvloop.run(self._is_valid_token(token=token))
+
+    async def _is_valid_id(self, community_id: str) -> bool:
         vk_api = API(token=self._community_token, http_client=AiohttpClient())
         try:
             console.print("Checking if VK community id is valid...")
@@ -71,6 +75,9 @@ class Community:
             )
             return False
         return True
+
+    def is_valid_id(self, community_id: str) -> bool:
+        return uvloop.run(self._is_valid_id(community_id=community_id))
 
     def prompt_community_id(self) -> str:
         return EnvPrompt.ask(
@@ -114,16 +121,16 @@ class Community:
             ),
         )
 
-    async def prompt_all(self) -> None:
+    def prompt_all(self) -> None:
         while True:
             self._community_token = self.prompt_community_token()
-            if await self.is_valid_token(self._community_token):
+            if self.is_valid_token(self._community_token):
                 break
             self._community_token = ""
 
         while True:
             self._community_id = self.prompt_community_id()
-            if await self.is_valid_id(community_id=self._community_id):
+            if self.is_valid_id(community_id=self._community_id):
                 break
             self._community_id = ""
 

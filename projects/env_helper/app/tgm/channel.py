@@ -12,7 +12,7 @@ from app.console import console
 from app.prompt import EnvPrompt
 
 if TYPE_CHECKING:
-    from telethon import TelegramClient
+    from telethon.sync import TelegramClient
 
 
 class Channel(ABC):
@@ -52,12 +52,12 @@ class Channel(ABC):
             prompt=f"Is your {self.channel_type} Telegram channel public?",
         )
 
-    async def is_channel_valid(self, entity: str | int) -> bool:
+    def is_channel_valid(self, entity: str | int) -> bool:
         try:
             console.print(
                 f"Checking if {self.channel_type} Telegram channel is valid...",
             )
-            channel_entity = await self._client.get_input_entity(peer=entity)
+            channel_entity = self._client.get_input_entity(peer=entity)
             console.print(f"{self.channel_type} Telegram channel is valid.")
 
             if isinstance(channel_entity, InputPeerChannel):
@@ -73,7 +73,7 @@ class Channel(ABC):
             return False
         return True
 
-    async def prompt_all(self) -> None:
+    def prompt_all(self) -> None:
         is_public = self.prompt_is_public()
         while True:
             if is_public:
@@ -81,7 +81,7 @@ class Channel(ABC):
             else:
                 self._channel_id = self.prompt_id()
 
-            if await self.is_channel_valid(
+            if self.is_channel_valid(
                 entity=self._name if is_public else int(self._channel_id),
             ):
                 break

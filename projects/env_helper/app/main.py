@@ -9,7 +9,7 @@ from app.vk import Community, FloodControlError, KateAuth, OfficialAuth
 from app.vtt import Options
 
 
-async def main() -> int:  # noqa: C901
+def main() -> int:  # noqa: C901
     vk_kate_auth = None
     vk_official_auth = None
     vk_community = None
@@ -35,14 +35,14 @@ async def main() -> int:  # noqa: C901
         vk_kate_auth = KateAuth(
             token=settings.VK_KATE_TOKEN,
         )
-        await vk_kate_auth.prompt_all()
+        vk_kate_auth.prompt_all()
 
         vk_official_auth = OfficialAuth(
             token=settings.VK_OFFICIAL_TOKEN,
             login=vk_kate_auth.login,
             password=vk_kate_auth.password,
         )
-        await vk_official_auth.prompt_all()
+        vk_official_auth.prompt_all()
 
         vk_community = Community(
             community_id=settings.VK_COMMUNITY_ID,
@@ -50,7 +50,7 @@ async def main() -> int:  # noqa: C901
             server_title=settings.VK_SERVER_TITLE,
             server_url=settings.SERVER_URL,
         )
-        await vk_community.prompt_all()
+        vk_community.prompt_all()
 
         tgm_bot_auth = BotAuth(
             api_id=settings.TGM_API_ID,
@@ -58,7 +58,7 @@ async def main() -> int:  # noqa: C901
             access_token=settings.TGM_BOT_TOKEN,
             session=settings.TGM_BOT_SESSION,
         )
-        await tgm_bot_auth.prompt_all()
+        tgm_bot_auth.prompt_all()
 
         tgm_user_auth = UserAuth(
             api_id=tgm_bot_auth.api_id,
@@ -66,18 +66,18 @@ async def main() -> int:  # noqa: C901
             access_token=settings.TGM_CLIENT_PHONE,
             session=settings.TGM_CLIENT_SESSION,
         )
-        await tgm_user_auth.prompt_all()
+        tgm_user_auth.prompt_all()
 
-        bot_client = await tgm_bot_auth.client
+        bot_client = tgm_bot_auth.client
 
         tgm_main_channel = MainChannel(
             client=bot_client,
             name=settings.TGM_CHANNEL_USERNAME,
             channel_id=settings.TGM_CHANNEL_ID,
         )
-        await tgm_main_channel.prompt_all()
+        tgm_main_channel.prompt_all()
 
-        await tgm_bot_auth.update_session()
+        tgm_bot_auth.update_session()
 
         console.rule()
 
@@ -93,9 +93,9 @@ async def main() -> int:  # noqa: C901
                 name=settings.TGM_CHANNEL_USERNAME,
                 channel_id=settings.TGM_CHANNEL_ID,
             )
-            await tgm_playlist_channel.prompt_all()
+            tgm_playlist_channel.prompt_all()
 
-            await tgm_bot_auth.update_session()
+            tgm_bot_auth.update_session()
 
         vtt_options = Options(
             ignore_ads=settings.VTT_IGNORE_ADS,
@@ -148,7 +148,6 @@ async def main() -> int:  # noqa: C901
 
 
 if __name__ == "__main__":
-    import asyncio
     import sys
 
     from loguru import logger
@@ -156,4 +155,4 @@ if __name__ == "__main__":
     logger.disable("vkbottle")
 
     with logger.catch(onerror=lambda _: sys.exit(1)):
-        sys.exit(asyncio.run(main()))
+        sys.exit(main())

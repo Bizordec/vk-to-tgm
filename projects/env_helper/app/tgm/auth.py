@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
-from telethon import TelegramClient
 from telethon.errors import AccessTokenInvalidError, ApiIdInvalidError
 from telethon.sessions import StringSession
+from telethon.sync import TelegramClient
 
 from app.config import DIGITS_PATTERN, TGM_BOT_TOKEN_PATTERN
 from app.console import console
@@ -51,7 +51,7 @@ class Auth(ABC):
         return self._session
 
     @property
-    async def client(self) -> TelegramClient:
+    def client(self) -> TelegramClient:
         if self._client:
             return self._client
 
@@ -62,14 +62,14 @@ class Auth(ABC):
         )
 
         console.print(f"Checking if {self.auth_type} Telegram credentials are valid...")
-        await client.start(phone=lambda: self._access_token)
+        client.start(phone=lambda: self._access_token)
         console.print(f"{self.auth_type} Telegram credentials are valid.")
 
         self._client = client
         return client
 
-    async def update_session(self) -> None:
-        client = await self.client
+    def update_session(self) -> None:
+        client = self.client
         self._session = client.session.save()
 
     def prompt_api_id(self) -> str:
@@ -89,7 +89,7 @@ class Auth(ABC):
             password=True,
         )
 
-    async def prompt_all(self) -> None:
+    def prompt_all(self) -> None:
         need_token = True
         while True:
             if self._need_app_creds:
@@ -98,7 +98,7 @@ class Auth(ABC):
             if need_token:
                 self._access_token = self.prompt_access_token()
             try:
-                await self.update_session()
+                self.update_session()
                 break
             except ApiIdInvalidError:
                 self._need_app_creds = True
