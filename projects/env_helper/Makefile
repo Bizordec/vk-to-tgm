@@ -25,5 +25,15 @@ venv: .venv/bin/activate
 run: .venv/bin/activate
 	.venv/bin/python3 -m app.main
 
+############
+
+build-image:
+	docker build -t env_helper $(OPTS) .
+
+run-container:
+	docker run --rm -it --mount type=bind,source="$(PWD)/.env",target=/code/.env env_helper
+
+############
+
 clean:
 	rm -rf .venv
