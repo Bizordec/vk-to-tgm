@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator[Mapping[str, Any], None]:
+    logger.disable("vkbottle")
     confirmation_code = await setup_vk_server()
     yield {"confirmation_code": confirmation_code}
 
