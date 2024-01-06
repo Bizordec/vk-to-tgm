@@ -3,13 +3,60 @@ services:
   env_validator:
     build:
       context: ./projects/env_validator
-    env_file: .env
+    environment:
+      - VK_KATE_TOKEN=${VK_KATE_TOKEN}
+      - VK_OFFICIAL_TOKEN=${VK_OFFICIAL_TOKEN}
+      - VK_COMMUNITY_ID=${VK_COMMUNITY_ID}
+      - VK_COMMUNITY_TOKEN=${VK_COMMUNITY_TOKEN}
+      - VK_SERVER_TITLE=${VK_SERVER_TITLE}
+      - SERVER_URL=${SERVER_URL}
+      - TGM_API_ID=${TGM_API_ID}
+      - TGM_API_HASH=${TGM_API_HASH}
+      - TGM_BOT_TOKEN=${TGM_BOT_TOKEN}
+      - TGM_BOT_SESSION=${TGM_BOT_SESSION}
+      - TGM_CLIENT_PHONE=${TGM_CLIENT_PHONE}
+      - TGM_CLIENT_SESSION=${TGM_CLIENT_SESSION}
+      - TGM_CHANNEL_ID=${TGM_CHANNEL_ID}
+      - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
+      - VTT_LANGUAGE=${VTT_LANGUAGE}
+      - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
+  rabbitmq:
+    image: rabbitmq:3.12.12-alpine
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    depends_on:
+      env_validator:
+        condition: service_completed_successfully
+  redis:
+    image: redis:7.2.3-alpine3.19
+    healthcheck:
+      test: sh -c "redis-cli ping | grep PONG"
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    depends_on:
+      env_validator:
+        condition: service_completed_successfully
   cb_receiver:
     build:
       context: ./projects/cb_receiver
       additional_contexts:
         - libs=./libs
-    env_file: .env
+    environment:
+      - VK_COMMUNITY_ID=${VK_COMMUNITY_ID}
+      - VK_COMMUNITY_TOKEN=${VK_COMMUNITY_TOKEN}
+      - VK_SERVER_TITLE=${VK_SERVER_TITLE}
+      - SERVER_URL=${SERVER_URL}
+      - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - CELERY_RESULT_BACKEND=redis://redis/0
     depends_on:
       env_validator:
         condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
