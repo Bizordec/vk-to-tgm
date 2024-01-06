@@ -13,4 +13,7 @@
             "path": "projects/cb_receiver"
         }
     ],
+    "settings": {
+        "files.insertFinalNewline": true
+    }
 }
