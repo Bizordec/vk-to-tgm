@@ -6,7 +6,7 @@ authors = ["Ilia Boyazitov"]
 license = "GPL-3.0-or-later"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 fastapi = "^0.104.1"
 vkbottle = "^4.3.12"
 loguru = "^0.7.2"
