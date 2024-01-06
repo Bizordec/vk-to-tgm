@@ -14,7 +14,8 @@ RUN pip install poetry==1.7.1
 # Using additional build context 'libs'
 COPY --from=libs ./vtt_common /code/libs/vtt_common
 COPY ./pyproject.toml ./poetry.lock* ./
-RUN python -m venv $VIRTUAL_ENV \
+RUN sed -i "s/\(develop\s*=\s*\)true/\1false/" poetry.lock \
+    && python -m venv $VIRTUAL_ENV \
     && poetry install --no-root --without=dev --no-interaction --no-ansi
 
 
