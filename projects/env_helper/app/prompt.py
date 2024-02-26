@@ -151,7 +151,7 @@ class EnvPromptBase(Generic[PromptType]):
         return casted_value
 
     def pre_prompt(self) -> None:
-        """Hook to display something before the prompt."""
+        """Display something before the prompt."""
         console.rule()
 
         console.print("[bold]Name[/]:", end=" ")
