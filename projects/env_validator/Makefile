@@ -1,22 +1,11 @@
-.SHELLFLAGS := -ec
 .SILENT:
-.PHONY: venv run
+.PHONY: venv run build-image clean
 
 .DEFAULT_GOAL := run
 
 .venv/bin/activate: poetry.lock
-	if ! [ -x "$$(command -v poetry)" ]; then \
-		echo "Install Poetry and try again."; \
-		exit 1; \
-	fi
-
-	if [ -n "$$VIRTUAL_ENV" ]; then \
-		echo "Deactivate virtual environment by executing 'deactivate' and try again."; \
-		exit 1; \
-	fi
-
-	POETRY_VIRTUALENVS_IN_PROJECT=true poetry install --no-root
-
+	POETRY_VIRTUALENVS_IN_PROJECT=true env -u VIRTUAL_ENV poetry install --no-root; \
+	\
 	# Update timestamp for this target
 	touch .venv/bin/activate
 
@@ -28,7 +17,16 @@ run: .venv/bin/activate
 ############
 
 build-image:
-	docker build -t env_validator $(OPTS) .
+	OLD_IMAGE_ID=$$(docker images env_validator -q); \
+	\
+	echo "Building a new image..."; \
+	docker build -t env_validator $(OPTS) .; \
+	\
+	NEW_IMAGE_ID=$$(docker images env_validator -q); \
+	if [ -n "$$OLD_IMAGE_ID" ] && [ "$$OLD_IMAGE_ID" != "$$NEW_IMAGE_ID" ]; then \
+		echo "Removing an old image..."; \
+		docker rmi $$OLD_IMAGE_ID; \
+	fi
 
 ############
 

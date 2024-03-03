@@ -1,22 +1,11 @@
-.SHELLFLAGS := -ec
 .SILENT:
-.PHONY: venv run build-image tunnel
+.PHONY: venv run build-image tunnel clean
 
 .DEFAULT_GOAL := run
 
 .venv/bin/activate: poetry.lock
-	if ! [ -x "$$(command -v poetry)" ]; then \
-		echo "Install Poetry and try again."; \
-		exit 1; \
-	fi
-
-	if [ -n "$$VIRTUAL_ENV" ]; then \
-		echo "Deactivate virtual environment by executing 'deactivate' and try again."; \
-		exit 1; \
-	fi
-
-	POETRY_VIRTUALENVS_IN_PROJECT=true poetry install --no-root
-
+	POETRY_VIRTUALENVS_IN_PROJECT=true env -u VIRTUAL_ENV poetry install --no-root; \
+	\
 	# Update timestamp for this target
 	touch .venv/bin/activate
 
@@ -28,7 +17,16 @@ run: .venv/bin/activate
 ############
 
 build-image:
+	OLD_IMAGE_ID=$$(docker images cb_receiver -q); \
+	\
+	echo "Building a new image..."; \
 	docker build -t cb_receiver --build-context libs=../../libs $(OPTS) .
+	\
+	NEW_IMAGE_ID=$$(docker images env_helper -q); \
+	if [ -n "$$OLD_IMAGE_ID" ] && [ "$$OLD_IMAGE_ID" != "$$NEW_IMAGE_ID" ]; then \
+		echo "Removing an old image..."; \
+		docker rmi $$OLD_IMAGE_ID; \
+	fi
 
 ############
 
@@ -39,7 +37,7 @@ tunnel/node_modules: tunnel/package-lock.json
 	touch tunnel/node_modules
 
 tunnel: tunnel/node_modules
-	npm start --prefix ./tunnel/
+	npm start --prefix ./tunnel/ $(ARGS)
 
 ############
 

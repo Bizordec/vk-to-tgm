@@ -1,11 +1,21 @@
-.SHELLFLAGS := -ec
 .SILENT:
-.PHONY: pre-commit
+.PHONY: env-helper tunnel compose-local pre-commit
 .INTERMEDIATE: pre-commit.pyz
 
-.DEFAULT_GOAL := pre-commit
+.DEFAULT_GOAL := compose-local
 
 PRECOMMIT_VERSION := 3.6.0
+
+env-helper:
+	$(MAKE) -C projects/env_helper build-image run-container HOST_ENV_PATH="$(PWD)/.env"
+
+tunnel:
+	$(MAKE) -C projects/cb_receiver tunnel ARGS="8000 $(PWD)/.env"
+
+compose-local:
+	docker compose -f docker-compose.local.yml up --build
+
+############
 
 pre-commit.pyz:
 	wget -O pre-commit.pyz "https://github.com/pre-commit/pre-commit/releases/download/v${PRECOMMIT_VERSION}/pre-commit-${PRECOMMIT_VERSION}.pyz"; \
