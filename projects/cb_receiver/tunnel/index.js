@@ -1,26 +1,26 @@
-import localtunnel from 'localtunnel';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { parse, stringify } from 'envfile';
-
+import { tunnelmole } from 'tunnelmole';
+import { resolve } from 'path';
 
 (async () => {
-  const port = process.argv.splice(2)[0] || 8000;
-  try {
-    console.log('Opening a tunnel...');
-    const tunnel = await localtunnel({ port: port, subdomain: 'mtest' });
+  const port = process.argv[2] || 8000;
+  const envPath = resolve(process.argv[3] || '../.env')
 
-    console.log(`\nPublic url: ${tunnel.url}`);
+  console.info('Opening a new tunnel...');
+  const url = await tunnelmole({ port: port });
+  console.info(`\nPublic url: ${url}\n`);
 
-    const sourcePath = '../.env'
-    const data = readFileSync(sourcePath, 'utf8');
-    const parsedFile = parse(data);
-    parsedFile.SERVER_URL = '"' + tunnel.url + '/"';
-    writeFileSync(sourcePath, stringify(parsedFile))
-
-    tunnel.on('close', () => {
-      console.warn('WARNING: Tunnel closed!');
-    });
-  } catch (error) {
-    console.error(`Error: ${error}`);
+  let envContent;
+  if (!existsSync(envPath)) {
+    console.warn(`WARNING: File '${envPath}' not found, creating a new one.`);
+    envContent = `SERVER_URL=${url}`;
+  } else {
+    const oldEnvData = readFileSync(envPath, 'utf8');
+    const parsedFile = parse(oldEnvData);
+    parsedFile.SERVER_URL = url;
+    envContent = stringify(parsedFile);
   }
+  writeFileSync(envPath, envContent);
+  console.info(`Variable 'SERVER_URL' has been saved in '${envPath}'.`);
 })();

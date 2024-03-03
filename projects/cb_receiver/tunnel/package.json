@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "envfile": "^7.0.0",
-    "localtunnel": "^2.0.2"
+    "tunnelmole": "^2.2.13"
   }
 }
