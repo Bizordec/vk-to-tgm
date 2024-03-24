@@ -22,73 +22,65 @@ ruff = "^0.1.7"
 commitizen = "^3.13.0"
 
 
-[tool.isort]
-profile = "black"
-
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 ignore_missing_imports = true
 plugins = [
     "pydantic.mypy"
 ]
 
 [tool.ruff]
-target-version = "py310"
-select = [
-    "F",        # pyflakes
-    "E",        # pycodestyle errors
-    "W",        # pycodestyle warnings
-    "C90",      # mccabe
-    "I",        # isort
-    "N",        # pep8-naming
-    "UP",       # pyupgrade
-    "YTT",      # flake8-2020
-    "ANN",      # flake8-annotations
-    "ASYNC",    # flake8-async
-    "S",        # flake8-bandit
-    "BLE",      # flake8-blind-except
-    "FBT",      # flake8-boolean-trap
-    "B",        # flake8-bugbear
-    "A",        # flake8-builtins
-    "COM",      # flake8-commas
-    "C4",       # flake8-comprehensions
-    "DTZ",      # flake8-datetimez
-    "T10",      # flake8-debugger
-    "EXE",      # flake8-executable
-    "FA",       # flake8-future-annotations
-    "ISC",      # flake8-implicit-str-concat
-    "ICN",      # flake8-import-conventions
-    "G",        # flake8-logging-format
-    "INP",      # flake8-no-pep420
-    "PIE",      # flake8-pie
-    "T20",      # flake8-print
-    "PT",       # flake8-pytest-style
-    "Q",        # flake8-quotes
-    "RSE",      # flake8-raise
-    "RET",      # flake8-return
-    "SLF",      # flake8-self
-    "SLOT",     # flake8-slots
-    "SIM",      # flake8-simplify
-    "TID",      # flake8-tidy-imports
-    "TCH",      # flake8-type-checking
-    "ARG",      # flake8-unused-arguments
-    "PTH",      # flake8-use-pathlib
-    "PGH",      # pygrep-hooks
-    "PL",       # pylint
-    "TRY",      # tryceratops
-    "FLY",      # flynt
-    "PERF",     # perflint
-    "RUF",      # ruff
-]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["ALL"]
 ignore = [
-    "E501",     # line-too-long
-    "ANN101",   # missing-type-self
-    "ANN102",   # missing-type-cls
-    "FBT001",   # boolean-type-hint-positional-argument
-    "PLR0912",  # too-many-branches
-    "PLR0913",  # too-many-arguments
-    "PLR0915",  # too-many-statements
-    "TRY003",   # raise-vanilla-args
+    "D100",     # pydocstyle: undocumented-public-module
+    "D101",     # pydocstyle: undocumented-public-class
+    "D102",     # pydocstyle: undocumented-public-method
+    "D103",     # pydocstyle: undocumented-public-function
+    "D104",     # pydocstyle: undocumented-public-package
+    "D105",     # pydocstyle: undocumented-magic-method
+    "D106",     # pydocstyle: undocumented-public-nested-class
+    "D107",     # pydocstyle: undocumented-public-init
+    "D203",     # pydocstyle: one-blank-line-before-class
+    "D213",     # pydocstyle: multi-line-summary-second-line
+    "ANN002",   # flake8-annotations: missing-type-args
+    "ANN003",   # flake8-annotations: missing-type-kwargs
+    "ANN101",   # flake8-annotations: missing-type-self
+    "ANN102",   # flake8-annotations: missing-type-cls
+    "TRIO",     # flake8-trio
+    "FBT001",   # flake8-boolean-trap: boolean-type-hint-positional-argument
+    "DJ",       # flake8-django
+    "EM",       # flake8-errmsg
+    "TD002",    # flake8-todos: missing-todo-author
+    "TD003",    # flake8-todos: missing-todo-link
+    "FIX",      # flake8-fixme
+    "PD",       # pandas-vet
+    "PLR0911",  # pylint: too-many-return-statements
+    "PLR0913",  # pylint: too-many-arguments
+    "TRY003",   # tryceratops: raise-vanilla-args
+    "NPY",      # numpy
+    "AIR",      # airflow
+    "RUF001",   # ruff: ambiguous-unicode-character-string
+    "RUF002",   # ruff: ambiguous-unicode-character-docstring
+    "RUF003",   # ruff: ambiguous-unicode-character-comment
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/*" = [
+    "S101",     # flake8-bandit: assert
+    "SLF001",   # flake8-self: private-member-access
+    "PLR2004"   # pylint: magic-value-comparison
+]
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true
+
+[tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:"
 ]
 
 [build-system]

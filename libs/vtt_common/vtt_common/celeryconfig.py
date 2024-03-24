@@ -15,6 +15,8 @@ worker_cancel_long_running_tasks_on_connection_loss = True
 # The maximum number of connections that can be open in the connection pool.
 broker_pool_limit = 1
 
+broker_connection_retry_on_startup = True
+
 # Late ack means the task messages
 # will be acknowledged after the task has been executed.
 task_acks_late = True

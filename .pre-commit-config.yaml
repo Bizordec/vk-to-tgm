@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v3.16.0
+    rev: v3.20.0
     hooks:
       - id: commitizen
       - id: commitizen-branch
@@ -16,13 +16,86 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.2.2
+  - repo: local
     hooks:
       - id: ruff
+        name: (env_helper) ruff
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/env_helper/
+        entry: sh -c 'cd projects/env_helper/ && .venv/bin/ruff check --force-exclude'
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
+        name: (env_helper) ruff-format
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/env_helper/
+        entry: sh -c 'cd projects/env_helper/ && .venv/bin/ruff format --force-exclude'
+
+      - id: ruff
+        name: (env_validator) ruff
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/env_validator/
+        entry: sh -c 'cd projects/env_validator/ && .venv/bin/ruff check --force-exclude'
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+        name: (env_validator) ruff-format
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/env_validator/
+        entry: sh -c 'cd projects/env_validator/ && .venv/bin/ruff format --force-exclude'
+
+      - id: ruff
+        name: (cb_receiver) ruff
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/cb_receiver/
+        entry: sh -c 'cd projects/cb_receiver/ && .venv/bin/ruff check --force-exclude'
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+        name: (cb_receiver) ruff-format
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/cb_receiver/
+        entry: sh -c 'cd projects/cb_receiver/ && .venv/bin/ruff format --force-exclude'
+
+      - id: ruff
+        name: (worker_wall) ruff
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/worker_wall/
+        entry: sh -c 'cd projects/worker_wall/ && .venv/bin/ruff check --force-exclude'
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+        name: (worker_wall) ruff-format
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/worker_wall/
+        entry: sh -c 'cd projects/worker_wall/ && .venv/bin/ruff format --force-exclude'
+  - repo: local
     hooks:
       - id: mypy
+        name: (env_helper) mypy
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/env_helper/
+        entry: sh -c 'cd projects/env_helper/ && .venv/bin/mypy .'
+      - id: mypy
+        name: (env_validator) mypy
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/env_validator/
+        entry: sh -c 'cd projects/env_validator/ && .venv/bin/mypy .'
+      - id: mypy
+        name: (cb_receiver) mypy
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/cb_receiver/
+        entry: sh -c 'cd projects/cb_receiver/ && .venv/bin/mypy .'
+      - id: mypy
+        name: (worker_wall) mypy
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/worker_wall/
+        entry: sh -c 'cd projects/worker_wall/ && .venv/bin/mypy .'

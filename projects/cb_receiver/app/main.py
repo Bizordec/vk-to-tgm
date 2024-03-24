@@ -74,7 +74,8 @@ def vk_callback(body: VkCallback, request: Request) -> Response:
                 logger.warning(f"Post {full_id} already exists.")
             else:
                 celery_app.send_task(
-                    "forward_wall",
+                    "app.main.forward_wall",
+                    queue="vtt-wall",
                     kwargs={
                         "owner_id": owner_id,
                         "wall_id": post_id,

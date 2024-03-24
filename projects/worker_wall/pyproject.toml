@@ -1,26 +1,36 @@
 [tool.poetry]
-name = "cb-receiver"
+name = "worker-wall"
 version = "0.1.0"
-description = "Service that receives messages from VK Callback API"
+description = "Celery worker to handle VK wall posts"
 authors = ["Ilia Boyazitov"]
 license = "GPL-3.0-or-later"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = "^0.104.1"
-vkbottle = "^4.3.12"
-loguru = "^0.7.2"
 celery = {extras = ["redis"], version = "^5.3.6"}
-python-dotenv = "^1.0.0"
-uvicorn = {extras = ["standard"], version = "^0.24.0.post1"}
 vtt_common = {path = "../../libs/vtt_common", develop = true}
+loguru = "^0.7.2"
+pydantic = "<2.0.0"
+vkbottle = "^4.3.12"
+vkaudiotoken = {git = "https://github.com/Bizordec/vkaudiotoken-python.git"}
+telethon = "^1.34.0"
+python-dotenv = "^1.0.1"
+aiofiles = "23.1.0"
+eyed3 = "^0.9.7"
+ffmpeg-python = "^0.2.0"
 
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.11.0"
-mypy = "^1.7.1"
-ruff = "^0.1.7"
-commitizen = "^3.13.0"
+mypy = "^1.9.0"
+ruff = "^0.3.2"
+commitizen = "^3.20.0"
+pytest = "^8.1.1"
+pytest-asyncio = "^0.23.5.post1"
+babel = "^2.14.0"
+types-aiofiles = "^23.2.0.20240311"
+pytest-cov = "^4.1.0"
+aioresponses = "^0.7.6"
 
 
 [tool.mypy]

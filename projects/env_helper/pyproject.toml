@@ -26,15 +26,17 @@ ruff = "^0.2.2"
 mypy = "^1.8.0"
 commitizen = "^3.15.0"
 
-[tool.isort]
-profile = "black"
 
 [tool.mypy]
 python_version = "3.11"
 ignore_missing_imports = true
+plugins = [
+    "pydantic.mypy"
+]
 
 [tool.ruff]
 target-version = "py311"
+line-length = 120
 
 [tool.ruff.lint]
 select = ["ALL"]
@@ -75,6 +77,15 @@ ignore = [
 "**/tests/*" = [
     "S101",     # flake8-bandit: assert
     "SLF001",   # flake8-self: private-member-access
+    "PLR2004"   # pylint: magic-value-comparison
+]
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true
+
+[tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:"
 ]
 
 [build-system]

@@ -11,7 +11,10 @@
         },
         {
             "path": "projects/cb_receiver"
-        }
+        },
+        {
+            "path": "projects/worker_wall"
+        },
     ],
     "settings": {
         "files.insertFinalNewline": true

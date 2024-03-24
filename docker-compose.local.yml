@@ -20,16 +20,6 @@ services:
       - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
       - VTT_LANGUAGE=${VTT_LANGUAGE}
       - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
-  rabbitmq:
-    image: rabbitmq:3.12.12-alpine
-    healthcheck:
-      test: rabbitmq-diagnostics check_port_connectivity
-      interval: 1s
-      timeout: 3s
-      retries: 30
-    depends_on:
-      env_validator:
-        condition: service_completed_successfully
   redis:
     image: redis:7.2.3-alpine3.19
     healthcheck:
@@ -51,12 +41,34 @@ services:
       - VK_SERVER_TITLE=${VK_SERVER_TITLE}
       - SERVER_URL=${SERVER_URL}
       - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - CELERY_BROKER_URL=redis://redis/0
       - CELERY_RESULT_BACKEND=redis://redis/0
+    ports:
+      - "8000:8000"
     depends_on:
       env_validator:
         condition: service_completed_successfully
-      rabbitmq:
+      redis:
         condition: service_healthy
+  worker_wall:
+    build:
+      context: ./projects/worker_wall
+      additional_contexts:
+        - libs=./libs
+    environment:
+      - CELERY_BROKER_URL=redis://redis/0
+      - CELERY_RESULT_BACKEND=redis://redis/0
+      - VK_KATE_TOKEN=${VK_KATE_TOKEN}
+      - VK_OFFICIAL_TOKEN=${VK_OFFICIAL_TOKEN}
+      - TGM_API_ID=${TGM_API_ID}
+      - TGM_API_HASH=${TGM_API_HASH}
+      - TGM_BOT_TOKEN=${TGM_BOT_TOKEN}
+      - TGM_BOT_SESSION=${TGM_BOT_SESSION}
+      - TGM_CHANNEL_ID=${TGM_CHANNEL_ID}
+      - VTT_LANGUAGE=${VTT_LANGUAGE}
+      - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
+    depends_on:
+      env_validator:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy

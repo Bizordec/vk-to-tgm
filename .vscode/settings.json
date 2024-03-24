@@ -8,5 +8,6 @@
         "**/Thumbs.db": true,
         "**/.ruby-lsp": true,
         "projects": true,
-    }
+    },
+    "mypy.enabled": false
 }
