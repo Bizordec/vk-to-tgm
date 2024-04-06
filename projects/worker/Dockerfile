@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DEFAULT_TIMEOUT=120 \
     VIRTUAL_ENV=/venv
 
-RUN pip install poetry==1.7.1
+RUN pip install poetry==1.8.2 && apk --update add cargo
 
 # Using additional build context 'libs'
 COPY --from=libs ./vtt_common /code/libs/vtt_common

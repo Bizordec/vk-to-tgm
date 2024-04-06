@@ -1,7 +1,7 @@
 import os
 
 # Default broker URL.
-broker_url = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672//")
+broker_url = os.getenv("CELERY_BROKER_URL", "redis://localhost/0")
 
 # The backend used to store task results.
 result_backend = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost/0")

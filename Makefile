@@ -13,7 +13,7 @@ tunnel:
 	$(MAKE) -C projects/cb_receiver tunnel ARGS="8000 $(PWD)/.env"
 
 compose-local:
-	docker compose -f docker-compose.local.yml up --build
+	docker compose -f docker-compose.local.yml --profile with-pl up --build --remove-orphans
 
 ############
 

@@ -15,14 +15,17 @@ from app.worker import worker
 if TYPE_CHECKING:
     from telethon import TelegramClient
     from telethon.tl.types import TypeMessageEntity
+    from vkbottle_types.objects import AudioAudio
 
     from app.services.vk import VkService
-    from app.vtt.schemas import VttAttachments, VttMessage
+    from app.vtt.schemas import VttAttachments, VttAudioPlaylist, VttMessage
 
-PL_SOON = _("PL_SOON")
+GO_TO_POST = _("GO_TO_POST")
+GO_TO_PL = _("GO_TO_PL")
+PL_OUT_OF = _("PL_OUT_OF")
 
 
-class TelegramService:
+class TelegramWallSender:
     def __init__(self, tgm_client: TelegramClient, vk_service: VkService, channel_id: int) -> None:
         self.tgm_client = tgm_client
         self.vk_service = vk_service
@@ -159,6 +162,7 @@ class TelegramService:
                 file=InputMediaGeoLive(geo_point=InputGeoPoint(lat=latitude, long=longitude)),
                 reply_to=first_message_id,
             )
+
         if attachments.poll:
             logger.info("Sending poll...")
             await self.tgm_client.send_file(
@@ -166,6 +170,7 @@ class TelegramService:
                 file=attachments.poll,
                 reply_to=first_message_id,
             )
+
         async with Downloader(vk_service=self.vk_service) as downloader:
             if attachments.audios:
                 logger.info("Sending audios...")
@@ -177,6 +182,7 @@ class TelegramService:
                     reply_to=first_message_id,
                 )
                 logger.info("Audios sent successfully.")
+
             if attachments.documents:
                 logger.info("Sending documents...")
                 document_urls = [doc.url for doc in attachments.documents]
@@ -189,8 +195,7 @@ class TelegramService:
                 )
                 logger.info("Documents sent successfully.")
 
-            if settings.TGM_PL_CHANNEL_ID and attachments.audio_playlist:
-                logger.info("Sending playlist...")
+            if attachments.audio_playlist:
                 playlist = attachments.audio_playlist
 
                 playlist_caption = playlist.text.caption
@@ -202,27 +207,31 @@ class TelegramService:
                 if playlist.photo:
                     downloaded_photo = await downloader.download_media(url=playlist.photo)
 
-                # Send playlist link to the main channel
-                main_pl_link_message = await self.tgm_client.send_message(
+                # Send playlist message without audios to the main channel
+                main_pl_message = await self.tgm_client.send_message(
                     self.channel_id,
                     message=first_pl_caption_html,
                     file=downloaded_photo,
-                    buttons=Button.inline(PL_SOON, b"wait_for_pl_link"),
                     reply_to=first_message_id,
                 )
 
-                # Send task to create messages in the playlist channel
-                worker.send_task(
-                    "app.main.forward_playlist",
-                    queue="vtt-playlist",
-                    kwargs={
-                        "owner_id": playlist.owner_id,
-                        "playlist_id": playlist.id,
-                        "access_key": playlist.access_key,
-                        "reply_channel_id": self.channel_id,
-                        "reply_message_id": main_pl_link_message.id,
-                    },
-                )
+                if settings.TGM_PL_CHANNEL_ID:
+                    logger.info("Sending playlist task...")
+
+                    # Send task to create messages in the playlist channel
+                    worker.send_task(
+                        "app.main.forward_playlist",
+                        queue="vtt-playlist",
+                        kwargs={
+                            "owner_id": playlist.owner_id,
+                            "playlist_id": playlist.id,
+                            "access_key": playlist.access_key,
+                            "reply_channel_id": self.channel_id,
+                            "reply_message_id": main_pl_message.id,
+                        },
+                    )
+
+                    logger.info(f"[{playlist.full_id}] Playlist task sent successfully.")
 
                 # Send rest playlist messages if any to the main channel
                 rest_messages = playlist_caption[1:]
@@ -232,9 +241,8 @@ class TelegramService:
                         message=text,
                         formatting_entities=entities,
                         link_preview=False,
-                        reply_to=main_pl_link_message,
+                        reply_to=main_pl_message,
                     )
-                logger.info(f"[{playlist.full_id}] Playlist sent successfully.")
 
     async def send_main_message(
         self,
@@ -318,3 +326,147 @@ class TelegramService:
                 )
 
         return await self._get_message_link(message_id=main_message.id)
+
+
+class TelegramPlaylistSender:
+    def __init__(
+        self,
+        tgm_client: TelegramClient,
+        vk_service: VkService,
+        pl_channel_id: int,
+        wall_channel_id: int | None = None,
+        wall_message_id: int | None = None,
+    ) -> None:
+        self.tgm_client = tgm_client
+        self.vk_service = vk_service
+
+        self.pl_channel_id = pl_channel_id
+
+        self.wall_channel_id = wall_channel_id
+        self.wall_message_id = wall_message_id
+
+    async def _get_message_link(self, channel_id: int, message_id: int) -> str:
+        entity = await self.tgm_client.get_entity(channel_id)
+
+        if not isinstance(entity, Channel):
+            logger.warning(f"Entity with id '{channel_id}' is not a channel.")
+            return ""
+
+        channel = entity.username
+        if channel is None:
+            channel = f"c/{entity.id}"
+
+        return f"https://t.me/{channel}/{message_id}"
+
+    async def _add_link_buttons(self, pl_message: TelethonMessage) -> None:
+        if not self.wall_channel_id or not self.wall_message_id:
+            return
+
+        wall_post_link = await self._get_message_link(
+            channel_id=self.wall_channel_id,
+            message_id=self.wall_message_id,
+        )
+        pl_main_message = await self.tgm_client.edit_message(
+            entity=pl_message,
+            buttons=Button.url(f"🔗 {GO_TO_POST}", wall_post_link),
+        )
+
+        pl_post_link = await self._get_message_link(
+            channel_id=self.pl_channel_id,
+            message_id=pl_main_message.id,
+        )
+        wall_message = cast(
+            TelethonMessage,
+            await self.tgm_client.get_messages(
+                self.wall_channel_id,
+                ids=self.wall_message_id,
+            ),
+        )
+        await self.tgm_client.edit_message(
+            wall_message,
+            buttons=Button.url(f"🔊 {GO_TO_PL}", pl_post_link),
+        )
+
+    async def _send_first_main_message(self, vtt_playlist: VttAudioPlaylist) -> tuple[TelethonMessage, bool]:
+        logger.info("Sending first main message...")
+
+        is_caption = False
+
+        async with Downloader(vk_service=self.vk_service) as downloader:
+            if not vtt_playlist.photo:
+                message, entities = next(iter(vtt_playlist.text.message), ("", None))
+                downloaded_photo = None
+            else:
+                is_caption = True
+                message, entities = next(iter(vtt_playlist.text.caption), ("", None))
+                downloaded_photo = await downloader.download_media(url=vtt_playlist.photo)
+
+        main_message = await self.tgm_client.send_message(
+            self.pl_channel_id,
+            file=downloaded_photo,
+            message=message,
+            formatting_entities=entities,
+            link_preview=False,
+        )
+
+        await self._add_link_buttons(pl_message=main_message)
+
+        return main_message, is_caption
+
+    async def _send_rest_main_text_messages(
+        self,
+        first_message_id: int,
+        rest_messages_text: list[tuple[str, list[TypeMessageEntity]]],
+    ) -> None:
+        if not rest_messages_text:
+            return
+
+        logger.info("Sending rest main message...")
+        for text, entities in rest_messages_text:
+            await self.tgm_client.send_message(
+                self.pl_channel_id,
+                message=text,
+                formatting_entities=entities,
+                link_preview=False,
+                reply_to=first_message_id,
+            )
+
+    async def _send_main_message(self, vtt_playlist: VttAudioPlaylist) -> TelethonMessage:
+        first_message, is_caption = await self._send_first_main_message(vtt_playlist=vtt_playlist)
+
+        rest_messages_text = vtt_playlist.text.caption[1:] if is_caption else vtt_playlist.text.message[1:]
+        await self._send_rest_main_text_messages(
+            first_message_id=first_message.id,
+            rest_messages_text=rest_messages_text,
+        )
+
+        logger.info("Main message sent successfully.")
+        return first_message
+
+    async def _send_audios(self, audios: list[AudioAudio] | None, main_message_id: int) -> None:
+        if not audios:
+            return
+
+        full_audios_count = len(audios)
+        for i in range(0, full_audios_count, 10):
+            current_audios = audios[i : i + 10]
+            current_audios_count = len(current_audios)
+            pl_audio_caption = [""] * (current_audios_count - 1) + [
+                f"{i + 1}-{i + current_audios_count} {PL_OUT_OF} {full_audios_count}",
+            ]
+            async with Downloader(vk_service=self.vk_service) as downloader:
+                current_audios_paths = await downloader.download_files(audios=current_audios)
+                await self.tgm_client.send_file(
+                    self.pl_channel_id,
+                    file=current_audios_paths,
+                    caption=pl_audio_caption,
+                    reply_to=main_message_id,
+                )
+
+    async def send_vtt_playlist(self, vtt_playlist: VttAudioPlaylist) -> str:
+        main_message = await self._send_main_message(vtt_playlist=vtt_playlist)
+        main_message_id = main_message.id
+
+        await self._send_audios(audios=vtt_playlist.audios, main_message_id=main_message_id)
+
+        return await self._get_message_link(channel_id=self.pl_channel_id, message_id=main_message_id)

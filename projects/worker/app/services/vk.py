@@ -4,11 +4,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 from loguru import logger
 from vkbottle import VKAPIError
-from vkbottle_types.objects import (
-    AudioAudio,
-    BasePropertyExists,
-    VideoVideoFiles,
-)
+from vkbottle_types.objects import AudioAudio, BasePropertyExists, VideoVideoFiles
 
 from app.vk.schemas import AudioPlaylist
 from app.vtt.schemas import VttVideo
@@ -52,8 +48,8 @@ class VkService:
 
     async def get_audio_playlist(
         self,
-        owner_id: str,
-        playlist_id: str,
+        owner_id: int,
+        playlist_id: int,
         access_key: str | None = None,
     ) -> AudioPlaylist | None:
         try:
@@ -91,6 +87,31 @@ class VkService:
                 },
             )
         )["response"]
+        return [AudioAudio(**audio) for audio in audios if audio.get("url")]
+
+    async def get_audios_by_playlist_id(
+        self,
+        owner_id: int,
+        playlist_id: int,
+        access_key: str,
+        count: int,
+        *,
+        use_vk_user: bool = False,
+    ) -> list[AudioAudio]:
+        vk_api = self.kate_user
+        if use_vk_user:
+            vk_api = self.vk_user
+        audios: list[dict[str, Any]] = (
+            await vk_api.request(
+                "audio.get",
+                {
+                    "owner_id": owner_id,
+                    "playlist_id": playlist_id,
+                    "access_key": access_key,
+                    "count": count,
+                },
+            )
+        )["response"]["items"]
         return [AudioAudio(**audio) for audio in audios if audio.get("url")]
 
     async def get_video_by_ids(self, video_ids: list[str]) -> list[VttVideo]:

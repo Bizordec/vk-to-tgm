@@ -78,8 +78,8 @@ class VttLink:
 
 @dataclass
 class VttAudioPlaylistId:
-    owner_id: str
-    playlist_id: str
+    owner_id: int
+    playlist_id: int
     access_key: str | None = None
 
 
@@ -99,8 +99,8 @@ class VttText:
 
 @dataclass
 class VttAudioPlaylist:
-    id: str
-    owner_id: str
+    id: int
+    owner_id: int
     title: str
     text: VttText
     description: str

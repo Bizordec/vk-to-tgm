@@ -13,8 +13,11 @@ poetry.lock:
 
 venv: .venv/bin/activate
 
-run: .venv/bin/activate
+run_main: .venv/bin/activate
 	.venv/bin/python3 -m celery -A app.main worker -n worker-main -Q vtt-wall -c 1 -l INFO
+
+run_pl: .venv/bin/activate
+	.venv/bin/python3 -m celery -A app.main worker -n worker-pl -Q vtt-playlist -c 1 -l INFO
 
 test: .venv/bin/activate
 	.venv/bin/pytest --cov --cov-report=html tests/

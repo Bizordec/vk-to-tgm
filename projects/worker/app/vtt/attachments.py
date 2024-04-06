@@ -133,10 +133,12 @@ class LinkHandler(AttachmentHandler):
         owner_id = match.group("owner_id")
         if not owner_id:
             return
+        owner_id = int(owner_id)
 
         playlist_id = match.group("playlist_id")
         if not playlist_id:
             return
+        playlist_id = int(playlist_id)
 
         access_key = None
         if "access_hash" in link_query:
