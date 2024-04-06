@@ -13,7 +13,7 @@
             "path": "projects/cb_receiver"
         },
         {
-            "path": "projects/worker_wall"
+            "path": "projects/worker"
         },
     ],
     "settings": {

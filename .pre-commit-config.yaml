@@ -61,18 +61,18 @@ repos:
         entry: sh -c 'cd projects/cb_receiver/ && .venv/bin/ruff format --force-exclude'
 
       - id: ruff
-        name: (worker_wall) ruff
+        name: (worker) ruff
         language: python
         types_or: [python, pyi]
-        files: ^projects/worker_wall/
-        entry: sh -c 'cd projects/worker_wall/ && .venv/bin/ruff check --force-exclude'
+        files: ^projects/worker/
+        entry: sh -c 'cd projects/worker/ && .venv/bin/ruff check --force-exclude'
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
-        name: (worker_wall) ruff-format
+        name: (worker) ruff-format
         language: python
         types_or: [python, pyi]
-        files: ^projects/worker_wall/
-        entry: sh -c 'cd projects/worker_wall/ && .venv/bin/ruff format --force-exclude'
+        files: ^projects/worker/
+        entry: sh -c 'cd projects/worker/ && .venv/bin/ruff format --force-exclude'
   - repo: local
     hooks:
       - id: mypy
@@ -94,8 +94,8 @@ repos:
         files: ^projects/cb_receiver/
         entry: sh -c 'cd projects/cb_receiver/ && .venv/bin/mypy .'
       - id: mypy
-        name: (worker_wall) mypy
+        name: (worker) mypy
         language: python
         types_or: [python, pyi]
-        files: ^projects/worker_wall/
-        entry: sh -c 'cd projects/worker_wall/ && .venv/bin/mypy .'
+        files: ^projects/worker/
+        entry: sh -c 'cd projects/worker/ && .venv/bin/mypy .'

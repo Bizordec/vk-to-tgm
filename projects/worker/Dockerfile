@@ -1,6 +1,6 @@
 FROM python:3.11.7-alpine3.19 as build-stage
 
-WORKDIR /code/projects/worker_wall
+WORKDIR /code/projects/worker
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -30,5 +30,3 @@ ENV PYTHONUNBUFFERED=1 \
 COPY --from=build-stage /venv /venv
 COPY ./locales ./locales
 COPY ./app ./app
-
-CMD [ "celery", "-A", "app.main", "worker", "-n", "worker-wall", "-Q", "vtt-wall", "-c", "1", "-l", "INFO"]

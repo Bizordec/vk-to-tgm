@@ -26,4 +26,4 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-_ = gettext.translation("worker_wall", "locales", languages=[settings.VTT_LANGUAGE]).gettext
+_ = gettext.translation("worker", "locales", languages=[settings.VTT_LANGUAGE]).gettext

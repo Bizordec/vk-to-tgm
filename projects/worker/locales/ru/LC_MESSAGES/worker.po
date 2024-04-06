@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-03-24 21:43+0300\n"
+"POT-Creation-Date: 2024-04-06 16:01+0000\n"
 "PO-Revision-Date: 2024-03-10 19:55+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -23,18 +23,18 @@ msgstr ""
 msgid "PL_SOON"
 msgstr "Ссылка на плейлист скоро появится..."
 
-#: app/vtt/factories/text.py:23
+#: app/vtt/factories/text.py:22
 msgid "SOURCE"
 msgstr "Источник"
 
-#: app/vtt/factories/text.py:24
+#: app/vtt/factories/text.py:23
 msgid "VK_POST"
 msgstr "Пост в VK"
 
-#: app/vtt/factories/text.py:25
+#: app/vtt/factories/text.py:24
 msgid "VK_REPOST"
 msgstr "Репост в VK"
 
-#: app/vtt/factories/text.py:26
+#: app/vtt/factories/text.py:25
 msgid "VK_PLAYLIST"
 msgstr "Плейлист в VK"

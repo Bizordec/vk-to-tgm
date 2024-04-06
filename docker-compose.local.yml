@@ -50,11 +50,12 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
-  worker_wall:
+  worker_main:
     build:
-      context: ./projects/worker_wall
+      context: ./projects/worker
       additional_contexts:
         - libs=./libs
+    command: celery -A app.main worker -n worker-main -Q vtt-wall -c 1 -l INFO
     environment:
       - CELERY_BROKER_URL=redis://redis/0
       - CELERY_RESULT_BACKEND=redis://redis/0

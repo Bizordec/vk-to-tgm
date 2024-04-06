@@ -1,18 +1,17 @@
-# English translations for PROJECT.
+# Translations template for PROJECT.
 # Copyright (C) 2024 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-03-24 21:43+0300\n"
-"PO-Revision-Date: 2024-03-10 19:55+0300\n"
+"POT-Creation-Date: 2024-04-06 16:01+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
-"Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,20 +19,20 @@ msgstr ""
 
 #: app/services/tgm.py:22
 msgid "PL_SOON"
-msgstr "Playlist link will be here soon..."
+msgstr ""
+
+#: app/vtt/factories/text.py:22
+msgid "SOURCE"
+msgstr ""
 
 #: app/vtt/factories/text.py:23
-msgid "SOURCE"
-msgstr "Source"
+msgid "VK_POST"
+msgstr ""
 
 #: app/vtt/factories/text.py:24
-msgid "VK_POST"
-msgstr "VK post"
+msgid "VK_REPOST"
+msgstr ""
 
 #: app/vtt/factories/text.py:25
-msgid "VK_REPOST"
-msgstr "VK repost"
-
-#: app/vtt/factories/text.py:26
 msgid "VK_PLAYLIST"
-msgstr "VK playlist"
+msgstr ""

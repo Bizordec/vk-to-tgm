@@ -14,25 +14,25 @@ poetry.lock:
 venv: .venv/bin/activate
 
 run: .venv/bin/activate
-	.venv/bin/python3 -m celery -A app.main worker -n worker-wall -Q vtt-wall -c 1 -l INFO
+	.venv/bin/python3 -m celery -A app.main worker -n worker-main -Q vtt-wall -c 1 -l INFO
 
 test: .venv/bin/activate
 	.venv/bin/pytest --cov --cov-report=html tests/
 
 update_locales:
 	pybabel extract app/ -o locales/base.pot
-	pybabel update -i locales/base.pot -D worker_wall -d locales/
-	pybabel compile -D worker_wall -d locales/
+	pybabel update -i locales/base.pot -D worker -d locales/
+	pybabel compile -D worker -d locales/
 
 ############
 
 build-image:
-	OLD_IMAGE_ID=$$(docker images worker_wall -q); \
+	OLD_IMAGE_ID=$$(docker images worker -q); \
 	\
 	echo "Building a new image..."; \
-	docker build -t worker_wall --build-context libs=../../libs $(OPTS) .; \
+	docker build -t worker --build-context libs=../../libs $(OPTS) .; \
 	\
-	NEW_IMAGE_ID=$$(docker images worker_wall -q); \
+	NEW_IMAGE_ID=$$(docker images worker -q); \
 	if [ -n "$$OLD_IMAGE_ID" ] && [ "$$OLD_IMAGE_ID" != "$$NEW_IMAGE_ID" ]; then \
 		echo "Removing an old image..."; \
 		docker rmi $$OLD_IMAGE_ID; \

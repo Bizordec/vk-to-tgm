@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "worker-wall"
+name = "worker"
 version = "0.1.0"
-description = "Celery worker to handle VK wall posts"
+description = "Celery worker to forward VK entities to Telegram"
 authors = ["Ilia Boyazitov"]
 license = "GPL-3.0-or-later"
 readme = "README.md"
