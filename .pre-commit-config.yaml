@@ -73,6 +73,20 @@ repos:
         types_or: [python, pyi]
         files: ^projects/worker/
         entry: sh -c 'cd projects/worker/ && .venv/bin/ruff format --force-exclude'
+
+      - id: ruff
+        name: (tgm_bot) ruff
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/tgm_bot/
+        entry: sh -c 'cd projects/tgm_bot/ && .venv/bin/ruff check --force-exclude'
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+        name: (tgm_bot) ruff-format
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/tgm_bot/
+        entry: sh -c 'cd projects/tgm_bot/ && .venv/bin/ruff format --force-exclude'
   - repo: local
     hooks:
       - id: mypy
@@ -98,4 +112,10 @@ repos:
         language: python
         types_or: [python, pyi]
         files: ^projects/worker/
+        entry: sh -c 'cd projects/worker/ && .venv/bin/mypy .'
+      - id: mypy
+        name: (worker) mypy
+        language: python
+        types_or: [python, pyi]
+        files: ^projects/worker/tgm_bot
         entry: sh -c 'cd projects/worker/ && .venv/bin/mypy .'
