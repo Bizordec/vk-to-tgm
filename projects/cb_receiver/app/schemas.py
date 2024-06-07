@@ -5,7 +5,7 @@ from vkbottle_types.objects import CallbackBase
 
 
 class VkCallback(CallbackBase):
-    object: Any | None = None  # noqa: A003
+    object: Any | None = None
 
 
 class VttTaskType(Enum):

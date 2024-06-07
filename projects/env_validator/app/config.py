@@ -22,8 +22,8 @@ TGM_CHANNEL_ID_PATTERN = re.compile(r"^-100[0-9]+$")
 TGM_BOT_TOKEN_PATTERN = re.compile(r"^.+:.+$")
 
 TOKENS_UA = {
-    "VK_KATE_TOKEN": "KateMobileAndroid/56 lite-460 (Android 4.4.2; SDK 19; x86; unknown Android SDK built for x86; en)",
-    "VK_OFFICIAL_TOKEN": "VKAndroidApp/5.52-4543 (Android 5.1.1; SDK 22; x86_64; unknown Android SDK built for x86_64; en; 320x240)",
+    "VK_KATE_TOKEN": "KateMobileAndroid/56 lite-460 (Android 4.4.2; SDK 19; x86; unknown Android SDK built for x86; en)",  # noqa: E501
+    "VK_OFFICIAL_TOKEN": "VKAndroidApp/5.52-4543 (Android 5.1.1; SDK 22; x86_64; unknown Android SDK built for x86_64; en; 320x240)",  # noqa: E501
 }
 
 VttLanguage = Literal["en", "ru"]
@@ -177,7 +177,7 @@ class Settings(BaseSettings):
     ) -> dict:
         loop = asyncio.get_event_loop()
         if loop.is_running():
-            loop.create_task(check_func(values))
+            loop.create_task(check_func(values))  # noqa: RUF006
         else:
             loop.run_until_complete(check_func(values))
         return values

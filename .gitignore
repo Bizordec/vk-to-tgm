@@ -9,3 +9,4 @@ node_modules
 *.session
 *.session-journal
 celerybeat-*
+*.pyz

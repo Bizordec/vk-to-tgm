@@ -4,7 +4,7 @@
 
 .DEFAULT_GOAL := compose-local
 
-PRECOMMIT_VERSION := 3.6.0
+PRECOMMIT_VERSION := 3.7.1
 
 env-helper:
 	$(MAKE) -C projects/env_helper build-image run-container HOST_ENV_PATH="$(PWD)/.env"
