@@ -5,15 +5,35 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: FastAPI",
-            "type": "python",
+            "name": "Python: Debug Tests",
+            "type": "debugpy",
             "request": "launch",
-            "module": "uvicorn",
-            "args": [
-                "app.main:app",
-                "--reload"
+            "program": "${file}",
+            "purpose": [
+                "debug-test"
             ],
+            "console": "integratedTerminal",
             "justMyCode": false
         },
+        {
+            "name": "Python Debugger: Remote Attach",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/.venv",
+                    "remoteRoot": "/venv"
+                },
+                {
+                    "localRoot": "${workspaceFolder}/app",
+                    "remoteRoot": "/code/app"
+                }
+            ],
+            "justMyCode": false
+        }
     ]
 }

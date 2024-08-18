@@ -15,6 +15,9 @@ tunnel:
 compose-local:
 	docker compose -f docker-compose.local.yml --profile with-pl up --build --remove-orphans
 
+compose-debug:
+	docker compose -f docker-compose.local.yml -f docker-compose.debug.yml --profile with-pl up --build --remove-orphans
+
 ############
 
 pre-commit.pyz:

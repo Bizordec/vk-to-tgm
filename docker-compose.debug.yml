@@ -1,0 +1,29 @@
+services:
+  cb_receiver:
+    command: ["sh", "-c", "pip install debugpy -t /tmp && python -Xfrozen_modules=off /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 -m uvicorn app.main:app --reload --host 0.0.0.0" ]
+    ports:
+      - "5678:5678"
+    volumes:
+      - ./projects/cb_receiver/app:/code/app
+  worker_main:
+    command: ["sh", "-c", "pip install debugpy -t /tmp && python -Xfrozen_modules=off /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 -m celery -A app.main worker -n worker-main -Q vtt-wall -c 1 -l INFO" ]
+    ports:
+      - "5679:5678"
+  worker_pl:
+    command: ["sh", "-c", "pip install debugpy -t /tmp && python -Xfrozen_modules=off /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 -m celery -A app.main worker -n worker-pl -Q vtt-playlist -c 1 -l INFO" ]
+    ports:
+      - "5680:5678"
+  tgm_bot:
+    command: ["sh", "-c", "pip install debugpy -t /tmp && python -Xfrozen_modules=off /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 -m app.main" ]
+    ports:
+      - "5681:5678"
+  flower:
+    image: mher/flower:2.0
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    ports:
+      - "5555:5555"
+    depends_on:
+      redis:
+        condition: service_healthy
