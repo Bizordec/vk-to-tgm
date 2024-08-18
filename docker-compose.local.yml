@@ -21,6 +21,7 @@ services:
       - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
   redis:
     image: redis:7.2.3-alpine3.19
+    restart: always
     healthcheck:
       test: sh -c "redis-cli ping | grep PONG"
       interval: 1s
@@ -34,6 +35,7 @@ services:
       context: ./projects/cb_receiver
       additional_contexts:
         - libs=./libs
+    restart: always
     environment:
       - VK_COMMUNITY_ID=${VK_COMMUNITY_ID}
       - VK_COMMUNITY_TOKEN=${VK_COMMUNITY_TOKEN}
@@ -54,6 +56,7 @@ services:
       context: ./projects/worker
       additional_contexts:
         - libs=./libs
+    restart: always
     command: celery -A app.main worker -n worker-main -Q vtt-wall -c 1 -l INFO
     environment:
       - CELERY_BROKER_URL=redis://redis/0
@@ -99,3 +102,28 @@ services:
         condition: service_healthy
     profiles:
       - with-pl
+  tgm_bot:
+    build:
+      context: ./projects/tgm_bot
+      additional_contexts:
+        - libs=./libs
+    restart: always
+    environment:
+      - CELERY_BROKER_URL=redis://redis/0
+      - CELERY_RESULT_BACKEND=redis://redis/0
+      - VK_KATE_TOKEN=${VK_KATE_TOKEN}
+      - VK_OFFICIAL_TOKEN=${VK_OFFICIAL_TOKEN}
+      - TGM_API_ID=${TGM_API_ID}
+      - TGM_API_HASH=${TGM_API_HASH}
+      - TGM_BOT_TOKEN=${TGM_BOT_TOKEN}
+      - TGM_BOT_SESSION=${TGM_BOT_SESSION}
+      - TGM_CLIENT_PHONE=${TGM_CLIENT_PHONE}
+      - TGM_CLIENT_SESSION=${TGM_CLIENT_SESSION}
+      - TGM_CHANNEL_ID=${TGM_CHANNEL_ID}
+      - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
+      - VTT_LANGUAGE=${VTT_LANGUAGE}
+    depends_on:
+      env_validator:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy

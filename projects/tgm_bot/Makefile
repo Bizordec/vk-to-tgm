@@ -14,6 +14,12 @@ venv: .venv/bin/activate
 run: .venv/bin/activate
 	.venv/bin/python3 -m app.main
 
+update_locales:
+	mkdir -p locales/
+	pybabel extract app/ -o locales/base.pot
+	pybabel update -i locales/base.pot -D tgm_bot -d locales/
+	pybabel compile -D tgm_bot -d locales/
+
 ############
 
 build-image:
