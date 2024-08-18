@@ -12,6 +12,64 @@ packages = [
 python = "^3.10"
 
 
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "D100",     # pydocstyle: undocumented-public-module
+    "D101",     # pydocstyle: undocumented-public-class
+    "D102",     # pydocstyle: undocumented-public-method
+    "D103",     # pydocstyle: undocumented-public-function
+    "D104",     # pydocstyle: undocumented-public-package
+    "D105",     # pydocstyle: undocumented-magic-method
+    "D106",     # pydocstyle: undocumented-public-nested-class
+    "D107",     # pydocstyle: undocumented-public-init
+    "D203",     # pydocstyle: one-blank-line-before-class
+    "D213",     # pydocstyle: multi-line-summary-second-line
+    "ANN002",   # flake8-annotations: missing-type-args
+    "ANN003",   # flake8-annotations: missing-type-kwargs
+    "ANN101",   # flake8-annotations: missing-type-self
+    "ANN102",   # flake8-annotations: missing-type-cls
+    "TRIO",     # flake8-trio
+    "FBT001",   # flake8-boolean-trap: boolean-type-hint-positional-argument
+    "DJ",       # flake8-django
+    "EM",       # flake8-errmsg
+    "TD002",    # flake8-todos: missing-todo-author
+    "TD003",    # flake8-todos: missing-todo-link
+    "FIX",      # flake8-fixme
+    "PD",       # pandas-vet
+    "PLR0911",  # pylint: too-many-return-statements
+    "PLR0913",  # pylint: too-many-arguments
+    "TRY003",   # tryceratops: raise-vanilla-args
+    "NPY",      # numpy
+    "AIR",      # airflow
+    "RUF001",   # ruff: ambiguous-unicode-character-string
+    "RUF002",   # ruff: ambiguous-unicode-character-docstring
+    "RUF003",   # ruff: ambiguous-unicode-character-comment
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/*" = [
+    "S101",     # flake8-bandit: assert
+    "SLF001",   # flake8-self: private-member-access
+    "PLR2004"   # pylint: magic-value-comparison
+]
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true
+
+[tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:"
+]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

@@ -81,9 +81,3 @@ async def setup_vk_server() -> str:
     )
 
     return confirmation_code
-
-
-def is_queued_post(owner_id: int, post_id: int) -> bool:
-    # TODO: check if exists in redis
-    logger.info(f"{owner_id}_{post_id}")
-    return False

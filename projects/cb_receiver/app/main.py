@@ -6,12 +6,14 @@ from typing import TYPE_CHECKING
 from fastapi import FastAPI, Request, Response
 from loguru import logger
 from vkbottle_types.objects import CallbackType, WallPostType, WallWallpostFull
+from vtt_common.schemas import VttTaskType
+from vtt_common.tasks import get_queued_task
 
 from app.config import settings
 from app.schemas import (
     VkCallback,  # noqa: TCH001
 )
-from app.utils import is_queued_post, setup_vk_server
+from app.utils import setup_vk_server
 from app.worker import app as celery_app
 
 if TYPE_CHECKING:
@@ -70,11 +72,17 @@ def vk_callback(body: VkCallback, request: Request) -> Response:
             WallPostType.VIDEO,
         ]:
             logger.info(f"New post ({full_id}).")
-            if is_queued_post(owner_id, post_id):
+            if get_queued_task(
+                app=celery_app,
+                task_type=VttTaskType.wall,
+                owner_id=owner_id,
+                post_id=post_id,
+            ):
                 logger.warning(f"Post {full_id} already exists.")
             else:
                 celery_app.send_task(
                     "app.main.forward_wall",
+                    task_id=f"{VttTaskType.wall}_{owner_id}_{post_id}",
                     queue="vtt-wall",
                     kwargs={
                         "owner_id": owner_id,
