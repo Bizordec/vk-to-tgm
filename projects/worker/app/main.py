@@ -14,6 +14,8 @@ from app.vtt.factories.message import VttMessageFactory
 from app.vtt.factories.playlist import VttPlaylistFactory
 from app.worker import worker
 
+logger.disable("vkbottle")
+
 
 @worker.task()
 @async_to_sync

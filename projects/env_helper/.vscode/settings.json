@@ -7,5 +7,10 @@
             "source.organizeImports": "explicit"
         }
     },
-    "mypy.dmypyExecutable": "${workspaceFolder}/.venv/bin/dmypy"
+    "mypy.dmypyExecutable": "${workspaceFolder}/.venv/bin/dmypy",
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }
