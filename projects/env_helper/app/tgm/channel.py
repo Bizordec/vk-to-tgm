@@ -28,16 +28,13 @@ class Channel(ABC):
 
     @property
     @abstractmethod
-    def channel_type(self) -> str:
-        ...
+    def channel_type(self) -> str: ...
 
     @abstractmethod
-    def prompt_name(self) -> str:
-        ...
+    def prompt_name(self) -> str: ...
 
     @abstractmethod
-    def prompt_id(self) -> str:
-        ...
+    def prompt_id(self) -> str: ...
 
     @property
     def name(self) -> str:

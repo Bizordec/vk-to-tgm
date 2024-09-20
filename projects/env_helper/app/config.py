@@ -81,6 +81,3 @@ class Settings(BaseSettings):
     _check_tgm_id = validator("TGM_CHANNEL_ID", "TGM_PL_CHANNEL_ID", allow_reuse=True)(
         partial(check_env, pattern=TGM_CHANNEL_ID_PATTERN),
     )
-
-    class Config:
-        env_file = ".env"

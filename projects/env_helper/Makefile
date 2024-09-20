@@ -28,10 +28,8 @@ build-image:
 		docker rmi $$OLD_IMAGE_ID; \
 	fi
 
-HOST_ENV_PATH ?= "$(PWD)/.env"
-
 run-container:
-	docker run --rm -it -v "$(HOST_ENV_PATH)":/code/.env env_helper
+	docker run --rm -it -v "$(PWD)/out":/tmp/out env_helper
 
 ############
 

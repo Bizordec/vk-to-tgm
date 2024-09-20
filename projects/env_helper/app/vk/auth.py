@@ -29,8 +29,7 @@ if TYPE_CHECKING:
             auth_code: str,
             captcha_sid: str,
             captcha_key: str,
-        ) -> str:
-            ...
+        ) -> str: ...
 
 
 class Auth(ABC):
@@ -43,18 +42,15 @@ class Auth(ABC):
 
     @property
     @abstractmethod
-    def token_name(self) -> str:
-        ...
+    def token_name(self) -> str: ...
 
     @property
     @abstractmethod
-    def user_agent(self) -> str:
-        ...
+    def user_agent(self) -> str: ...
 
     @property
     @abstractmethod
-    def get_token_fn(self) -> TokenFunc:
-        ...
+    def get_token_fn(self) -> TokenFunc: ...
 
     @property
     def login(self) -> str:

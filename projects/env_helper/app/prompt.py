@@ -24,12 +24,8 @@ class EnvPromptBase(Generic[PromptType]):
     choices: tuple[str, ...] | None = None
 
     validate_error_message = "[prompt.invalid]Please enter a valid value"
-    illegal_choice_message = (
-        "[prompt.invalid.choice]Please select one of the available options"
-    )
-    illegal_match_message = (
-        "[prompt.invalid.choice]Please enter a value, that matches pattern"
-    )
+    illegal_choice_message = "[prompt.invalid.choice]Please select one of the available options"
+    illegal_match_message = "[prompt.invalid.choice]Please enter a value, that matches pattern"
     prompt_suffix = ": "
 
     def __init__(
@@ -44,19 +40,13 @@ class EnvPromptBase(Generic[PromptType]):
         show_default: bool = True,
         show_choices: bool = True,
     ) -> None:
-        self.prompt = (
-            Text.from_markup(prompt, style="prompt")
-            if isinstance(prompt, str)
-            else prompt
-        )
+        self.prompt = Text.from_markup(prompt, style="prompt") if isinstance(prompt, str) else prompt
         self.name = name
         self.description = description
         self.password = password
         if choices is not None:
             self.choices = choices
-        self.re_pattern = (
-            re.compile(pattern) if pattern and self.choices is None else None
-        )
+        self.re_pattern = re.compile(pattern) if pattern and self.choices is None else None
         self.show_default = show_default
         self.show_choices = show_choices
 
@@ -106,11 +96,7 @@ class EnvPromptBase(Generic[PromptType]):
             prompt.append(" ")
             prompt.append(choices, "prompt.choices")
 
-        if (
-            default is not None
-            and self.show_default
-            and isinstance(default, self.response_type)
-        ):
+        if default is not None and self.show_default and isinstance(default, self.response_type):
             prompt.append(" ")
             _default = self.render_default(default=default)
             prompt.append(_default)

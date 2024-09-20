@@ -105,9 +105,7 @@ class Community:
         return EnvPrompt.ask(
             name="SERVER_URL",
             default=self._server_url,
-            description=(
-                "URL of your server. Will be used in automatic server creation."
-            ),
+            description="URL of your server. Will be used in automatic server creation.",
             pattern=SERVER_URL_PATTERN,
         )
 
@@ -115,10 +113,7 @@ class Community:
         return EnvPrompt.ask(
             name="VK_SERVER_TITLE",
             default=self._server_title,
-            description=(
-                "Title for VK Callback API server. "
-                "Will be used in automatic server creation."
-            ),
+            description="Title for VK Callback API server. Will be used in automatic server creation.",
         )
 
     def prompt_all(self) -> None:

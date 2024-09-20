@@ -18,13 +18,24 @@ RUN python -m venv $VIRTUAL_ENV \
 
 FROM python:3.11.7-alpine3.19
 
+ARG UID=1000
+ARG GID=1000
+
 WORKDIR /code
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PATH="/venv/bin:$PATH"
 
+RUN addgroup -g $GID user \
+    && adduser --shell /sbin/nologin --disabled-password \
+    --no-create-home --uid $UID --ingroup user user \
+    && mkdir /tmp/out && chown $UID:$GID /tmp/out
+
+USER user
+
 COPY --from=build-stage /venv /venv
 COPY ./app ./app
 
-CMD [ "python3", "-m", "app.main" ]
+ENTRYPOINT [ "python3", "-m", "app.main" ]
+CMD [ "--env-file", "/tmp/out/.env" ]

@@ -1,9 +1,17 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from dotenv import set_key
 
-from app.config import Settings
 from app.tgm import BotAuth, MainChannel, PlaylistChannel, UserAuth
 from app.vk import Community, KateAuth, OfficialAuth
 from app.vtt import Options
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from app.config import Settings
 
 
 class SettingsManager:
@@ -106,10 +114,12 @@ class SettingsManager:
         )
         vtt_options.prompt_all()
 
-    def save_env(self) -> None:
+    def save_env(self, env_file: Path) -> None:
+        env_file.touch(mode=0o600, exist_ok=True)
+
         for field in sorted(self.settings.__fields_set__):
             set_key(
-                dotenv_path=".env",
+                dotenv_path=env_file,
                 key_to_set=field,
                 value_to_set=str(getattr(self.settings, field)),
             )

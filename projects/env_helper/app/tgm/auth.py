@@ -27,12 +27,10 @@ class Auth(ABC):
 
     @property
     @abstractmethod
-    def auth_type(self) -> str:
-        ...
+    def auth_type(self) -> str: ...
 
     @abstractmethod
-    def prompt_access_token(self) -> str:
-        ...
+    def prompt_access_token(self) -> str: ...
 
     @property
     def api_id(self) -> str:
@@ -121,11 +119,7 @@ class UserAuth(Auth):
         return EnvPrompt.ask(
             name="TGM_CLIENT_PHONE",
             default=self._access_token,
-            description=(
-                "Telegram client phone. "
-                "Must be numeric. "
-                "Used for searching posts in main channel."
-            ),
+            description="Telegram client phone. Must be numeric. Used for searching posts in main channel.",
             pattern=DIGITS_PATTERN,
             password=True,
         )
