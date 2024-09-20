@@ -1,22 +1,29 @@
-.SILENT:
-.PHONY: env-helper tunnel compose-local pre-commit
+
+.PHONY: env-helper tunnel compose compose-debug pre-commit
 .INTERMEDIATE: pre-commit.pyz
 
-.DEFAULT_GOAL := compose-local
+.DEFAULT_GOAL := compose
 
 PRECOMMIT_VERSION := 3.7.1
 
 env-helper:
-	$(MAKE) -C projects/env_helper build-image run-container HOST_ENV_PATH="$(PWD)/.env"
+	# $(MAKE) -C projects/env_helper build-image run-container HOST_ENV_PATH="$(PWD)/.env-test"
+
+	mkdir -p out/
+	cp .env out/.env
+	docker build -t env_helper projects/env_helper
+	docker run --rm -it -v "$(PWD)/out":/tmp/out env_helper
+	cp out/.env .env
+	rm -r out/
 
 tunnel:
 	$(MAKE) -C projects/cb_receiver tunnel ARGS="8000 $(PWD)/.env"
 
-compose-local:
-	docker compose -f docker-compose.local.yml --profile with-pl up --build --remove-orphans
+compose:
+	docker compose -f docker-compose.yml --profile with-pl up --build --remove-orphans
 
 compose-debug:
-	docker compose -f docker-compose.local.yml -f docker-compose.debug.yml --profile with-pl up --build --remove-orphans
+	docker compose -f docker-compose.yml -f docker-compose.debug.yml --profile with-pl up --build --remove-orphans
 
 ############
 

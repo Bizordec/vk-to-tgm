@@ -10,3 +10,4 @@ node_modules
 *.session-journal
 celerybeat-*
 *.pyz
+out/

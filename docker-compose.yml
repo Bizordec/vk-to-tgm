@@ -1,100 +1,138 @@
-version: "3.8"
-volumes:
-  vtt:
-networks:
-  net_vtt:
 services:
-  sign_in:
-    build: .
+  env_helper:
+    build:
+      context: ./projects/env_helper
     volumes:
-      - vtt:/vk-to-tgm/tgm_sessions/
-      - ./.env:/vk-to-tgm/.env
+      - type: bind
+        source: ${PWD}/.env321
+        target: /code/.env
     profiles:
-      - sign_in
-    command: python -m app.sign_in
-  rabbitmq:
-    image: rabbitmq:3.10.5-alpine
-    networks:
-      - net_vtt
-  cb-receiver:
-    build: .
+      - create-env
+  env_validator:
+    build:
+      context: ./projects/env_validator
+    environment:
+      - VK_KATE_TOKEN=${VK_KATE_TOKEN}
+      - VK_OFFICIAL_TOKEN=${VK_OFFICIAL_TOKEN}
+      - VK_COMMUNITY_ID=${VK_COMMUNITY_ID}
+      - VK_COMMUNITY_TOKEN=${VK_COMMUNITY_TOKEN}
+      - VK_SERVER_TITLE=${VK_SERVER_TITLE}
+      - SERVER_URL=${SERVER_URL}
+      - TGM_API_ID=${TGM_API_ID}
+      - TGM_API_HASH=${TGM_API_HASH}
+      - TGM_BOT_TOKEN=${TGM_BOT_TOKEN}
+      - TGM_BOT_SESSION=${TGM_BOT_SESSION}
+      - TGM_CLIENT_PHONE=${TGM_CLIENT_PHONE}
+      - TGM_CLIENT_SESSION=${TGM_CLIENT_SESSION}
+      - TGM_CHANNEL_ID=${TGM_CHANNEL_ID}
+      - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
+      - VTT_LANGUAGE=${VTT_LANGUAGE}
+      - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
+  redis:
+    image: redis:7.2.3-alpine3.19
+    restart: always
+    healthcheck:
+      test: sh -c "redis-cli ping | grep PONG"
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    depends_on:
+      env_validator:
+        condition: service_completed_successfully
+  cb_receiver:
+    build:
+      context: ./projects/cb_receiver
+      additional_contexts:
+        - libs=./libs
     restart: always
     environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-    volumes:
-      - vtt:/vk-to-tgm/tgm_sessions/
-      - ./.env:/vk-to-tgm/.env
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-config app/logging_config.yaml
-    depends_on:
-      - rabbitmq
-    networks:
-      - net_vtt
+      - VK_COMMUNITY_ID=${VK_COMMUNITY_ID}
+      - VK_COMMUNITY_TOKEN=${VK_COMMUNITY_TOKEN}
+      - VK_SERVER_TITLE=${VK_SERVER_TITLE}
+      - SERVER_URL=${SERVER_URL}
+      - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
+      - CELERY_BROKER_URL=redis://redis/0
+      - CELERY_RESULT_BACKEND=redis://redis/0
     ports:
-      - "127.0.0.1:8000:8000"
-  tgm-bot:
-    build: .
-    restart: always
-    environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-    volumes:
-      - vtt:/vk-to-tgm/tgm_sessions/
-      - ./.env:/vk-to-tgm/.env
-    command: python3 -m app.bot.main
+      - "8000:8000"
     depends_on:
-      - rabbitmq
-    networks:
-      - net_vtt
-  worker-wall:
-    build: .
+      env_validator:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+  worker_main:
+    build:
+      context: ./projects/worker
+      additional_contexts:
+        - libs=./libs
     restart: always
+    command: celery -A app.main worker -n worker-main -Q vtt-wall -c 1 -l INFO
     environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-    volumes:
-      - vtt:/vk-to-tgm/tgm_sessions/
-      - ./.env:/vk-to-tgm/.env
-    command: celery -A app.celery_worker worker -n vtt-worker-wall@%%h -Q vtt-wall --pool=solo --loglevel=INFO
+      - CELERY_BROKER_URL=redis://redis/0
+      - CELERY_RESULT_BACKEND=redis://redis/0
+      - VK_KATE_TOKEN=${VK_KATE_TOKEN}
+      - VK_OFFICIAL_TOKEN=${VK_OFFICIAL_TOKEN}
+      - TGM_API_ID=${TGM_API_ID}
+      - TGM_API_HASH=${TGM_API_HASH}
+      - TGM_BOT_TOKEN=${TGM_BOT_TOKEN}
+      - TGM_BOT_SESSION=${TGM_BOT_SESSION}
+      - TGM_CHANNEL_ID=${TGM_CHANNEL_ID}
+      - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
+      - VTT_LANGUAGE=${VTT_LANGUAGE}
+      - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
     depends_on:
-      - rabbitmq
-    networks:
-      - net_vtt
-  worker-pl:
-    build: .
-    restart: always
+      env_validator:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+  worker_pl:
+    build:
+      context: ./projects/worker
+      additional_contexts:
+        - libs=./libs
+    command: celery -A app.main worker -n worker-pl -Q vtt-playlist -c 1 -l INFO
     environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-    volumes:
-      - vtt:/vk-to-tgm/tgm_sessions/
-      - ./.env:/vk-to-tgm/.env
-    command: celery -A app.celery_worker worker -n vtt-worker-pl@%%h -Q vtt-playlist --pool=solo --loglevel=INFO
+      - CELERY_BROKER_URL=redis://redis/0
+      - CELERY_RESULT_BACKEND=redis://redis/0
+      - VK_KATE_TOKEN=${VK_KATE_TOKEN}
+      - VK_OFFICIAL_TOKEN=${VK_OFFICIAL_TOKEN}
+      - TGM_API_ID=${TGM_API_ID}
+      - TGM_API_HASH=${TGM_API_HASH}
+      - TGM_BOT_TOKEN=${TGM_BOT_TOKEN}
+      - TGM_BOT_SESSION=${TGM_BOT_SESSION}
+      - TGM_CHANNEL_ID=${TGM_CHANNEL_ID}
+      - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
+      - VTT_LANGUAGE=${VTT_LANGUAGE}
+      - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
     depends_on:
-      - rabbitmq
-    networks:
-      - net_vtt
+      env_validator:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
     profiles:
-      - with_pl
-  worker-dbc:
-    build: .
+      - with-pl
+  tgm_bot:
+    build:
+      context: ./projects/tgm_bot
+      additional_contexts:
+        - libs=./libs
     restart: always
     environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-    volumes:
-      - vtt:/vk-to-tgm/tgm_sessions/
-      - ./.env:/vk-to-tgm/.env
-    command: celery -A app.celery_worker worker -n vtt-worker-dbc@%%h -Q celery --pool=solo --loglevel=INFO
+      - CELERY_BROKER_URL=redis://redis/0
+      - CELERY_RESULT_BACKEND=redis://redis/0
+      - VK_KATE_TOKEN=${VK_KATE_TOKEN}
+      - VK_OFFICIAL_TOKEN=${VK_OFFICIAL_TOKEN}
+      - TGM_API_ID=${TGM_API_ID}
+      - TGM_API_HASH=${TGM_API_HASH}
+      - TGM_BOT_TOKEN=${TGM_BOT_TOKEN}
+      - TGM_BOT_SESSION=${TGM_BOT_SESSION}
+      - TGM_CLIENT_PHONE=${TGM_CLIENT_PHONE}
+      - TGM_CLIENT_SESSION=${TGM_CLIENT_SESSION}
+      - TGM_CHANNEL_ID=${TGM_CHANNEL_ID}
+      - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
+      - VTT_LANGUAGE=${VTT_LANGUAGE}
     depends_on:
-      - rabbitmq
-    networks:
-      - net_vtt
-  dbc-scheduler:
-    build: .
-    restart: always
-    environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-    volumes:
-      - vtt:/vk-to-tgm/tgm_sessions/
-      - ./.env:/vk-to-tgm/.env
-    command: celery -A app.celery_worker beat --loglevel=INFO --logfile=logs/vtt-dbc-scheduler.log
-    depends_on:
-      - rabbitmq
-    networks:
-      - net_vtt
+      env_validator:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy

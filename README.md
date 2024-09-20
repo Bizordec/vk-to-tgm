@@ -2,19 +2,18 @@
 
 An application that forwards wall posts and playlists from VK community to Telegram channel.
 
-Consists of following services:
+Consists of the following services:
+
 - Server that receives VK Callback events
 - Telegram bot that forwards wall posts or playlists by user request
 - Celery worker that forwards wall posts
 - (optional) Celery worker that forwards playlists
-- Celery Beat service, that cleans up a SQLite3 database task results
 
 ![vtt_schema](assets/vtt_schema.png)
 
-## Requirements: 
-- Python 3.8+
-- RabbitMQ Server
-- FFmpeg
+## Requirements
+
+- Docker
 - [VK community token with access to community management](https://vk.com/dev/access_token)
 - VK account
 - Telegram channel (and additional channel if you need playlists)
@@ -44,47 +43,62 @@ Consists of following services:
 **NOTE:** if post was edited in VK, it will NOT be edited in Telegram. As a workaround, you can delete old Telegram messages and reforward edited post through Telegram bot.
 
 ## Example
+
 ![vtt_example](assets/vtt_example.gif)
 
-Working example: https://t.me/mashup_vk
+Working example: <https://t.me/mashup_vk>
 
 ## Installation
-Run `install.sh` script.
 
-### Docker installation
-1. Set environment variables manually in `.env` file or by running 
-```sh
-./vtt-cli.sh set_env
-```
-2. Install Nginx and run command
-```sh
-./vtt-cli.sh setup_nginx
-```
-3. Sign in VK and Telegram
-```sh
-docker compose run --rm -it sign_in
-```
-4. Start the app
-```sh
-docker compose up
+1. Set environment variables manually in `.env` file or by running these commands:
 
-# Or, if you also want to handle playlists
-docker compose --profile with_pl up
-```
+    ```sh
+    # Go to the root directory of this repository
+    cd "$(git rev-parse --show-toplevel)"
+
+    # Build env_helper
+    docker build -t env_helper projects/env_helper
+
+    # Run env_helper
+    docker run --rm -it -v "$(pwd)/out":/tmp/out env_helper
+
+    # Copy resulting '.env' file to the root directory
+    cp out/.env .env
+    ```
+
+2. Run the app using Docker Compose:
+
+    ```sh
+    docker compose up --build --remove-orphans
+
+    # Or, if you also want to handle playlists
+    docker compose --profile with-pl up --build --remove-orphans
+    ```
 
 If you want to install client SSL certificate, read [here](setup/ssl/README.md).
 
+TODO: write about SSL with docker here.
+
 ## Uninstallation
-Run `uninstall.sh` script.
-### Docker uninstallation
+
 ```sh
 docker compose down -v --rmi all --remove-orphans
 ```
 
-## Logs
-You can check logs in the `logs/` directory.
+## Configuration
+
+Here is the list of environment variables used in vk-to-tgm:
+TODO: write envs
+
+## Migration from v1
+
+1. Backup `.env` file.
+2. Run `uninstall.sh` script if vk-to-tgm was installed locally.
+3. Rename environment variables.
+4. [Install with docker](#installation)
 
 ## License
+
 GNU General Public License v3.0 or later.
 
 See [LICENSE](LICENSE) file.
