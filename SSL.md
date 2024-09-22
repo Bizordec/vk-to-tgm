@@ -32,10 +32,10 @@ If you want to use your SSL certificate, mount your certificate files in the [do
 Run the app using Docker Compose:
 
   ```sh
-  docker compose -f docker-compose.yml -f docker-compose.ssl.yml up --build --remove-orphans
+  docker compose -f docker-compose.yml -f docker-compose.ssl.yml up -d --build --remove-orphans
 
   # Or, if you also want to handle playlists
-  docker compose -f docker-compose.yml -f docker-compose.ssl.yml --profile with-pl up --build --remove-orphans
+  docker compose -f docker-compose.yml -f docker-compose.ssl.yml --profile with-pl up -d --build --remove-orphans
   ```
 
 ## Add client SSL certificate

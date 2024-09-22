@@ -7,5 +7,5 @@ if [ "$ENABLE_SSL" -ne 0 ]; then
 fi
 
 if [ "$ENABLE_CLIENT_SSL" -eq 0 ]; then
-    rm /etc/nginx/ssl/client-ssl.conf
+    rm -f /etc/nginx/ssl/client-ssl.conf
 fi
