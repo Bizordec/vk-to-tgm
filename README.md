@@ -2,24 +2,9 @@
 
 An application that forwards wall posts and playlists from VK community to Telegram channel.
 
-Consists of the following services:
+![vtt_example](assets/vtt_example.gif)
 
-- Server that receives VK Callback events
-- Telegram bot that forwards wall posts or playlists by user request
-- Celery worker that forwards wall posts
-- (optional) Celery worker that forwards playlists
-
-![vtt_schema](assets/vtt_schema.png)
-
-## Requirements
-
-- Docker
-- [VK community token with access to community management](https://vk.com/dev/access_token)
-- VK account
-- Telegram channel (and additional channel if you need playlists)
-- Telegram account
-- [Telegram bot token](https://core.telegram.org/bots#3-how-do-i-create-a-bot)
-- [Telegram application](https://core.telegram.org/api/obtaining_api_id)
+Working example: <https://t.me/mashup_vk>
 
 ## What can it forward
 
@@ -40,13 +25,18 @@ Consists of the following services:
 | Map         | ✅        | Will be posted in separate message.                                                                                                                                                   |
 | Live stream | ✅        | Will be posted at the top in the form of link.                                                                                                                                        |
 
-**NOTE:** if post was edited in VK, it will NOT be edited in Telegram. As a workaround, you can delete old Telegram messages and reforward edited post through Telegram bot.
+> [!NOTE]
+> if a post was edited in VK, it will NOT be edited in Telegram. As a workaround, you can delete old Telegram messages and reforward edited post through the Telegram bot.
 
-## Example
+## Requirements
 
-![vtt_example](assets/vtt_example.gif)
-
-Working example: <https://t.me/mashup_vk>
+- Docker
+- [VK community token with access to community management](https://vk.com/dev/access_token)
+- VK account
+- Telegram channel (and additional channel if you need playlists)
+- Telegram account
+- [Telegram bot token](https://core.telegram.org/bots#3-how-do-i-create-a-bot)
+- [Telegram application](https://core.telegram.org/api/obtaining_api_id)
 
 ## Installation
 
@@ -66,18 +56,17 @@ Working example: <https://t.me/mashup_vk>
     cp out/.env .env
     ```
 
-2. Run the app using Docker Compose:
+2. After that, you have two options:
+   - Run the application without SSL certificate:
 
-    ```sh
-    docker compose up --build --remove-orphans
+        ```sh
+        docker compose up --build --remove-orphans
 
-    # Or, if you also want to handle playlists
-    docker compose --profile with-pl up --build --remove-orphans
-    ```
+        # Or, if you also want to handle playlists
+        docker compose --profile with-pl up --build --remove-orphans
+        ```
 
-If you want to install client SSL certificate, read [here](setup/ssl/README.md).
-
-TODO: write about SSL with docker here.
+   - Run the application with SSL certificate - read [this guide](SSL.md).
 
 ## Uninstallation
 
@@ -85,17 +74,23 @@ TODO: write about SSL with docker here.
 docker compose down -v --rmi all --remove-orphans
 ```
 
-## Configuration
-
-Here is the list of environment variables used in vk-to-tgm:
-TODO: write envs
-
 ## Migration from v1
 
 1. Backup `.env` file.
 2. Run `uninstall.sh` script if vk-to-tgm was installed locally.
 3. Rename environment variables.
 4. [Install with docker](#installation)
+
+## Architecture
+
+It consists of the following services:
+
+- Server that receives VK Callback events
+- Telegram bot that forwards wall posts or playlists by user request
+- Celery worker that forwards wall posts
+- (optional) Celery worker that forwards playlists
+
+![vtt_schema](assets/vtt_schema.png)
 
 ## License
 

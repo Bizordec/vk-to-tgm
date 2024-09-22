@@ -1,0 +1,30 @@
+server {
+    listen 8443 ssl default_server;
+    listen [::]:8443 ssl default_server;
+
+    server_name ${NGINX_SERVER_NAME};
+
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+
+    # Optional client SSL configuration
+    include /etc/nginx/ssl/client-ssl.conf*;
+
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_pass ${NGINX_PROXY_PASS};
+    }
+}
+
+server {
+    listen 8080 default_server;
+    listen [::]:8080 default_server;
+
+    server_name ${NGINX_SERVER_NAME};
+
+    return 301 https://$host$request_uri;
+}

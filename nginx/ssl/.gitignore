@@ -1,3 +1,5 @@
+client/
 *.crt
 *.key
 *.p12
+*.pem

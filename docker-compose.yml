@@ -53,8 +53,6 @@ services:
       - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
       - CELERY_BROKER_URL=redis://redis/0
       - CELERY_RESULT_BACKEND=redis://redis/0
-    ports:
-      - "8000:8000"
     depends_on:
       env_validator:
         condition: service_completed_successfully
@@ -136,3 +134,13 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "80:8080"
+    environment:
+      - NGINX_PROXY_PASS=http://cb_receiver:8000
+    depends_on:
+      cb_receiver:
+        condition: service_started

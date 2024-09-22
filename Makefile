@@ -17,13 +17,16 @@ env-helper:
 	rm -r out/
 
 tunnel:
-	$(MAKE) -C projects/cb_receiver tunnel ARGS="8000 $(PWD)/.env"
+	$(MAKE) -C projects/cb_receiver tunnel ARGS="80 $(PWD)/.env"
 
 compose:
 	docker compose -f docker-compose.yml --profile with-pl up --build --remove-orphans
 
 compose-debug:
 	docker compose -f docker-compose.yml -f docker-compose.debug.yml --profile with-pl up --build --remove-orphans
+
+compose-ssl:
+	docker compose -f docker-compose.yml -f docker-compose.ssl.yml --profile with-pl up --build --remove-orphans
 
 ############
 

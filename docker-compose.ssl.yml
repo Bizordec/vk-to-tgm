@@ -1,0 +1,12 @@
+services:
+  nginx:
+    ports:
+      - "80:8080"
+      - "443:8443"
+    environment:
+      - ENABLE_SSL=1
+      - ENABLE_CLIENT_SSL=${ENABLE_CLIENT_SSL:-0}
+      - SSL_EMAIL=${SSL_EMAIL}
+      - NGINX_SERVER_NAME=${NGINX_SERVER_NAME}
+    volumes:
+      - ./nginx/ssl/client:/etc/nginx/ssl/client:ro

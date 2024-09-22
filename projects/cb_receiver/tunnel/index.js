@@ -1,7 +1,7 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { parse, stringify } from 'envfile';
-import { tunnelmole } from 'tunnelmole';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
+import { tunnelmole } from 'tunnelmole';
 
 (async () => {
   const port = process.argv[2] || 8000;
@@ -11,16 +11,14 @@ import { resolve } from 'path';
   const url = await tunnelmole({ port: port });
   console.info(`\nPublic url: ${url}\n`);
 
-  let envContent;
-  if (!existsSync(envPath)) {
-    console.warn(`WARNING: File '${envPath}' not found, creating a new one.`);
-    envContent = `SERVER_URL=${url}`;
-  } else {
-    const oldEnvData = readFileSync(envPath, 'utf8');
-    const parsedFile = parse(oldEnvData);
-    parsedFile.SERVER_URL = url;
-    envContent = stringify(parsedFile);
+  let envs = {};
+  if (existsSync(envPath)) {
+    envs = parse(readFileSync(envPath, 'utf8'));
   }
-  writeFileSync(envPath, envContent);
-  console.info(`Variable 'SERVER_URL' has been saved in '${envPath}'.`);
+
+  envs.SERVER_URL = url;
+
+  writeFileSync(envPath, stringify(envs));
+
+  console.info(`'SERVER_URL' has been saved in '${envPath}'.`);
 })();
