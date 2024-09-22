@@ -119,7 +119,9 @@ class UserAuth(Auth):
         return EnvPrompt.ask(
             name="TGM_CLIENT_PHONE",
             default=self._access_token,
-            description="Telegram client phone. Must be numeric. Used for searching posts in main channel.",
+            description=(
+                "Telegram client phone. Must be numeric. Used for searching posts in the main Telegram channel."
+            ),
             pattern=DIGITS_PATTERN,
             password=True,
         )

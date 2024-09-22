@@ -40,7 +40,7 @@ Working example: <https://t.me/mashup_vk>
 
 ## Installation
 
-1. Set environment variables manually in `.env` file or by running these commands:
+1. Set environment variables manually in `.env` file (see [.env.example](.env.example)) or by running these commands:
 
     ```sh
     # Go to the root directory of this repository

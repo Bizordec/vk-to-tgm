@@ -9,7 +9,7 @@ Add domain name of your server to the `.env` file like this:
   NGINX_SERVER_NAME=example.com
   ```
 
-By default, SSL certificate from Let's Encrypt is generated. It requires you to put your email to the `.env` file:
+By default, an SSL certificate is issued by Let's Encrypt. It requires you to put your email to the `.env` file:
 
   ```text
   SSL_EMAIL=my@example.com
@@ -53,5 +53,5 @@ Run the app using Docker Compose:
     ```
 
 3. Go to your VK community page, `"Manage" > "Settings" > "API usage" > "Callback API" > "Server settings"`;
-4. Select server with the name same as in the `VK_SERVER_TITLE` env variable (by default it's `vk-to-tgm`). If there is no such server, create one or edit name of the existing server.
+4. Select a server with the name same as in the `VK_SERVER_TITLE` env variable (by default it's `vk-to-tgm`). If there is no such server, create one or edit the name of an existing server.
 5. Upload `vkapi.p12` file in the `SSL certificate` field.
