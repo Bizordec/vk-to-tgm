@@ -21,11 +21,20 @@ RUN sed -i "s/\(develop\s*=\s*\)true/\1false/" poetry.lock \
 
 FROM python:3.11.7-alpine3.19
 
+ARG UID=1000
+ARG GID=1000
+
 WORKDIR /code
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PATH="/venv/bin:$PATH"
+
+RUN addgroup -g $GID user \
+    && adduser --shell /sbin/nologin --disabled-password \
+    --no-create-home --uid $UID --ingroup user user
+
+USER user
 
 COPY --from=build-stage /venv /venv
 COPY ./app ./app
