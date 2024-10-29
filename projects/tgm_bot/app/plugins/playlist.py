@@ -118,7 +118,7 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
             raise StopPropagation
 
         queued_task = get_queued_task(
-            app=celery_app,
+            backend=celery_app.backend,
             task_type=VttTaskType.playlist,
             owner_id=owner_id,
             post_id=playlist_id,

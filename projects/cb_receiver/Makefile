@@ -12,7 +12,7 @@
 venv: .venv/bin/activate
 
 run: .venv/bin/activate
-	.venv/bin/python3 -m uvicorn app.main:app
+	.venv/bin/python3 -m uvicorn --factory app.main:create_app
 
 ############
 

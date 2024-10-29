@@ -17,7 +17,7 @@
         },
         {
             "path": "projects/tgm_bot"
-        },
+        }
     ],
     "settings": {
         "files.insertFinalNewline": true

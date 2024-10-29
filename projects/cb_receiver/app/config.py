@@ -1,14 +1,18 @@
 from __future__ import annotations
 
 import secrets
+from functools import lru_cache
 from typing import Literal
 
-from pydantic import BaseSettings, validator
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 VttLanguage = Literal["en", "ru"]
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env")
+
     VK_COMMUNITY_ID: int
     VK_COMMUNITY_TOKEN: str
 
@@ -18,13 +22,12 @@ class Settings(BaseSettings):
 
     VTT_IGNORE_ADS: bool = True
 
-    @validator("SERVER_URL")
+    @field_validator("SERVER_URL")
     @classmethod
     def add_trailing_slash(cls, val: str) -> str:
         return val if val.endswith("/") else f"{val}/"
 
-    class Config:
-        env_file = ".env"
 
-
-settings = Settings()
+@lru_cache
+def get_settings() -> Settings:  # pragma: no cover
+    return Settings()

@@ -1,16 +1,28 @@
+from __future__ import annotations
+
 import asyncio
+import warnings
+from typing import TYPE_CHECKING
 
 from loguru import logger
-from vkbottle import AiohttpClient
-from vkbottle.api.api import API
+
+with warnings.catch_warnings(record=True, action="ignore", category=DeprecationWarning):
+    from vkbottle.api.api import API
+
+from vkbottle.http import AiohttpClient
 from vkbottle_types import API_VERSION
 from vkbottle_types.methods.groups import GroupsCategory
-from vkbottle_types.objects import GroupsCallbackServer
 
-from app.config import settings
+from app.config import get_settings
+
+if TYPE_CHECKING:
+    from app.config import Settings
 
 
-async def setup_vk_server() -> str:
+async def setup_vk_server(settings: Settings | None = None) -> str:
+    if not settings:  # pragma: no cover
+        settings = get_settings()
+
     logger.info("Setting up callback server...")
     vk_group = GroupsCategory(
         API(
@@ -24,7 +36,7 @@ async def setup_vk_server() -> str:
     server_title = settings.VK_SERVER_TITLE
 
     confirmation = await vk_group.get_callback_confirmation_code(group_id=group_id)
-    confirmation_code = confirmation.code or ""
+    confirmation_code: str = confirmation.code
     logger.info(f"Callback confirmation code: {confirmation_code}")
 
     server_id: int | None = None
@@ -39,13 +51,9 @@ async def setup_vk_server() -> str:
             secret_key=secret_key,
         )
         server_id = new_server.server_id
-        logger.info("No callback servers found, added new.")
+        logger.info(f"Added new callback server '{server_title}'")
     else:
-
-        def find_by_title(callback_server: GroupsCallbackServer) -> bool:
-            return callback_server.title == server_title
-
-        main_server = next(filter(find_by_title, servers.items), None)
+        main_server = next(filter(lambda server: server.title == server_title, servers.items), None)
         if main_server:
             await vk_group.edit_callback_server(
                 group_id=group_id,
@@ -55,7 +63,7 @@ async def setup_vk_server() -> str:
                 secret_key=secret_key,
             )
             server_id = main_server.id
-            logger.info(f"Using the existing callback server: {main_server.title}")
+            logger.info(f"Using existing callback server '{main_server.title}'")
         else:
             new_server = await vk_group.add_callback_server(
                 group_id=group_id,
@@ -64,9 +72,7 @@ async def setup_vk_server() -> str:
                 secret_key=secret_key,
             )
             server_id = new_server.server_id
-            logger.info(
-                f"No callback server found by title '{server_title}', added new.",
-            )
+            logger.info(f"No callback server found by title '{server_title}', added new.")
 
     task = asyncio.create_task(
         vk_group.set_callback_settings(
@@ -76,8 +82,6 @@ async def setup_vk_server() -> str:
             wall_post_new=True,
         ),
     )
-    task.add_done_callback(
-        lambda _: logger.info("Callback server settings has been set."),
-    )
+    task.add_done_callback(lambda _: logger.info("Callback server settings has been set."))
 
     return confirmation_code

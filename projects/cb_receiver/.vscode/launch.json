@@ -25,6 +25,10 @@
             },
             "pathMappings": [
                 {
+                    "localRoot": "${workspaceFolder}/../../libs/vtt_common/vtt_common",
+                    "remoteRoot": "/venv/lib/python3.12/site-packages/vtt_common"
+                },
+                {
                     "localRoot": "${workspaceFolder}/.venv",
                     "remoteRoot": "/venv"
                 },

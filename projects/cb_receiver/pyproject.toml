@@ -7,30 +7,38 @@ authors = ["Ilia Boyazitov"]
 license = "GPL-3.0-or-later"
 
 [tool.poetry.dependencies]
-python = "^3.11"
-fastapi = "^0.104.1"
-vkbottle = "^4.3.12"
+python = "^3.12"
+fastapi = "^0.115.2"
+vkbottle = "^4.4.2"
 loguru = "^0.7.2"
 celery = {extras = ["redis"], version = "^5.4.0"}
 python-dotenv = "^1.0.1"
-uvicorn = {extras = ["standard"], version = "^0.24.0.post1"}
+pydantic-settings = "^2.6.0"
+uvicorn = {extras = ["standard"], version = "^0.32.0"}
 vtt_common = {path = "../../libs/vtt_common", develop = true}
 
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^1.10.0"
-ruff = "^0.4.8"
-commitizen = "^3.27.0"
-pytest = "^8.2.2"
+mypy = "^1.13.0"
+ruff = "^0.7.0"
+commitizen = "^3.30.0"
+pytest = "^8.3.3"
 pytest-cov = "^5.0.0"
+httpx = "^0.27.2"
+pytest-socket = "^0.7.0"
+aioresponses = "^0.7.6"
+pytest-asyncio = "^0.24.0"
+pytest-celery = "^1.1.3"
+pytest-mock = "^3.14.0"
 
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
 ignore_missing_imports = true
 plugins = [
     "pydantic.mypy"
 ]
+strict = true
 
 [tool.ruff]
 target-version = "py311"
@@ -53,7 +61,6 @@ ignore = [
     "ANN003",   # flake8-annotations: missing-type-kwargs
     "ANN101",   # flake8-annotations: missing-type-self
     "ANN102",   # flake8-annotations: missing-type-cls
-    "TRIO",     # flake8-trio
     "FBT001",   # flake8-boolean-trap: boolean-type-hint-positional-argument
     "DJ",       # flake8-django
     "EM",       # flake8-errmsg
@@ -61,6 +68,7 @@ ignore = [
     "TD003",    # flake8-todos: missing-todo-link
     "FIX",      # flake8-fixme
     "PD",       # pandas-vet
+    "PLE1205",  # pylint: logging-too-many-args
     "PLR0911",  # pylint: too-many-return-statements
     "PLR0913",  # pylint: too-many-arguments
     "TRY003",   # tryceratops: raise-vanilla-args
@@ -80,6 +88,13 @@ ignore = [
 
 [tool.ruff.lint.flake8-annotations]
 allow-star-arg-any = true
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+addopts = [
+    "--disable-socket",
+    "--allow-unix-socket"
+]
 
 [tool.coverage.report]
 exclude_also = [
