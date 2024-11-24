@@ -32,7 +32,8 @@ ENV PYTHONUNBUFFERED=1 \
 
 RUN addgroup -g $GID user \
     && adduser --shell /sbin/nologin --disabled-password \
-    --no-create-home --uid $UID --ingroup user user
+    --no-create-home --uid $UID --ingroup user user \
+    && apk add ffmpeg
 
 USER user
 
