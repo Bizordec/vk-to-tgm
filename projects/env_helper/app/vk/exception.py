@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 from urllib.parse import parse_qs, urlparse
 
 from rich.prompt import IntPrompt, Prompt
@@ -5,6 +8,9 @@ from vkaudiotoken import CommonParams, TokenException, TwoFAHelper
 
 from app.console import console
 from app.vk.models import AuthParams
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
 class FloodControlError(Exception):
@@ -40,7 +46,7 @@ def _handle_2fa_app(redirect_uri: str) -> AuthParams:
         return AuthParams(token=access_token)
 
 
-def _handle_captcha(error_extra: dict) -> AuthParams:
+def _handle_captcha(error_extra: dict[str, Any]) -> AuthParams:
     captcha_sid = error_extra["captcha_sid"]
     captcha_key = input(
         "Enter captcha key from image (" + error_extra["captcha_img"] + "): ",
@@ -50,7 +56,7 @@ def _handle_captcha(error_extra: dict) -> AuthParams:
 
 def handle_token_exception(user_agent: str, error: TokenException) -> AuthParams:
     error_code: int = error.code
-    error_extra: dict = error.extra or {}
+    error_extra: dict[str, Any] = error.extra or {}
     error_name = error_extra["error"]
     if error_name == "need_validation":
         validation_type = error_extra["validation_type"]
@@ -69,4 +75,4 @@ def handle_token_exception(user_agent: str, error: TokenException) -> AuthParams
         return AuthParams(auth_code="GET_CODE")
     if error_code == TokenException.CAPTCHA_REQ:
         return _handle_captcha(error_extra=error_extra)
-    raise
+    raise error

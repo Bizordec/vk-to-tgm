@@ -4,8 +4,8 @@ from .exception import FloodControlError
 
 __all__ = (
     "Auth",
-    "KateAuth",
-    "OfficialAuth",
     "Community",
     "FloodControlError",
+    "KateAuth",
+    "OfficialAuth",
 )

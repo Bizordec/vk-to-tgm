@@ -4,7 +4,8 @@ import re
 from functools import partial
 from typing import TYPE_CHECKING, Literal
 
-from pydantic import BaseSettings, validator
+from pydantic import field_validator
+from pydantic_settings import BaseSettings
 
 if TYPE_CHECKING:
     from re import Pattern
@@ -57,27 +58,24 @@ class Settings(BaseSettings):
     VTT_LANGUAGE: VttLanguage = "en"
     VTT_IGNORE_ADS: bool = True
 
-    _check_server_url = validator("SERVER_URL", allow_reuse=True)(
+    _check_server_url = field_validator("SERVER_URL")(
         partial(check_env, pattern=SERVER_URL_PATTERN),
     )
 
-    _check_digits = validator(
+    _check_digits = field_validator(
         "VK_COMMUNITY_ID",
         "TGM_API_ID",
         "TGM_CLIENT_PHONE",
-        allow_reuse=True,
     )(partial(check_env, pattern=DIGITS_PATTERN))
 
-    _check_tgm_bot_token = validator("TGM_BOT_TOKEN", allow_reuse=True)(
+    _check_tgm_bot_token = field_validator("TGM_BOT_TOKEN")(
         partial(check_env, pattern=TGM_BOT_TOKEN_PATTERN),
     )
 
-    _check_tgm_channel_name = validator(
-        "TGM_CHANNEL_USERNAME",
-        "TGM_PL_CHANNEL_USERNAME",
-        allow_reuse=True,
-    )(partial(check_env, pattern=TGM_CHANNEL_USERNAME_PATTERN))
+    _check_tgm_channel_name = field_validator("TGM_CHANNEL_USERNAME", "TGM_PL_CHANNEL_USERNAME")(
+        partial(check_env, pattern=TGM_CHANNEL_USERNAME_PATTERN),
+    )
 
-    _check_tgm_id = validator("TGM_CHANNEL_ID", "TGM_PL_CHANNEL_ID", allow_reuse=True)(
+    _check_tgm_id = field_validator("TGM_CHANNEL_ID", "TGM_PL_CHANNEL_ID")(
         partial(check_env, pattern=TGM_CHANNEL_ID_PATTERN),
     )

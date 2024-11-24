@@ -78,6 +78,8 @@ class SettingsManager:
         )
         tgm_user_auth.prompt_all()
 
+        self.settings.TGM_API_ID = tgm_user_auth.api_id
+        self.settings.TGM_API_HASH = tgm_user_auth.api_hash
         self.settings.TGM_CLIENT_PHONE = tgm_user_auth.access_token
         self.settings.TGM_CLIENT_SESSION = tgm_user_auth.session
 
@@ -117,7 +119,7 @@ class SettingsManager:
     def save_env(self, env_file: Path) -> None:
         env_file.touch(mode=0o600, exist_ok=True)
 
-        for field in sorted(self.settings.__fields_set__):
+        for field in sorted(self.settings.model_fields_set):
             set_key(
                 dotenv_path=env_file,
                 key_to_set=field,

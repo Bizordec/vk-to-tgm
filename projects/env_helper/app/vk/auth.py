@@ -1,17 +1,12 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol, cast
 
 import uvloop
+import vkaudiotoken
 from aiohttp import ClientSession
 from rich.prompt import Prompt
-from vkaudiotoken import (
-    TokenException,
-    get_kate_token,
-    get_vk_official_token,
-    supported_clients,
-)
 from vkbottle import API, AiohttpClient, VKAPIError
 
 from app.console import console
@@ -19,17 +14,22 @@ from app.vk.exception import handle_token_exception
 from app.vk.models import AuthParams
 
 if TYPE_CHECKING:
-    from typing import Protocol
+    from typing import Any, TypedDict
 
-    class TokenFunc(Protocol):
-        def __call__(
-            self,
-            login: str,
-            password: str,
-            auth_code: str,
-            captcha_sid: str,
-            captcha_key: str,
-        ) -> str: ...
+    class TokenData(TypedDict):
+        token: str
+        user_agent: str
+
+
+class TokenFunc(Protocol):
+    def __call__(
+        self,
+        login: str,
+        password: str,
+        auth_code: str,
+        captcha_sid: str,
+        captcha_key: str,
+    ) -> TokenData: ...
 
 
 class Auth(ABC):
@@ -123,9 +123,9 @@ class Auth(ABC):
                     auth_code=params.auth_code,
                     captcha_sid=params.captcha_sid,
                     captcha_key=params.captcha_key,
-                )
-            except TokenException as error:
-                error_extra: dict = error.extra or {}
+                )["token"]
+            except vkaudiotoken.TokenException as error:
+                error_extra: dict[str, Any] = error.extra or {}
                 error_desc = error_extra.get("error_description", error)
                 console.print(f"Error on getting new '{self.token_name}': {error_desc}")
 
@@ -148,11 +148,11 @@ class OfficialAuth(Auth):
 
     @property
     def user_agent(self) -> str:
-        return supported_clients.VK_OFFICIAL.user_agent
+        return cast(str, vkaudiotoken.supported_clients.VK_OFFICIAL.user_agent)
 
     @property
     def get_token_fn(self) -> TokenFunc:
-        return get_vk_official_token
+        return cast(TokenFunc, vkaudiotoken.get_vk_official_token)
 
 
 class KateAuth(Auth):
@@ -162,8 +162,8 @@ class KateAuth(Auth):
 
     @property
     def user_agent(self) -> str:
-        return supported_clients.KATE.user_agent
+        return cast(str, vkaudiotoken.supported_clients.KATE.user_agent)
 
     @property
     def get_token_fn(self) -> TokenFunc:
-        return get_kate_token
+        return cast(TokenFunc, vkaudiotoken.get_kate_token)

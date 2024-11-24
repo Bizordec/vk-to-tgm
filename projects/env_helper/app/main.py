@@ -14,14 +14,14 @@ class ArgNamespace(argparse.Namespace):
     env_file: str
 
 
-def main() -> int:
+def main(arg_list: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Helper to create or update .env file.")
     parser.add_argument(
         "--env-file",
         default=".env",
         help="Path to .env file",
     )
-    args = parser.parse_args(namespace=ArgNamespace)
+    args = parser.parse_args(arg_list, namespace=ArgNamespace)
 
     console.print(
         "[yellow]Note: sensitive information (e.g. passwords, tokens) won't be shown in prompts.",
@@ -29,7 +29,7 @@ def main() -> int:
     )
     console.print("Loading values from '.env' file...")
     try:
-        settings = Settings(_env_file=args.env_file)  # type: ignore[call-arg]
+        settings = Settings(_env_file=args.env_file)
     except ValidationError as error:
         print(error)  # noqa: T201
         return 1
