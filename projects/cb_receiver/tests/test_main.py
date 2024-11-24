@@ -245,7 +245,6 @@ def test_ignore_donut_post(caplog: LogCaptureFixture) -> None:
     assert "[123] [1234_111] Ignoring donut post" in caplog.text
 
 
-# TODO: parametrize post_type
 @pytest.mark.parametrize("post_type", ["post", "reply", "photo", "video"])
 def test_new_wall_post(mocker: MockerFixture, post_type: str) -> None:
     mocker.patch("app.main.get_queued_task", return_value=None)

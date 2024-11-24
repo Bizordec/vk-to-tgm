@@ -11,7 +11,7 @@ from vtt_common.tasks import get_queued_task
 
 from app.config import Settings, get_settings
 from app.logging import init_logging
-from app.schemas import VkCallback  # noqa: TCH001
+from app.schemas import VkCallback  # noqa:TC001
 from app.utils import setup_vk_server
 from app.worker import create_worker
 

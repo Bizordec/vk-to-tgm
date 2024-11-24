@@ -1,14 +1,10 @@
 from __future__ import annotations
 
 import asyncio
-import warnings
 from typing import TYPE_CHECKING
 
 from loguru import logger
-
-with warnings.catch_warnings(record=True, action="ignore", category=DeprecationWarning):
-    from vkbottle.api.api import API
-
+from vkbottle.api.api import API
 from vkbottle.http import AiohttpClient
 from vkbottle_types import API_VERSION
 from vkbottle_types.methods.groups import GroupsCategory
