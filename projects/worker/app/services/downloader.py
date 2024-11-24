@@ -10,13 +10,14 @@ from typing import TYPE_CHECKING, Any, Self
 from urllib.parse import urlparse
 
 import aiofiles
-import eyed3
 import ffmpeg
 from aiofiles.tempfile import NamedTemporaryFile
 from aiohttp import ClientSession
 from loguru import logger
+from mutagen.easyid3 import EasyID3
 from vkbottle_types.objects import AudioAudio
 
+from app.exceptions import VttError
 from app.services.vk import VkService
 from app.vtt.schemas import VttVideo
 
@@ -44,10 +45,8 @@ class Downloader:
         for path in self.file_paths:
             path.unlink(missing_ok=True)
 
-    async def download_media(self, url: str) -> Path | None:
+    async def download_media(self, url: str) -> Path:
         logger.info(f"Downloading document from URL: {url}")
-
-        filepath = None
 
         await asyncio.sleep(randbelow(3))
         async with self.session.get(url, timeout=3600) as response:
@@ -125,11 +124,11 @@ class Downloader:
             filepath = Path(str(temp.name))
 
         # Setting audio metadata
-        audiofile = eyed3.load(filepath)
-        if audiofile:
-            audiofile.tag.artist = audio.artist
-            audiofile.tag.title = audio.title
-            audiofile.tag.save()
+        audiofile = EasyID3(filepath)
+        if audiofile is not None:
+            audiofile["artist"] = audio.artist
+            audiofile["title"] = audio.title
+            audiofile.save()
         elif try_fallback:
             logger.warning(f"Broken audio [{audio_full_id}] [{audio_full_title}], trying with another token...")
             fallback_audio = next(
@@ -149,7 +148,8 @@ class Downloader:
             logger.warning("Unable to download audio.")
             return None
 
-        logger.info(f"Audio succesfully downloaded: [{audio_full_id}] [{audio_full_title}]")
+        if filepath:
+            logger.info(f"Audio succesfully downloaded: [{audio_full_id}] [{audio_full_title}]")
         return filepath
 
     async def download_files(
@@ -168,6 +168,8 @@ class Downloader:
             coros.extend(self.download_video(video.url, video.title) for video in videos)
 
         file_paths = [path for path in await asyncio.gather(*coros) if path is not None]
+        if not file_paths:
+            raise VttError("Failed to download files.")
 
         self.file_paths.extend(file_paths)
 

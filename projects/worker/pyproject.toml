@@ -18,11 +18,11 @@ vkaudiotoken = {git = "https://github.com/Bizordec/vkaudiotoken-python.git"}
 telethon = "^1.35.0"
 python-dotenv = "^1.0.1"
 aiofiles = "<22.2"
-eyed3 = "^0.9.7"
 ffmpeg-python = "^0.2.0"
 pillow = "^10.3.0"
 hachoir = "^3.3.0"
 cryptg = "^0.4.0"
+mutagen = "^1.47.0"
 
 
 [tool.poetry.group.dev.dependencies]

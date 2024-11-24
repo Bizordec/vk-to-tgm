@@ -7,6 +7,7 @@ from vkbottle import API, AiohttpClient
 
 from app.config import settings
 from app.decorators import async_to_sync
+from app.exceptions import VttError
 from app.services.tgm import TelegramPlaylistSender, TelegramWallSender
 from app.services.vk import VkService
 from app.vk.request_validators import VkLangRequestValidator
@@ -65,7 +66,12 @@ async def forward_wall(owner_id: int, wall_id: int) -> str:
                 vk_service=vk_service,
                 channel_id=settings.TGM_CHANNEL_ID,
             )
-            return await tgm_service.send_vtt_message(vtt_message=vtt_message)
+            try:
+                return await tgm_service.send_vtt_message(vtt_message=vtt_message)
+            except VttError as error:
+                error_msg = error.message
+                logger.warning(f"Post was not sent to Telegram. Reason: '{error_msg}'")
+                return error_msg
 
 
 @worker.task()
