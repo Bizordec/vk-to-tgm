@@ -50,40 +50,40 @@ def split_text(
     return [html.parse(main_text), *rest_texts]
 
 
-@dataclass
+@dataclass(slots=True, frozen=True)
 class VttDocument:
     url: str
     extension: str
 
 
-@dataclass
+@dataclass(slots=True, frozen=True)
 class VttMarket:
     id: int
     owner_id: int
     title: str
 
 
-@dataclass
+@dataclass(slots=True, frozen=True)
 class VttPoll:
     question: str
     answers: list[str]
     multiple_choice: bool
 
 
-@dataclass
+@dataclass(slots=True, frozen=True)
 class VttLink:
     caption: str
     url: str
 
 
-@dataclass
+@dataclass(slots=True, frozen=True)
 class VttAudioPlaylistId:
     owner_id: int
     playlist_id: int
     access_key: str | None = None
 
 
-@dataclass
+@dataclass(slots=True)
 class VttText:
     header: str
     footer: str
@@ -97,7 +97,7 @@ class VttText:
         return split_text(header_text=self.header, footer_text=self.footer, is_caption=True)
 
 
-@dataclass
+@dataclass(slots=True, frozen=True)
 class VttAudioPlaylist:
     id: int
     owner_id: int
@@ -113,7 +113,7 @@ class VttAudioPlaylist:
         return f"{self.owner_id}_{self.id}_{self.access_key}"
 
 
-@dataclass
+@dataclass(slots=True, frozen=True)
 class VttVideo:
     title: str
     url: str
@@ -121,7 +121,7 @@ class VttVideo:
     is_live: bool = False
 
 
-@dataclass
+@dataclass(slots=True)
 class VttAttachments:
     photos: list[str] = field(default_factory=list)
     audio_ids: list[str] = field(default_factory=list)
@@ -137,7 +137,7 @@ class VttAttachments:
     geo: WallGeo | None = None
 
 
-@dataclass
+@dataclass(slots=True, frozen=True)
 class VttMessage:
     text: VttText
     attachments: VttAttachments

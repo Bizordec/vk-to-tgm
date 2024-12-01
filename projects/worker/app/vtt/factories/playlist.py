@@ -1,10 +1,18 @@
-from loguru import logger
-from vkbottle_types.objects import AudioAudio
+from __future__ import annotations
 
-from app.services.vk import VkService
-from app.vk.schemas import AudioPlaylist
+from typing import TYPE_CHECKING
+
+from loguru import logger
+
 from app.vtt.factories.text import VttPlaylistTextFactory
-from app.vtt.schemas import VttAudioPlaylist, VttText
+from app.vtt.schemas import VttAudioPlaylist
+
+if TYPE_CHECKING:
+    from vkbottle_types.objects import AudioAudio
+
+    from app.services.vk import VkService
+    from app.vk.schemas import AudioPlaylist
+    from app.vtt.schemas import VttText
 
 
 class VttPlaylistFactory:

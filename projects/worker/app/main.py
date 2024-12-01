@@ -18,7 +18,7 @@ from app.worker import worker
 logger.disable("vkbottle")
 
 
-@worker.task()
+@worker.task()  # type: ignore[misc]
 @async_to_sync
 async def forward_wall(owner_id: int, wall_id: int) -> str:
     with logger.contextualize(owner_id=owner_id, wall_id=wall_id):
@@ -74,7 +74,7 @@ async def forward_wall(owner_id: int, wall_id: int) -> str:
                 return error_msg
 
 
-@worker.task()
+@worker.task()  # type: ignore[misc]
 @async_to_sync
 async def forward_playlist(
     *,

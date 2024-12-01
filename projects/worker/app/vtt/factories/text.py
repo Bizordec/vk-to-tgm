@@ -4,15 +4,17 @@ import re
 from typing import TYPE_CHECKING
 
 from telethon.extensions import html
-from vkbottle_types.objects import GroupsGroupFull, WallPostCopyright, WallPostType, WallWallpostFull
+from vkbottle_types.objects import WallPostType
 
 from app.config import _
-from app.vtt.schemas import VttAttachments, VttLink, VttMarket, VttText
+from app.vtt.schemas import VttText
 
 if TYPE_CHECKING:
     from vkbottle import ABCAPI
+    from vkbottle_types.objects import GroupsGroupFull, WallPostCopyright, WallWallpostFull
 
     from app.vk.schemas import AudioPlaylist
+    from app.vtt.schemas import VttAttachments, VttLink, VttMarket
 
 
 VK_BRACKETS_PATTERN = re.compile(r"\[(?P<url>[^\[|]+)\|(?P<title>[^\]]+)\]")

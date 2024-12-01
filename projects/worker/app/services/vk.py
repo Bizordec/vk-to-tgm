@@ -3,22 +3,30 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, cast
 
 from loguru import logger
+from pydantic import Field
 from vkbottle import VKAPIError
 from vkbottle_types.objects import AudioAudio, BasePropertyExists, VideoVideoFiles
+from vkbottle_types.responses.wall import WallGetByIdExtendedResponseModel, WallWallpostFull  # noqa: TC002
 
 from app.vk.schemas import AudioPlaylist
 from app.vtt.schemas import VttVideo
 
 if TYPE_CHECKING:
     from vkbottle.api.abc import ABCAPI
-    from vkbottle_types.responses.wall import GetByIdExtendedResponseModel
+
+
+# TODO: remove after fix in vkbottle
+class WallGetByIdExtendedResponseModel(WallGetByIdExtendedResponseModel):  # type: ignore[misc, no-redef]
+    items: list[WallWallpostFull] = Field()
 
 
 def get_video_url(formats: VideoVideoFiles | None) -> str | None:
     if not formats:
         return None
-    return (
-        formats.mp4_720 or formats.mp4_480 or formats.mp4_360 or formats.mp4_240 or formats.mp4_144 or formats.flv_320
+
+    return cast(
+        str | None,
+        formats.mp4_720 or formats.mp4_480 or formats.mp4_360 or formats.mp4_240 or formats.mp4_144 or formats.flv_320,
     )
 
 
@@ -31,13 +39,19 @@ class VkService:
         self,
         owner_id: int,
         wall_id: int,
-    ) -> GetByIdExtendedResponseModel | None:
+    ) -> WallGetByIdExtendedResponseModel | None:
         try:
-            wall_info = await self.kate_user.wall.get_by_id(
-                posts=[f"{owner_id}_{wall_id}"],
-                copy_history_depth=100,
-                extended=True,
+            # TODO: change to `await self.kate_user.wall.get_by_id()` after fix in vkbottle
+            response = await self.kate_user.request(
+                "wall.getById",
+                {
+                    "posts": [f"{owner_id}_{wall_id}"],
+                    "copy_history_depth": 100,
+                    "extended": True,
+                },
             )
+            wall_info = WallGetByIdExtendedResponseModel(**response["response"])
+
             if not wall_info.items:
                 return None
         except VKAPIError as error:

@@ -1,10 +1,12 @@
 import gettext
 from typing import Literal
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env")
+
     VK_KATE_TOKEN: str
     VK_OFFICIAL_TOKEN: str
 
@@ -19,9 +21,6 @@ class Settings(BaseSettings):
 
     VTT_LANGUAGE: Literal["en", "ru"] = "en"
     VTT_IGNORE_ADS: bool = True
-
-    class Config:
-        env_file = ".env"
 
 
 settings = Settings()

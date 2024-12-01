@@ -1,17 +1,20 @@
+from __future__ import annotations
+
 import re
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 from urllib.parse import parse_qs, urlparse
 
 from loguru import logger
-from vkbottle_types.objects import (
-    PhotosPhotoSizes,
-    PhotosPhotoSizesType,
-    WallWallpostAttachment,
-    WallWallpostAttachmentType,
-)
+from vkbottle_types.objects import PhotosPhotoSizesType, WallWallpostAttachmentType
 
 from app.config import settings
-from app.vtt.schemas import VttAttachments, VttAudioPlaylistId, VttDocument, VttLink, VttMarket, VttPoll
+from app.vtt.schemas import VttAudioPlaylistId, VttDocument, VttLink, VttMarket, VttPoll
+
+if TYPE_CHECKING:
+    from vkbottle_types.objects import PhotosPhotoSizes, WallWallpostAttachment
+
+    from app.vtt.schemas import VttAttachments
 
 
 class AttachmentHandler(ABC):

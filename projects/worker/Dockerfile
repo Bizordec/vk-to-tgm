@@ -1,4 +1,4 @@
-FROM python:3.11.7-alpine3.19 AS build-stage
+FROM python:3.12.7-alpine3.20 AS build-stage
 
 WORKDIR /code/projects/worker
 
@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DEFAULT_TIMEOUT=120 \
     VIRTUAL_ENV=/venv
 
-RUN pip install poetry==1.8.2 && apk --update add cargo
+RUN pip install poetry==1.8.4 && apk --no-cache add cargo
 
 # Using additional build context 'libs'
 COPY --from=libs ./vtt_common /code/libs/vtt_common
@@ -19,7 +19,7 @@ RUN sed -i "s/\(develop\s*=\s*\)true/\1false/" poetry.lock \
     && poetry install --no-root --without=dev --no-interaction --no-ansi
 
 
-FROM python:3.11.7-alpine3.19
+FROM python:3.12.7-alpine3.20
 
 ARG UID=1000
 ARG GID=1000
@@ -33,7 +33,7 @@ ENV PYTHONUNBUFFERED=1 \
 RUN addgroup -g $GID user \
     && adduser --shell /sbin/nologin --disabled-password \
     --no-create-home --uid $UID --ingroup user user \
-    && apk add ffmpeg
+    && apk add --no-cache ffmpeg
 
 USER user
 

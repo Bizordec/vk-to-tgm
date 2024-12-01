@@ -1,12 +1,19 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from loguru import logger
-from vkbottle_types.objects import GroupsGroupFull, WallWallpostFull
 
 from app.config import settings
-from app.services.vk import VkService
 from app.vtt.attachments import get_attachment_handler
 from app.vtt.factories.playlist import VttPlaylistFactory
 from app.vtt.factories.text import VttWallTextFactory
 from app.vtt.schemas import VttAttachments, VttMessage, VttText
+
+if TYPE_CHECKING:
+    from vkbottle_types.objects import GroupsGroupFull, WallWallpostFull
+
+    from app.services.vk import VkService
 
 
 class VttMessageFactory:

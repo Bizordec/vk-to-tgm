@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import cgi
 import re
@@ -5,30 +7,32 @@ import tempfile
 from mimetypes import guess_extension
 from pathlib import Path
 from secrets import randbelow
-from types import TracebackType
 from typing import TYPE_CHECKING, Any, Self
 from urllib.parse import urlparse
 
 import aiofiles
 import ffmpeg
 from aiofiles.tempfile import NamedTemporaryFile
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ClientTimeout
 from loguru import logger
 from mutagen.easyid3 import EasyID3
-from vkbottle_types.objects import AudioAudio
 
 from app.exceptions import VttError
-from app.services.vk import VkService
-from app.vtt.schemas import VttVideo
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
+    from types import TracebackType
+
+    from vkbottle_types.objects import AudioAudio
+
+    from app.services.vk import VkService
+    from app.vtt.schemas import VttVideo
 
 
 class Downloader:
     def __init__(self, vk_service: VkService) -> None:
         self.vk_service = vk_service
-        self.session = ClientSession()
+        self.session = ClientSession(timeout=ClientTimeout(total=3600))
         self.file_paths: list[Path] = []
 
     async def __aenter__(self) -> Self:
@@ -49,7 +53,7 @@ class Downloader:
         logger.info(f"Downloading document from URL: {url}")
 
         await asyncio.sleep(randbelow(3))
-        async with self.session.get(url, timeout=3600) as response:
+        async with self.session.get(url) as response:
             filepath = Path(tempfile.gettempdir(), Path(response.url.path).name)
             async with aiofiles.open(filepath, "w+b") as file:
                 async for chunk, _ in response.content.iter_chunks():
@@ -62,7 +66,7 @@ class Downloader:
         filepath = None
 
         await asyncio.sleep(randbelow(3))
-        async with self.session.get(url, timeout=3600) as response:
+        async with self.session.get(url) as response:
             if not title:
                 content_disposition = response.headers.get("Content-Disposition")
                 if not content_disposition:
@@ -111,7 +115,7 @@ class Downloader:
         async with NamedTemporaryFile(suffix=".mp3", delete=False) as temp:
             if not urlparse(url).path.endswith("m3u8"):
                 logger.info("Downloading audio by http...")
-                async with self.session.get(url, timeout=3600) as response:
+                async with self.session.get(url) as response:
                     async for chunk, _ in response.content.iter_chunks():
                         await temp.write(chunk)
             else:
@@ -124,7 +128,7 @@ class Downloader:
             filepath = Path(str(temp.name))
 
         # Setting audio metadata
-        audiofile = EasyID3(filepath)
+        audiofile = EasyID3(filepath)  # type: ignore[no-untyped-call]
         if audiofile is not None:
             audiofile["artist"] = audio.artist
             audiofile["title"] = audio.title
