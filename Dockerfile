@@ -1,4 +1,4 @@
-FROM python:3.10.12-bullseye as build-stage
+FROM python:3.10.12-bullseye AS build-stage
 
 WORKDIR /vk-to-tgm
 
