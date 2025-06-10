@@ -11,5 +11,16 @@
             "module": "app.main",
             "justMyCode": false
         },
+        {
+            "name": "Python: Debug Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "purpose": [
+                "debug-test"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
     ]
 }

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import re
 from functools import partial
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Annotated, Literal
 
-from pydantic import field_validator
-from pydantic_settings import BaseSettings
+from pydantic import AfterValidator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 if TYPE_CHECKING:
     from re import Pattern
@@ -25,57 +25,45 @@ class NotMatchedPatternError(ValueError):
         super().__init__(f"Value does not match pattern '{pattern.pattern}'")
 
 
-def check_env(value: str, pattern: Pattern[str]) -> str:
-    if value and not pattern.match(value):
+def _check_env(value: str | int | None, pattern: Pattern[str]) -> str | int | None:
+    if value and not pattern.match(str(value)):
         raise NotMatchedPatternError(pattern)
     return value
 
 
-class Settings(BaseSettings):
-    VK_KATE_TOKEN: str = ""
-    VK_OFFICIAL_TOKEN: str = ""
+def pattern_validator(pattern: Pattern[str]) -> AfterValidator:
+    return AfterValidator(partial(_check_env, pattern=pattern))
 
-    VK_COMMUNITY_ID: str = ""
+
+Numeric = Annotated[str, pattern_validator(DIGITS_PATTERN)]
+ChannelId = Annotated[str, pattern_validator(TGM_CHANNEL_ID_PATTERN)]
+ChannelName = Annotated[str, pattern_validator(TGM_CHANNEL_USERNAME_PATTERN)]
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(extra="ignore")
+
+    VK_KATE_TOKEN: str = ""
+
+    VK_COMMUNITY_ID: Numeric = ""
     VK_COMMUNITY_TOKEN: str = ""
 
     VK_SERVER_TITLE: str = "vk-to-tgm"
-    SERVER_URL: str = ""
+    SERVER_URL: Annotated[str, pattern_validator(SERVER_URL_PATTERN)] = ""
 
-    TGM_API_ID: str = ""
+    TGM_API_ID: Numeric = ""
     TGM_API_HASH: str = ""
 
-    TGM_BOT_TOKEN: str = ""
+    TGM_BOT_TOKEN: Annotated[str, pattern_validator(TGM_BOT_TOKEN_PATTERN)] = ""
     TGM_BOT_SESSION: str = ""
 
-    TGM_CLIENT_PHONE: str = ""
+    TGM_CLIENT_PHONE: Numeric = ""
     TGM_CLIENT_SESSION: str = ""
 
-    TGM_CHANNEL_ID: str = ""
-    TGM_CHANNEL_USERNAME: str = ""
-    TGM_PL_CHANNEL_ID: str = ""
-    TGM_PL_CHANNEL_USERNAME: str = ""
+    TGM_CHANNEL_ID: ChannelId = ""
+    TGM_CHANNEL_USERNAME: ChannelName = ""
+    TGM_PL_CHANNEL_ID: ChannelId = ""
+    TGM_PL_CHANNEL_USERNAME: ChannelName = ""
 
     VTT_LANGUAGE: VttLanguage = "en"
     VTT_IGNORE_ADS: bool = True
-
-    _check_server_url = field_validator("SERVER_URL")(
-        partial(check_env, pattern=SERVER_URL_PATTERN),
-    )
-
-    _check_digits = field_validator(
-        "VK_COMMUNITY_ID",
-        "TGM_API_ID",
-        "TGM_CLIENT_PHONE",
-    )(partial(check_env, pattern=DIGITS_PATTERN))
-
-    _check_tgm_bot_token = field_validator("TGM_BOT_TOKEN")(
-        partial(check_env, pattern=TGM_BOT_TOKEN_PATTERN),
-    )
-
-    _check_tgm_channel_name = field_validator("TGM_CHANNEL_USERNAME", "TGM_PL_CHANNEL_USERNAME")(
-        partial(check_env, pattern=TGM_CHANNEL_USERNAME_PATTERN),
-    )
-
-    _check_tgm_id = field_validator("TGM_CHANNEL_ID", "TGM_PL_CHANNEL_ID")(
-        partial(check_env, pattern=TGM_CHANNEL_ID_PATTERN),
-    )

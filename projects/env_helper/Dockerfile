@@ -1,4 +1,4 @@
-FROM python:3.11.7-alpine3.19 AS build-stage
+FROM python:3.12.11-alpine3.21 AS build-stage
 
 WORKDIR /code
 
@@ -9,14 +9,14 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DEFAULT_TIMEOUT=120 \
     VIRTUAL_ENV=/venv
 
-RUN pip install poetry==1.8.3
+RUN pip install poetry==1.8.4
 
 COPY ./pyproject.toml ./poetry.lock* ./
 RUN python -m venv $VIRTUAL_ENV \
     && poetry install --no-root --without=dev --no-interaction --no-ansi
 
 
-FROM python:3.11.7-alpine3.19
+FROM python:3.12.11-alpine3.21
 
 ARG UID=1000
 ARG GID=1000

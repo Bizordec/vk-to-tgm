@@ -3,38 +3,35 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from urllib.parse import parse_qs, urlparse
 
-from rich.prompt import IntPrompt, Prompt
-from vkaudiotoken import CommonParams, TokenException, TwoFAHelper
+import questionary
+from vkbottle import APIAuthError, AuthError, CaptchaError
 
 from app.console import console
+from app.prompt import EnvPasswordPrompt, int_validator
 from app.vk.models import AuthParams
 
 if TYPE_CHECKING:
-    from typing import Any
+    from vkbottle import UserAuth, VKAPIError
 
 
 class FloodControlError(Exception):
     pass
 
 
-def _prompt_auth_code() -> int:
-    return IntPrompt.ask(prompt="Enter auth code", password=True)
+async def _handle_2fa_sms(user_auth: UserAuth, validation_sid: str) -> AuthParams:
+    await user_auth.validate_phone(validation_sid)
 
-
-def _handle_2fa_sms(user_agent: str, validation_sid: str) -> AuthParams:
-    params = CommonParams(user_agent)
-    TwoFAHelper(params).validate_phone(validation_sid)
     console.print("[yellow]SMS should be sent")
-    return AuthParams(auth_code=str(_prompt_auth_code()))
+
+    auth_code: str = await questionary.text("Enter auth code:", validate=int_validator).unsafe_ask_async()
+
+    return AuthParams(auth_code=auth_code, need_creds=False)
 
 
-def _handle_2fa_app(redirect_uri: str) -> AuthParams:
+async def _handle_2fa_app(redirect_uri: str) -> AuthParams:
     console.print(f"Enter code from 2FA app here: {redirect_uri}")
     while True:
-        url = Prompt.ask(
-            prompt="Enter OAuth URL from VK after signin in",
-            password=True,
-        )
+        url = await EnvPasswordPrompt.ask(prompt="Enter OAuth URL from VK after signin in")
         parsed_url = urlparse(url=url)
         try:
             access_token = parse_qs(parsed_url.fragment)["access_token"][0]
@@ -46,33 +43,25 @@ def _handle_2fa_app(redirect_uri: str) -> AuthParams:
         return AuthParams(token=access_token)
 
 
-def _handle_captcha(error_extra: dict[str, Any]) -> AuthParams:
-    captcha_sid = error_extra["captcha_sid"]
-    captcha_key = input(
-        "Enter captcha key from image (" + error_extra["captcha_img"] + "): ",
-    )
-    return AuthParams(captcha_sid=captcha_sid, captcha_key=captcha_key)
+async def _handle_captcha(error: CaptchaError) -> AuthParams:
+    captcha_key = await questionary.text(f"Enter captcha key from image ({error.captcha_img}):").unsafe_ask_async()
+    return AuthParams(captcha_sid=error.captcha_sid, captcha_key=captcha_key, need_creds=False)
 
 
-def handle_token_exception(user_agent: str, error: TokenException) -> AuthParams:
-    error_code: int = error.code
-    error_extra: dict[str, Any] = error.extra or {}
-    error_name = error_extra["error"]
-    if error_name == "need_validation":
-        validation_type = error_extra["validation_type"]
+async def handle_token_exception(user_auth: UserAuth, error: VKAPIError) -> AuthParams:
+    if isinstance(error, CaptchaError):
+        return await _handle_captcha(error=error)
+    if isinstance(error, APIAuthError):
+        validation_type = error.validation_type
         if validation_type == "2fa_sms":
-            return _handle_2fa_sms(
-                user_agent=user_agent,
-                validation_sid=error_extra["validation_sid"],
-            )
+            return await _handle_2fa_sms(user_auth=user_auth, validation_sid=error.validation_sid)
         if validation_type == "2fa_app":
-            return _handle_2fa_app(redirect_uri=error_extra["redirect_uri"])
-    if error_code == TokenException.TOKEN_NOT_RECEIVED:
+            return await _handle_2fa_app(redirect_uri=error.redirect_uri)
+    if isinstance(error, AuthError):
+        error_name = error.error_msg
         if error_name == "invalid_client":
             return AuthParams(need_creds=True)
         if error_name == "9;Flood control":
             raise FloodControlError
-        return AuthParams(auth_code="GET_CODE")
-    if error_code == TokenException.CAPTCHA_REQ:
-        return _handle_captcha(error_extra=error_extra)
+        return AuthParams(auth_code=True)
     raise error

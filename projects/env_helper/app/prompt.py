@@ -2,144 +2,61 @@ from __future__ import annotations
 
 import inspect
 import re
-from typing import TYPE_CHECKING, Generic, TypeVar
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
-from rich.prompt import InvalidResponse
+import questionary
 from rich.text import Text
 
 from app.console import console
 
 if TYPE_CHECKING:
-    from re import Pattern
-    from typing import TextIO
+    from collections.abc import Callable, Sequence
 
-    from rich.text import TextType
+    from questionary.prompts.common import Choice
 
 PromptType = TypeVar("PromptType", str, bool)
 
 
-class EnvPromptBase(Generic[PromptType]):
-    response_type: type[PromptType]
-    default_value: PromptType
-    choices: tuple[str, ...] | None = None
+def int_validator(value: str) -> bool | str:
+    try:
+        int(value)
+    except ValueError:
+        return "Value must be integer"
 
-    validate_error_message = "[prompt.invalid]Please enter a valid value"
-    illegal_choice_message = "[prompt.invalid.choice]Please select one of the available options"
-    illegal_match_message = "[prompt.invalid.choice]Please enter a value, that matches pattern"
-    prompt_suffix = ": "
+    return True
 
+
+class BaseEnvPrompt(ABC, Generic[PromptType]):
     def __init__(
         self,
-        prompt: TextType = "",
-        *,
-        name: str = "",
-        description: str = "",
-        pattern: str | Pattern[str] | None = None,
-        password: bool = False,
-        choices: tuple[str, ...] | None = None,
-        show_default: bool = True,
-        show_choices: bool = True,
+        prompt: str,
+        name: str,
+        description: str,
+        pattern: str | re.Pattern[str] | None = None,
+        default: PromptType | None = None,
+        choices: Sequence[str | Choice | dict[str, Any]] | None = None,
     ) -> None:
-        self.prompt = Text.from_markup(prompt, style="prompt") if isinstance(prompt, str) else prompt
+        self.prompt = prompt
         self.name = name
         self.description = description
-        self.password = password
-        if choices is not None:
-            self.choices = choices
-        self.re_pattern = re.compile(pattern) if pattern and self.choices is None else None
-        self.show_default = show_default
-        self.show_choices = show_choices
+        self.re_pattern = re.compile(pattern) if pattern else None
 
-    @classmethod
-    def ask(
-        cls,
-        prompt: TextType = "",
-        *,
-        name: str = "",
-        description: str = "",
-        pattern: str | Pattern[str] | None = r"^.+$",
-        password: bool = False,
-        choices: tuple[str, ...] | None = None,
-        show_default: bool = True,
-        show_choices: bool = True,
-        default: PromptType | None = None,
-        stream: TextIO | None = None,
-    ) -> PromptType:
-        """Shortcut to construct and run a prompt loop and return the result."""
-        _prompt = cls(
-            prompt or f"Enter {name}",
-            name=name,
-            description=description,
-            pattern=pattern,
-            password=password,
-            choices=choices,
-            show_default=show_default,
-            show_choices=show_choices,
-        )
-        return _prompt(default=default, stream=stream)
+        self.default: PromptType | None = default
+        self.choices = choices or []
 
-    def render_default(self, default: PromptType) -> Text:
-        """Turn the supplied default in to a Text instance."""
-        return Text(
-            text=f"(Default: {'<secret>' if self.password else default})",
-            style="prompt.default",
-        )
+        self.validator = self._make_validator(self.re_pattern) if self.re_pattern else None
 
-    def make_prompt(self, default: PromptType) -> Text:
-        """Make prompt text."""
-        prompt = self.prompt.copy()
-        prompt.end = ""
+    def _make_validator(self, re_pattern: re.Pattern[str]) -> Callable[[str], bool | str]:
+        def validator(value: str) -> bool | str:
+            if not re_pattern.match(value.strip()):
+                return "Please enter a value, that matches pattern"
+            return True
 
-        if self.show_choices and self.choices:
-            _choices = "/".join(self.choices)
-            choices = f"[{_choices}]"
-            prompt.append(" ")
-            prompt.append(choices, "prompt.choices")
+        return validator
 
-        if default is not None and self.show_default and isinstance(default, self.response_type):
-            prompt.append(" ")
-            _default = self.render_default(default=default)
-            prompt.append(_default)
-
-        prompt.append(self.prompt_suffix)
-
-        return prompt
-
-    @classmethod
-    def get_input(
-        cls,
-        prompt: TextType,
-        password: bool,
-        stream: TextIO | None = None,
-    ) -> str:
-        """Get input from user."""
-        return console.input(prompt, password=password, stream=stream)
-
-    def check_choice(self, value: str) -> bool:
-        """Check value is in the list of valid choices."""
-        if self.choices is None:
-            raise ValueError("Choices are not set")
-        return value in self.choices
-
-    def process_response(self, value: str) -> PromptType:
-        """Process response from user, convert to prompt type."""
-        value = value.strip()
-        try:
-            casted_value = self.response_type(value)
-        except ValueError as error:
-            raise InvalidResponse(self.validate_error_message) from error
-
-        if self.choices is not None and not self.check_choice(value):
-            raise InvalidResponse(self.illegal_choice_message)
-
-        if self.re_pattern and not self.re_pattern.match(string=value):
-            raise InvalidResponse(self.illegal_match_message)
-        return casted_value
-
-    def pre_prompt(self) -> None:
-        """Display something before the prompt."""
+    def _pre_prompt(self) -> None:
         console.rule()
-
         console.print("[bold]Name[/]:", end=" ")
         console.print(self.name, highlight=False, markup=False)
 
@@ -148,59 +65,110 @@ class EnvPromptBase(Generic[PromptType]):
             console.print(self.re_pattern.pattern, highlight=False, markup=False)
 
         console.print("[bold]Description[/]:", end=" ")
-        console.print(
-            inspect.cleandoc(self.description),
-            highlight=False,
-            markup=False,
-            end="\n\n",
+        console.print(Text.from_markup(inspect.cleandoc(self.description)), highlight=False, markup=False, end="\n\n")
+
+    @abstractmethod
+    async def get_input(self) -> PromptType:
+        raise NotImplementedError
+
+    async def __call__(self) -> PromptType:
+        self._pre_prompt()
+        return await self.get_input()
+
+    @classmethod
+    async def ask(
+        cls,
+        prompt: str = "",
+        name: str = "",
+        description: str = "",
+        pattern: str | re.Pattern[str] | None = None,
+        default: PromptType | None = None,
+        choices: tuple[str, ...] | None = None,
+    ) -> PromptType:
+        _prompt = cls(
+            prompt or f"Enter {name}:",
+            name=name,
+            description=description,
+            pattern=pattern,
+            default=default,
+            choices=choices,
+        )
+        return await _prompt()
+
+
+class EnvConfirmPrompt(BaseEnvPrompt[bool]):
+    async def get_input(self) -> bool:
+        return bool(await questionary.confirm(self.prompt, default=bool(self.default)).unsafe_ask_async())
+
+
+class EnvPasswordPrompt(BaseEnvPrompt[str]):
+    async def get_input(self) -> str:
+        return str(await questionary.password(self.prompt, default=self.default or "").unsafe_ask_async())
+
+
+class EnvSelectPrompt(BaseEnvPrompt[str]):
+    async def get_input(self) -> str:
+        return str(await questionary.select(self.prompt, choices=self.choices, default=self.default).unsafe_ask_async())
+
+
+class EnvTextPrompt(BaseEnvPrompt[str]):
+    async def get_input(self) -> str:
+        return str(
+            await questionary.text(
+                self.prompt,
+                default=self.default or "",
+                validate=self.validator,
+            ).unsafe_ask_async(),
         )
 
-    def __call__(
-        self,
-        *,
-        default: PromptType | None,
-        stream: TextIO | None = None,
-    ) -> PromptType:
-        """Run the prompt loop."""
-        self.pre_prompt()
-        while True:
-            prompt = self.make_prompt(default or self.default_value)
-            value = self.get_input(
-                prompt,
-                password=self.password,
-                stream=stream,
-            )
-            if not value and default is not None:
-                return default
-            try:
-                return_value = self.process_response(value)
-            except InvalidResponse as error:
-                console.print(error)
-                continue
-            else:
-                return return_value
 
+async def prompt_env(
+    prompt: str,
+    name: str,
+    description: str = "",
+    default: str | bool | None = None,
+    pattern: str | None = None,
+    choices: list[str] | None = None,
+    *,
+    is_password: bool = False,
+    is_confirm: bool = False,
+) -> str | bool:
+    console.rule()
 
-class EnvPrompt(EnvPromptBase[str]):
-    response_type = str
-    default_value = ""
+    console.print("[bold]Name[/]:", end=" ")
+    console.print(name, highlight=False, markup=False)
 
+    re_pattern = re.compile(pattern) if pattern else None
+    if re_pattern:
+        console.print("[bold]Pattern[/]:", end=" ")
+        console.print(re_pattern.pattern, highlight=False, markup=False)
 
-class EnvConfirmPrompt(EnvPromptBase[bool]):
-    response_type = bool
-    default_value = True
-    choices = ("y", "n")
+    console.print("[bold]Description[/]:", end=" ")
+    console.print(inspect.cleandoc(description), highlight=False, markup=False, end="\n\n")
 
-    validate_error_message = "[prompt.invalid]Please enter Y or N"
+    prompt_text = prompt or f"Enter {name}"
 
-    def render_default(self, default: bool) -> Text:
-        """Render the default as (y) or (n) rather than True/False."""
-        yes, no = self.choices
-        return Text(f"({yes})" if default else f"({no})", style="prompt.default")
+    if is_confirm:
+        return cast(bool, await questionary.confirm(prompt_text, default=bool(default)).unsafe_ask_async())
 
-    def process_response(self, value: str) -> bool:
-        """Convert choices to a bool."""
-        value = value.strip().lower()
-        if value not in self.choices:
-            raise InvalidResponse(self.validate_error_message)
-        return value == self.choices[0]
+    if is_password:
+        return cast(str, await questionary.password(prompt_text).unsafe_ask_async())
+
+    if isinstance(default, bool):
+        default = str(default)
+
+    if choices:
+        return cast(str, await questionary.select(prompt_text, choices=choices, default=default).unsafe_ask_async())
+
+    validator = None
+    if re_pattern:
+
+        def validate(value: str) -> bool | str:
+            value = value.strip()
+            if re_pattern and not re_pattern.match(value):
+                return "Please enter a value, that matches pattern"
+            return True
+
+        validator = validate
+
+    return cast(str, await questionary.text(prompt_text, default=default or "", validate=validator).unsafe_ask_async())

@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from textwrap import dedent
+import os
 from typing import TYPE_CHECKING
+from unittest import mock
+from unittest.mock import AsyncMock
+from urllib.parse import urlencode
 
+from dotenv import dotenv_values
 from telethon.tl.types import InputPeerChannel
-from vkaudiotoken import supported_clients
 
 from app.main import main
 
@@ -15,41 +18,88 @@ if TYPE_CHECKING:
     from pytest_mock import MockerFixture
 
 
-def test_main(mocker: MockerFixture, mock_vk: aioresponses, tmp_path: Path) -> None:
-    mocker.patch(
-        "vkaudiotoken.get_kate_token",
-        return_value={
-            "token": "kate-token",
-            "user_agent": supported_clients.KATE.user_agent,
-        },
-    )
-    mocker.patch(
-        "vkaudiotoken.get_vk_official_token",
-        return_value={
-            "token": "vk-official-token",
-            "user_agent": supported_clients.VK_OFFICIAL.user_agent,
-        },
-    )
-    mock_vk.post(
-        "groups.getTokenPermissions",
+def _get_vk_method_url(method: str, access_token: str = "", **kwargs: str) -> str:
+    params = {
+        "v": "5.199",
+    }
+    params.update(kwargs)
+    if access_token:
+        params["access_token"] = access_token
+    return f"https://api.vk.com/method/{method}?{urlencode(params)}"
+
+
+def _setup_vk_2fa_sms_mocks(mock_aioresponse: aioresponses, sid: str, token: str) -> None:
+    mock_aioresponse.post(
+        "https://oauth.vk.com/token",
         payload={
-            "mask": 262144,
-            "permissions": [
-                {
-                    "name": "manage",
-                    "setting": 262144,
-                },
-            ],
+            "error": "need_validation",
+            "error_description": "open redirect_uri in browser [5]. Also you can use 2fa_supported param",
+            "validation_type": "2fa_sms",
+            "validation_sid": sid,
+            "phone_mask": "+7 *** *** ** 89",
+            "redirect_uri": "https://m.vk.com/login?act=authcheck&api_hash=s0m34p1h4sh",
         },
     )
-    mock_vk.post(
-        "groups.getCallbackServers",
+
+    mock_aioresponse.get(
+        _get_vk_method_url("auth.validatePhone", lang="en", sid=sid),
         payload={
-            "count": 0,
-            "items": [],
+            "response": {
+                "type": "general",
+                "sid": sid,
+                "delay": 60,
+                "libverify_support": False,
+                "validation_type": "sms",
+                "validation_resend": "sms",
+                "code_length": 6,
+            },
         },
     )
-    mocker.patch("telethon.client.telegramclient.TelegramClient.start")
+
+    mock_aioresponse.post(
+        "https://oauth.vk.com/token",
+        payload={
+            "access_token": token,
+        },
+    )
+
+
+async def test_main(
+    mocker: MockerFixture,
+    mock_aioresponse: aioresponses,
+    tmp_path: Path,
+) -> None:
+    # VK_KATE_TOKEN
+    _setup_vk_2fa_sms_mocks(mock_aioresponse, "2fa_735098214_5367109_3c8f2a9bde514ee781", "vk-kate-token")
+
+    # VK_COMMUNITY_TOKEN
+    mock_aioresponse.post(
+        _get_vk_method_url("groups.getTokenPermissions", access_token="vk-community-token"),  # noqa: S106
+        payload={
+            "response": {
+                "mask": 262144,
+                "permissions": [
+                    {
+                        "name": "manage",
+                        "setting": 262144,
+                    },
+                ],
+            },
+        },
+    )
+
+    # VK_COMMUNITY_ID
+    mock_aioresponse.post(
+        _get_vk_method_url("groups.getCallbackServers", access_token="vk-community-token"),  # noqa: S106
+        payload={
+            "response": {
+                "count": 0,
+                "items": [],
+            },
+        },
+    )
+
+    mocker.patch("telethon.client.telegramclient.TelegramClient.start", new=AsyncMock())
     mocker.patch(
         "telethon.client.telegramclient.TelegramClient.get_input_entity",
         side_effect=[
@@ -59,50 +109,52 @@ def test_main(mocker: MockerFixture, mock_vk: aioresponses, tmp_path: Path) -> N
     )
 
     mocker.patch(
-        "rich.console.Console.input",
+        "questionary.question.Question.unsafe_ask_async",
         side_effect=[
-            "vk-login",
-            "vk-password",
-            "vk-community-token",
-            "123456789",
-            "https://example.com",
-            "test_server_title",
-            "12345678",
-            "s0m3v3rys3cr3tt3l3gr4map1h4sh123",
-            "89991234567",
-            "1123456789:BkhsfLSDubilKNy86t8FGYBybxiu23aDX12",
+            "vk-login",  # vk login for kate token
+            "vk-password",  # vk login for kate token
+            "1234",  # 2fa sms auth code for kate token
+            "vk-community-token",  # VK_COMMUNITY_TOKEN
+            "123456789",  # VK_COMMUNITY_ID
+            "https://example.com",  # SERVER_URL
+            "test_server_title",  # VK_SERVER_TITLE
+            "12345678",  # TGM_API_ID
+            "s0m3v3rys3cr3tt3l3gr4map1h4sh123",  # TGM_API_HASH
+            "89991234567",  # TGM_CLIENT_PHONE
+            "1123456789:BkhsfLSDubilKNy86t8FGYBybxiu23aDX12",  # TGM_BOT_TOKEN
             "y",  # is main channel public
-            "test_channel_name",
+            "test_channel_name",  # TGM_CHANNEL_USERNAME
             "y",  # has playlist channel
             "y",  # is playlist channel public
-            "test_pl_channel_name",
-            "y",
-            "en",
+            "test_pl_channel_name",  # TGM_PL_CHANNEL_USERNAME
+            "y",  # VTT_IGNORE_ADS
+            "en",  # VTT_LANGUAGE
         ],
     )
 
     env_file = tmp_path / ".env"
-    exit_code = main(["--env-file", str(env_file)])
+
+    with mock.patch.dict(os.environ, clear=True):
+        exit_code = await main(["--env-file", str(env_file)])
 
     assert exit_code == 0
     assert env_file.exists()
 
-    env_content = env_file.read_text(encoding="utf8")
-    assert env_content == dedent("""
-        SERVER_URL='https://example.com'
-        TGM_API_HASH='s0m3v3rys3cr3tt3l3gr4map1h4sh123'
-        TGM_API_ID='12345678'
-        TGM_BOT_SESSION=''
-        TGM_BOT_TOKEN='1123456789:BkhsfLSDubilKNy86t8FGYBybxiu23aDX12'
-        TGM_CHANNEL_ID='-100765432'
-        TGM_CHANNEL_USERNAME='test_channel_name'
-        TGM_CLIENT_PHONE='89991234567'
-        TGM_CLIENT_SESSION=''
-        TGM_PL_CHANNEL_ID='-100654321'
-        TGM_PL_CHANNEL_USERNAME='test_pl_channel_name'
-        VK_COMMUNITY_ID='123456789'
-        VK_COMMUNITY_TOKEN='vk-community-token'
-        VK_KATE_TOKEN='kate-token'
-        VK_OFFICIAL_TOKEN='vk-official-token'
-        VK_SERVER_TITLE='test_server_title'
-    """).lstrip("\n")
+    env_values = dotenv_values(env_file)
+    assert env_values["SERVER_URL"] == "https://example.com"
+    assert env_values["TGM_API_HASH"] == "s0m3v3rys3cr3tt3l3gr4map1h4sh123"
+    assert env_values["TGM_API_ID"] == "12345678"
+    assert env_values["TGM_BOT_SESSION"] == ""
+    assert env_values["TGM_BOT_TOKEN"] == "1123456789:BkhsfLSDubilKNy86t8FGYBybxiu23aDX12"  # noqa: S105
+    assert env_values["TGM_CHANNEL_ID"] == "-100765432"
+    assert env_values["TGM_CHANNEL_USERNAME"] == "test_channel_name"
+    assert env_values["TGM_CLIENT_PHONE"] == "89991234567"
+    assert env_values["TGM_CLIENT_SESSION"] == ""
+    assert env_values["TGM_PL_CHANNEL_ID"] == "-100654321"
+    assert env_values["TGM_PL_CHANNEL_USERNAME"] == "test_pl_channel_name"
+    assert env_values["VK_COMMUNITY_ID"] == "123456789"
+    assert env_values["VK_COMMUNITY_TOKEN"] == "vk-community-token"  # noqa: S105
+    assert env_values["VK_KATE_TOKEN"] == "vk-kate-token"  # noqa: S105
+    assert env_values["VK_SERVER_TITLE"] == "test_server_title"
+    assert env_values["VTT_IGNORE_ADS"] == "True"
+    assert env_values["VTT_LANGUAGE"] == "en"

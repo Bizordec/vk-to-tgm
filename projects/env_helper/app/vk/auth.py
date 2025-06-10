@@ -1,20 +1,18 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Protocol, cast
+from typing import TYPE_CHECKING, Protocol
 
-import uvloop
-import vkaudiotoken
+import questionary
 from aiohttp import ClientSession
-from rich.prompt import Prompt
-from vkbottle import API, AiohttpClient, VKAPIError
+from vkbottle import API, AiohttpClient, UserAuth, VKAPIError
 
 from app.console import console
 from app.vk.exception import handle_token_exception
 from app.vk.models import AuthParams
 
 if TYPE_CHECKING:
-    from typing import Any, TypedDict
+    from typing import TypedDict
 
     class TokenData(TypedDict):
         token: str
@@ -46,11 +44,15 @@ class Auth(ABC):
 
     @property
     @abstractmethod
-    def user_agent(self) -> str: ...
+    def client_id(self) -> int: ...
 
     @property
     @abstractmethod
-    def get_token_fn(self) -> TokenFunc: ...
+    def client_secret(self) -> str: ...
+
+    @property
+    @abstractmethod
+    def user_agent(self) -> str: ...
 
     @property
     def login(self) -> str:
@@ -65,25 +67,22 @@ class Auth(ABC):
         return self._token
 
     @staticmethod
-    def prompt_login() -> str:
+    async def prompt_login() -> str:
         while True:
-            login = Prompt.ask("Enter VK login (used to create tokens)")
+            login: str = await questionary.text("Enter VK login (used to create tokens):").unsafe_ask_async()
             if login:
                 return login
             console.print("[prompt.invalid]VK login must not be empty")
 
     @staticmethod
-    def prompt_password() -> str:
+    async def prompt_password() -> str:
         while True:
-            password = Prompt.ask(
-                "Enter VK password (used to create tokens)",
-                password=True,
-            )
+            password: str = await questionary.password("Enter VK password (used to create tokens):").unsafe_ask_async()
             if password:
                 return password
             console.print("[prompt.invalid]VK password must not be empty")
 
-    async def _is_valid_token(self, token: str) -> bool:
+    async def is_valid_token(self, token: str) -> bool:
         if not token:
             return False
 
@@ -95,64 +94,49 @@ class Auth(ABC):
         )
         try:
             console.print(f"Checking if {self.token_name} is valid...")
-            await vk_api.users.get()
+            await vk_api.request("audio.get", data={})
         except VKAPIError as error:
-            error_msg = error.description
             console.print(
-                f"[prompt.invalid]Could not verify '{self.token_name}': {error_msg}",
+                f"[prompt.invalid]Could not verify '{self.token_name}': {error.error_msg}",
             )
         else:
             console.print(f"{self.token_name} is valid.")
             return True
         return False
 
-    def is_valid_token(self, token: str) -> bool:
-        return uvloop.run(self._is_valid_token(token=token))
-
-    def get_new_token(self) -> str:
-        params = AuthParams(auth_code="GET_CODE", need_creds=self._need_creds)
+    async def get_new_token(self) -> str:
+        params = AuthParams(need_creds=self._need_creds)
+        user_auth = UserAuth(
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            http_client=AiohttpClient(session=ClientSession(headers={"User-agent": self.user_agent})),
+        )
         while True:
             if params.need_creds:
-                self._login = self.prompt_login()
-                self._password = self.prompt_password()
+                self._login = await self.prompt_login()
+                self._password = await self.prompt_password()
             try:
                 console.print(f"Getting new '{self.token_name}'...")
-                return self.get_token_fn(
+                return await user_auth.get_token(  # type: ignore[no-any-return]
                     login=self._login,
                     password=self._password,
                     auth_code=params.auth_code,
                     captcha_sid=params.captcha_sid,
                     captcha_key=params.captcha_key,
-                )["token"]
-            except vkaudiotoken.TokenException as error:
-                error_extra: dict[str, Any] = error.extra or {}
-                error_desc = error_extra.get("error_description", error)
-                console.print(f"Error on getting new '{self.token_name}': {error_desc}")
+                )
+            except VKAPIError as error:
+                console.print(f"Error on getting new '{self.token_name}': {error.error_msg}")
 
-                params = handle_token_exception(user_agent=self.user_agent, error=error)
+                params = await handle_token_exception(user_auth=user_auth, error=error)
                 token = params.token
-                if self.is_valid_token(token=token):
+                if await self.is_valid_token(token=token):
                     return token
 
-    def prompt_all(self) -> None:
-        if self.is_valid_token(token=self._token):
+    async def prompt_all(self) -> None:
+        if await self.is_valid_token(token=self._token):
             return
 
-        self._token = self.get_new_token()
-
-
-class OfficialAuth(Auth):
-    @property
-    def token_name(self) -> str:
-        return "VK official token"
-
-    @property
-    def user_agent(self) -> str:
-        return cast(str, vkaudiotoken.supported_clients.VK_OFFICIAL.user_agent)
-
-    @property
-    def get_token_fn(self) -> TokenFunc:
-        return cast(TokenFunc, vkaudiotoken.get_vk_official_token)
+        self._token = await self.get_new_token()
 
 
 class KateAuth(Auth):
@@ -161,9 +145,13 @@ class KateAuth(Auth):
         return "VK Kate token"
 
     @property
-    def user_agent(self) -> str:
-        return cast(str, vkaudiotoken.supported_clients.KATE.user_agent)
+    def client_id(self) -> int:
+        return 2685278
 
     @property
-    def get_token_fn(self) -> TokenFunc:
-        return cast(TokenFunc, vkaudiotoken.get_kate_token)
+    def client_secret(self) -> str:
+        return "lxhD8OD7dMsqtXIm5IUY"
+
+    @property
+    def user_agent(self) -> str:
+        return "KateMobileAndroid/56 lite-460 (Android 4.4.2; SDK 19; x86; unknown Android SDK built for x86; en)"

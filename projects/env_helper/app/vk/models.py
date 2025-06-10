@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class AuthParams:
-    auth_code: str = "GET_CODE"
+    auth_code: bool | str = True
     captcha_sid: str = ""
     captcha_key: str = ""
     need_creds: bool = True

@@ -11,8 +11,11 @@
 
 venv: .venv/bin/activate
 
-run: .venv/bin/activate
+run:
 	.venv/bin/python3 -m app.main
+
+test:
+	.venv/bin/pytest --cov --cov-report=html tests/
 
 ############
 
@@ -29,7 +32,7 @@ build-image:
 	fi
 
 run-container:
-	docker run --rm -it -v "$(PWD)/out":/tmp/out env_helper
+	mkdir -p out && docker run --rm -it -v "$(PWD)/out":/tmp/out env_helper
 
 ############
 

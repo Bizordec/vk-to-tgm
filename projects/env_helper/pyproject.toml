@@ -11,25 +11,26 @@ readme = "README.md"
 python = "^3.12"
 rich = "^13.9.4"
 telethon = "^1.38.1"
-vkaudiotoken = {git = "https://github.com/Bizordec/vkaudiotoken-python.git"}
-vkbottle = "^4.4.3"
-aiohttp = "^3.11.7"
-pydantic = "^2.10.1"
+vkbottle = "^4.5.1"
+aiohttp = "^3.12.12"
+pydantic = "^2.11.5"
 pydantic-settings = "^2.6.1"
 python-dotenv = "^1.0.1"
 loguru = "^0.7.2"
 uvloop = "^0.19.0"
+questionary = "^2.1.0"
 
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.3"
+pytest = "^8.3.4"
 pytest-cov = "^6.0.0"
 ruff = "^0.8.0"
-mypy = "^1.13.0"
-commitizen = "^3.31.0"
+mypy = "^1.16.0"
+commitizen = "^4.0.0"
 pytest-socket = "^0.7.0"
 pytest-mock = "^3.14.0"
 aioresponses = "^0.7.7"
+pytest-asyncio = "^1.0.0"
 
 
 [tool.mypy]
@@ -88,6 +89,8 @@ ignore = [
 allow-star-arg-any = true
 
 [tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 addopts = [
     "--disable-socket",
     "--allow-unix-socket"

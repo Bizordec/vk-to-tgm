@@ -1,8 +1,9 @@
 import argparse
 from pathlib import Path
 
+import questionary
+import uvloop
 from pydantic import ValidationError
-from rich.prompt import Confirm
 
 from app.config import Settings
 from app.console import console
@@ -14,7 +15,7 @@ class ArgNamespace(argparse.Namespace):
     env_file: str
 
 
-def main(arg_list: list[str] | None = None) -> int:
+async def main(arg_list: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Helper to create or update .env file.")
     parser.add_argument(
         "--env-file",
@@ -23,10 +24,6 @@ def main(arg_list: list[str] | None = None) -> int:
     )
     args = parser.parse_args(arg_list, namespace=ArgNamespace)
 
-    console.print(
-        "[yellow]Note: sensitive information (e.g. passwords, tokens) won't be shown in prompts.",
-        end="\n\n",
-    )
     console.print("Loading values from '.env' file...")
     try:
         settings = Settings(_env_file=args.env_file)
@@ -36,20 +33,21 @@ def main(arg_list: list[str] | None = None) -> int:
 
     settings_manager = SettingsManager(settings=settings)
     try:
-        settings_manager.prompt_vk_auth()
-        settings_manager.prompt_vk_community()
-        settings_manager.prompt_tgm_user_auth()
-        tgm_bot_auth = settings_manager.prompt_tgm_bot_auth()
-        settings_manager.prompt_tgm_main_channel(tgm_bot_auth=tgm_bot_auth)
+        await settings_manager.prompt_vk_auth()
+        await settings_manager.prompt_vk_community()
+        await settings_manager.prompt_tgm_user_auth()
+        tgm_bot_auth = await settings_manager.prompt_tgm_bot_auth()
+        await settings_manager.prompt_tgm_main_channel(tgm_bot_auth=tgm_bot_auth)
 
         console.rule()
-        has_pl_tgm = Confirm.ask(
-            prompt=("Do you want to forward audio playlists? Additional Telegram channel required"),
-        )
-        if has_pl_tgm:
-            settings_manager.prompt_tgm_playlist_channel(tgm_bot_auth=tgm_bot_auth)
 
-        settings_manager.prompt_vtt_options()
+        has_pl_tgm = await questionary.confirm(
+            "Do you want to forward audio playlists? Additional Telegram channel required",
+        ).unsafe_ask_async()
+        if has_pl_tgm:
+            await settings_manager.prompt_tgm_playlist_channel(tgm_bot_auth=tgm_bot_auth)
+
+        await settings_manager.prompt_vtt_options()
     except (KeyboardInterrupt, FloodControlError):
         console.print("\nInterrupted...")
 
@@ -70,4 +68,4 @@ if __name__ == "__main__":
     logger.disable("vkbottle")
 
     with logger.catch(onerror=lambda _: sys.exit(1)):
-        sys.exit(main())
+        sys.exit(uvloop.run(main()))

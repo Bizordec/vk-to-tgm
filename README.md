@@ -50,7 +50,7 @@ Working example: <https://t.me/mashup_vk>
     docker build -t env_helper projects/env_helper
 
     # Run env_helper
-    docker run --rm -it -v "$(pwd)/out":/tmp/out env_helper
+    mkdir -p out && docker run --rm -it -v "$(pwd)/out":/tmp/out env_helper
 
     # Copy resulting '.env' file to the root directory
     cp out/.env .env

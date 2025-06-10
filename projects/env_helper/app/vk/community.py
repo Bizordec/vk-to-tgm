@@ -1,9 +1,9 @@
-import uvloop
 from vkbottle import API, AiohttpClient, VKAPIError
+from vkbottle_types.codegen.methods.groups import GroupsCategory
 
 from app.config import DIGITS_PATTERN, SERVER_URL_PATTERN
 from app.console import console
-from app.prompt import EnvPrompt
+from app.prompt import EnvPasswordPrompt, EnvTextPrompt
 
 
 class Community:
@@ -36,17 +36,17 @@ class Community:
         return self._server_url
 
     @staticmethod
-    async def _is_valid_token(token: str) -> bool:
+    async def is_valid_token(token: str) -> bool:
         if not token:
             return False
 
-        vk_api = API(token=token, http_client=AiohttpClient())
+        vk_groups = GroupsCategory(API(token=token, http_client=AiohttpClient()))
         try:
             console.print("Checking if VK community token is valid...")
-            token_permissions = await vk_api.groups.get_token_permissions()
+            token_permissions = await vk_groups.get_token_permissions()
             console.print("VK community token is valid.")
         except VKAPIError as error:
-            error_msg = error.description
+            error_msg = error.error_msg
             console.print(
                 f"[prompt.invalid]Could not verify VK community token: {error_msg}",
             )
@@ -59,36 +59,30 @@ class Community:
             return False
         return True
 
-    def is_valid_token(self, token: str) -> bool:
-        return uvloop.run(self._is_valid_token(token=token))
-
-    async def _is_valid_id(self, community_id: str) -> bool:
-        vk_api = API(token=self._community_token, http_client=AiohttpClient())
+    async def is_valid_id(self, community_id: str) -> bool:
+        vk_groups = GroupsCategory(API(token=self._community_token, http_client=AiohttpClient()))
         try:
             console.print("Checking if VK community id is valid...")
-            await vk_api.groups.get_callback_servers(group_id=community_id)
+            await vk_groups.get_callback_servers(group_id=community_id)
             console.print("VK community id is valid.")
         except VKAPIError as error:
-            error_msg = error.description
+            error_msg = error.error_msg
             console.print(
                 f"[prompt.invalid]Could not verify VK community id: {error_msg}",
             )
             return False
         return True
 
-    def is_valid_id(self, community_id: str) -> bool:
-        return uvloop.run(self._is_valid_id(community_id=community_id))
-
-    def prompt_community_id(self) -> str:
-        return EnvPrompt.ask(
+    async def prompt_community_id(self) -> str:
+        return await EnvTextPrompt.ask(
             name="VK_COMMUNITY_ID",
             default=self._community_id,
             description="VK community ID. Must be numeric. Read more: https://vk.com/faq18062",
             pattern=DIGITS_PATTERN,
         )
 
-    def prompt_community_token(self) -> str:
-        return EnvPrompt.ask(
+    async def prompt_community_token(self) -> str:
+        return await EnvPasswordPrompt.ask(
             name="VK_COMMUNITY_TOKEN",
             default=self._community_token,
             description="""
@@ -98,36 +92,35 @@ class Community:
             check "Allow access to community management" permission
             and then click "Create".
             """,
-            password=True,
         )
 
-    def prompt_server_url(self) -> str:
-        return EnvPrompt.ask(
+    async def prompt_server_url(self) -> str:
+        return await EnvTextPrompt.ask(
             name="SERVER_URL",
             default=self._server_url,
             description="URL of your server. Will be used in automatic server creation.",
             pattern=SERVER_URL_PATTERN,
         )
 
-    def prompt_server_title(self) -> str:
-        return EnvPrompt.ask(
+    async def prompt_server_title(self) -> str:
+        return await EnvTextPrompt.ask(
             name="VK_SERVER_TITLE",
             default=self._server_title,
             description="Title for VK Callback API server. Will be used in automatic server creation.",
         )
 
-    def prompt_all(self) -> None:
+    async def prompt_all(self) -> None:
         while True:
-            self._community_token = self.prompt_community_token()
-            if self.is_valid_token(self._community_token):
+            self._community_token = await self.prompt_community_token()
+            if await self.is_valid_token(self._community_token):
                 break
             self._community_token = ""
 
         while True:
-            self._community_id = self.prompt_community_id()
-            if self.is_valid_id(community_id=self._community_id):
+            self._community_id = await self.prompt_community_id()
+            if await self.is_valid_id(community_id=self._community_id):
                 break
             self._community_id = ""
 
-        self._server_url = self.prompt_server_url()
-        self._server_title = self.prompt_server_title()
+        self._server_url = await self.prompt_server_url()
+        self._server_title = await self.prompt_server_title()
