@@ -1,30 +1,31 @@
 from __future__ import annotations
 
-import asyncio
 import re
 from functools import partial
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Annotated, Literal
 
 from aiohttp import ClientSession
-from pydantic import BaseSettings, Field, root_validator, validator
+from pydantic import AfterValidator, Field, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from vkbottle import API, AiohttpClient, VKAPIError
+from vkbottle_types.codegen.methods.groups import GroupsCategory
+
+from app.syncify import async_to_sync
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Coroutine
     from re import Pattern
+    from typing import Self
 
 
-DIGITS_PATTERN = re.compile(r"^[0-9]+$")
 SERVER_URL_PATTERN = re.compile(r"^https?://.+$")
+TGM_CHANNEL_USERNAME_PATTERN = re.compile(r"^[a-zA-Z][\w\d]{3,30}[a-zA-Z\d]$")
 TGM_CHANNEL_ID_PATTERN = re.compile(r"^-100[0-9]+$")
 TGM_BOT_TOKEN_PATTERN = re.compile(r"^.+:.+$")
 
-TOKENS_UA = {
-    "VK_KATE_TOKEN": "KateMobileAndroid/56 lite-460 (Android 4.4.2; SDK 19; x86; unknown Android SDK built for x86; en)",  # noqa: E501
-    "VK_OFFICIAL_TOKEN": "VKAndroidApp/5.52-4543 (Android 5.1.1; SDK 22; x86_64; unknown Android SDK built for x86_64; en; 320x240)",  # noqa: E501
-}
+KATE_USER_AGENT = "KateMobileAndroid/56 lite-460 (Android 4.4.2; SDK 19; x86; unknown Android SDK built for x86; en)"
+
 
 VttLanguage = Literal["en", "ru"]
 
@@ -34,78 +35,72 @@ class NotMatchedPatternError(ValueError):
         super().__init__(f"Value does not match pattern '{pattern.pattern}'")
 
 
-def check_env(value: str | int | None, pattern: Pattern[str]) -> str | int | None:
+def _check_env(value: str | int | None, pattern: Pattern[str]) -> str | int | None:
     if value is not None and not pattern.match(str(value)):
         raise NotMatchedPatternError(pattern)
     return value
 
 
+def pattern_validator(pattern: Pattern[str]) -> AfterValidator:
+    return AfterValidator(partial(_check_env, pattern=pattern))
+
+
+ChannelId = Annotated[str, pattern_validator(TGM_CHANNEL_ID_PATTERN)]
+ChannelName = Annotated[str, pattern_validator(TGM_CHANNEL_USERNAME_PATTERN)]
+
+
+@async_to_sync
+async def check_vk_kate_token(value: str) -> str:
+    vk_api = API(
+        token=value,
+        http_client=AiohttpClient(
+            session=ClientSession(headers={"User-agent": KATE_USER_AGENT}),
+        ),
+    )
+    try:
+        await vk_api.request("audio.get", data={})
+    except VKAPIError as error:
+        raise ValueError(f"[{value}] {error.error_msg}") from error
+
+    return value
+
+
 class Settings(BaseSettings):
-    VK_KATE_TOKEN: str
-    VK_OFFICIAL_TOKEN: str
+    model_config = SettingsConfigDict(extra="ignore")
+
+    VK_KATE_TOKEN: Annotated[str, AfterValidator(check_vk_kate_token)]
 
     VK_COMMUNITY_ID: int
     VK_COMMUNITY_TOKEN: str
 
     VK_SERVER_TITLE: str = Field(default="vk-to-tgm", min_length=1, max_length=14)
-    SERVER_URL: str
+
+    SERVER_URL: Annotated[str, pattern_validator(SERVER_URL_PATTERN)]
 
     TGM_API_ID: int
     TGM_API_HASH: str
 
-    TGM_BOT_TOKEN: str
+    TGM_BOT_TOKEN: Annotated[str, pattern_validator(TGM_BOT_TOKEN_PATTERN)]
     TGM_BOT_SESSION: str
 
-    TGM_CLIENT_PHONE: str
+    TGM_CLIENT_PHONE: int
     TGM_CLIENT_SESSION: str
 
-    TGM_CHANNEL_ID: int
-    TGM_PL_CHANNEL_ID: int | None = None
+    TGM_CHANNEL_ID: Annotated[int, pattern_validator(TGM_CHANNEL_ID_PATTERN)]
+    TGM_PL_CHANNEL_ID: Annotated[int | None, pattern_validator(TGM_CHANNEL_ID_PATTERN)] = None
 
     VTT_LANGUAGE: VttLanguage = "en"
     VTT_IGNORE_ADS: bool = True
 
-    _check_server_url = validator("SERVER_URL", allow_reuse=True)(
-        partial(check_env, pattern=SERVER_URL_PATTERN),
-    )
-
-    _check_digits = validator(
-        "TGM_CLIENT_PHONE",
-        allow_reuse=True,
-    )(partial(check_env, pattern=DIGITS_PATTERN))
-
-    _check_tgm_bot_token = validator("TGM_BOT_TOKEN", allow_reuse=True)(
-        partial(check_env, pattern=TGM_BOT_TOKEN_PATTERN),
-    )
-
-    _check_tgm_id = validator("TGM_CHANNEL_ID", "TGM_PL_CHANNEL_ID", allow_reuse=True)(
-        partial(check_env, pattern=TGM_CHANNEL_ID_PATTERN),
-    )
-
-    @staticmethod
-    async def _async_check_vk_user_tokens(values: dict) -> None:
-        for token_name, user_agent in TOKENS_UA.items():
-            vk_api = API(
-                token=values[token_name],
-                http_client=AiohttpClient(
-                    session=ClientSession(headers={"User-agent": user_agent}),
-                ),
-            )
-            try:
-                await vk_api.request("audio.get", data={})
-            except VKAPIError as error:
-                raise ValueError(f"[{token_name}] {error.description}") from error
-
-    @staticmethod
-    async def _async_check_vk_community_token(values: dict) -> None:
-        token = values["VK_COMMUNITY_TOKEN"]
-
-        vk_api = API(token=token, http_client=AiohttpClient())
+    @model_validator(mode="after")
+    @async_to_sync
+    async def check_vk_community(self) -> Self:
+        vk_groups = GroupsCategory(API(token=self.VK_COMMUNITY_TOKEN, http_client=AiohttpClient()))
         try:
-            token_permissions = await vk_api.groups.get_token_permissions()
-            await vk_api.groups.get_callback_servers(group_id=values["VK_COMMUNITY_ID"])
+            token_permissions = await vk_groups.get_token_permissions()
+            await vk_groups.get_callback_servers(group_id=self.VK_COMMUNITY_ID)
         except VKAPIError as error:
-            error_msg = error.description
+            error_msg = error.error_msg
             raise ValueError(
                 f"Could not verify VK community token: {error_msg}",
             ) from error
@@ -113,14 +108,18 @@ class Settings(BaseSettings):
         if not token_permissions.mask & 262144:
             raise ValueError("VK community token does not have 'manage' permission")
 
-    @staticmethod
-    async def _async_check_tgm_bot(values: dict) -> None:
+        return self
+
+    @model_validator(mode="after")
+    @async_to_sync
+    async def check_tgm_bot(self) -> Self:
         client = TelegramClient(
-            StringSession(string=values["TGM_BOT_SESSION"]),
-            values["TGM_API_ID"],
-            values["TGM_API_HASH"],
+            StringSession(string=self.TGM_BOT_SESSION),
+            self.TGM_API_ID,
+            self.TGM_API_HASH,
         )
-        async with await client.start(bot_token=values["TGM_BOT_TOKEN"]):
+        values = self.model_dump()
+        async with await client.start(bot_token=self.TGM_BOT_TOKEN):
             for channel_id_key in ("TGM_CHANNEL_ID", "TGM_PL_CHANNEL_ID"):
                 channel_id: int = values[channel_id_key]
                 if channel_id_key == "TGM_PL_CHANNEL_ID" and channel_id is not None:
@@ -148,14 +147,18 @@ class Settings(BaseSettings):
                         f"[{channel_id_key}] Bot doesn't have permissions to {' and '.join(str_permissions)} messages.",
                     )
 
-    @staticmethod
-    async def _async_check_tgm_user(values: dict) -> None:
+        return self
+
+    @model_validator(mode="after")
+    @async_to_sync
+    async def check_tgm_user(self) -> Self:
         client = TelegramClient(
-            StringSession(string=values["TGM_CLIENT_SESSION"]),
-            values["TGM_API_ID"],
-            values["TGM_API_HASH"],
+            StringSession(string=self.TGM_CLIENT_SESSION),
+            self.TGM_API_ID,
+            self.TGM_API_HASH,
         )
-        async with await client.start(phone=lambda: values["TGM_CLIENT_PHONE"]):
+        values = self.model_dump()
+        async with await client.start(phone=lambda: self.TGM_CLIENT_PHONE):
             for channel_id_key in ("TGM_CHANNEL_ID", "TGM_PL_CHANNEL_ID"):
                 channel_id = values[channel_id_key]
                 if channel_id_key == "TGM_PL_CHANNEL_ID" and channel_id is not None:
@@ -169,38 +172,4 @@ class Settings(BaseSettings):
                         "If your channel is private, make sure to add your user as an admin.",
                     ) from None
 
-    @classmethod
-    def _check_async(
-        cls,
-        check_func: Callable[[dict], Coroutine[Any, Any, None]],
-        values: dict,
-    ) -> dict:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            loop.create_task(check_func(values))  # noqa: RUF006
-        else:
-            loop.run_until_complete(check_func(values))
-        return values
-
-    @root_validator(skip_on_failure=True)
-    @classmethod
-    def check_vk_user_tokens(cls, values: dict) -> dict:
-        return cls._check_async(cls._async_check_vk_user_tokens, values)
-
-    @root_validator(skip_on_failure=True)
-    @classmethod
-    def check_vk_community_token(cls, values: dict) -> dict:
-        return cls._check_async(cls._async_check_vk_community_token, values)
-
-    @root_validator(skip_on_failure=True)
-    @classmethod
-    def check_tgm_bot(cls, values: dict) -> dict:
-        return cls._check_async(cls._async_check_tgm_bot, values)
-
-    @root_validator(skip_on_failure=True)
-    @classmethod
-    def check_tgm_user(cls, values: dict) -> dict:
-        return cls._check_async(cls._async_check_tgm_user, values)
-
-    class Config:
-        env_file = ".env"
+        return self

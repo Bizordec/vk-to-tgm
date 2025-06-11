@@ -9,19 +9,22 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pydantic = "<2.0.0"
+pydantic = "^2.11.5"
 loguru = "^0.7.2"
 python-dotenv = "^1.0.1"
 telethon = "^1.35.0"
-vkbottle = "^4.3.12"
+vkbottle = "^4.5.1"
+pydantic-settings = "^2.9.1"
 
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.10.0"
-ruff = "^0.4.8"
+ruff = "^0.8.0"
 commitizen = "^3.27.0"
 pytest = "^8.2.2"
 pytest-cov = "^5.0.0"
+aioresponses = "^0.7.8"
+pytest-mock = "^3.14.1"
 
 
 [tool.mypy]
@@ -50,9 +53,6 @@ ignore = [
     "D213",     # pydocstyle: multi-line-summary-second-line
     "ANN002",   # flake8-annotations: missing-type-args
     "ANN003",   # flake8-annotations: missing-type-kwargs
-    "ANN101",   # flake8-annotations: missing-type-self
-    "ANN102",   # flake8-annotations: missing-type-cls
-    "TRIO",     # flake8-trio
     "FBT001",   # flake8-boolean-trap: boolean-type-hint-positional-argument
     "DJ",       # flake8-django
     "EM",       # flake8-errmsg
@@ -60,6 +60,7 @@ ignore = [
     "TD003",    # flake8-todos: missing-todo-link
     "FIX",      # flake8-fixme
     "PD",       # pandas-vet
+    "PLE1205",  # pylint: logging-too-many-args
     "PLR0911",  # pylint: too-many-return-statements
     "PLR0913",  # pylint: too-many-arguments
     "TRY003",   # tryceratops: raise-vanilla-args
