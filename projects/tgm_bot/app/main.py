@@ -14,7 +14,7 @@ from app.vk.request_validators import VkLangRequestValidator
 
 
 async def main() -> None:
-    kate_user = API(
+    vk_api = API(
         token=settings.VK_KATE_TOKEN,
         http_client=AiohttpClient(
             session=ClientSession(
@@ -22,7 +22,7 @@ async def main() -> None:
             ),
         ),
     )
-    kate_user.request_validators.append(VkLangRequestValidator())
+    vk_api.request_validators.append(VkLangRequestValidator())
 
     client = TelegramClient(
         session=StringSession(settings.TGM_CLIENT_SESSION),
@@ -41,9 +41,9 @@ async def main() -> None:
     await bot.start(bot_token=settings.TGM_BOT_TOKEN)
 
     async with client:
-        await plugins.add_event_handlers(bot=bot, client=client, vk_api=kate_user)
+        await plugins.add_event_handlers(bot=bot, client=client, vk_api=vk_api)
         await bot.run_until_disconnected()
-        await kate_user.http_client.close()
+        await vk_api.http_client.close()
 
 
 if __name__ == "__main__":

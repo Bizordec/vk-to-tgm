@@ -24,7 +24,7 @@ PERMISSION_CHECK_FAILED = _("PERMISSION_CHECK_FAILED")
 
 
 def check_is_chat(event: NewMessageEvent) -> bool | None:
-    return event.is_private
+    return cast(bool | None, event.is_private)
 
 
 async def is_current_state(event: NewMessageEvent, expected_state: State) -> bool:

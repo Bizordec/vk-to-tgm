@@ -46,7 +46,7 @@ def is_user_chat(event: EventCommon) -> bool:
 
 
 async def add_initial_event_handlers(bot: TelegramClient) -> None:
-    @bot.on(events.NewMessage(pattern="/start", func=is_user_chat))
+    @bot.on(events.NewMessage(pattern="/start", func=is_user_chat))  # type: ignore[misc]
     async def start(event: Event) -> None:
         await event.respond(HELLO)
         if not await is_user_authorized(event):
@@ -56,21 +56,21 @@ async def add_initial_event_handlers(bot: TelegramClient) -> None:
         await event.respond(WAITING_FOR_LINK)
         raise events.StopPropagation
 
-    @bot.on(events.NewMessage(pattern="/cancel"))
+    @bot.on(events.NewMessage(pattern="/cancel"))  # type: ignore[misc]
     async def cancel(event: Event) -> None:
         state_manager.set_info(event.sender_id, State.WAITING_FOR_LINK)
         await event.edit(buttons=Button.clear())
         await event.respond(CANCELLED)
         raise events.StopPropagation
 
-    @bot.on(events.CallbackQuery(data=b"cancel"))
+    @bot.on(events.CallbackQuery(data=b"cancel"))  # type: ignore[misc]
     async def btn_cancel(event: events.CallbackQuery.Event) -> None:
         state_manager.set_info(event.sender_id, State.WAITING_FOR_LINK)
         await event.edit(buttons=Button.clear())
         await event.respond(CANCELLED)
         raise events.StopPropagation
 
-    @bot.on(events.NewMessage(func=lambda e: is_current_state(e, State.WAITING_FOR_CHOISE)))
+    @bot.on(events.NewMessage(func=lambda e: is_current_state(e, State.WAITING_FOR_CHOISE)))  # type: ignore[misc]
     async def waiting_for_choice(event: Event) -> None:
         if not await is_user_authorized(event):
             raise events.StopPropagation
@@ -81,7 +81,7 @@ async def add_initial_event_handlers(bot: TelegramClient) -> None:
 
 
 async def add_last_event_handlers(bot: TelegramClient) -> None:
-    @bot.on(events.NewMessage(func=lambda e: is_current_state(e, State.WAITING_FOR_LINK)))
+    @bot.on(events.NewMessage(func=lambda e: is_current_state(e, State.WAITING_FOR_LINK)))  # type: ignore[misc]
     async def incorrect_link(event: Event) -> None:
         if not await is_user_authorized(event):
             raise events.StopPropagation

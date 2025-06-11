@@ -14,9 +14,8 @@ from vtt_common.schemas import VttTaskType
 from vtt_common.tasks import get_queued_task
 
 from app.config import _, settings
-from app.plugins.common import is_current_state, is_user_authorized, state_manager
-from app.state_manager import State
-from app.utils import NewMessageEvent, get_tgm_channel_entity
+from app.state_manager import State, state_manager
+from app.utils import NewMessageEvent, get_tgm_channel_entity, is_current_state, is_user_authorized
 from app.vk.api import is_playlist_exists
 from app.worker import app as celery_app
 
@@ -71,11 +70,11 @@ def _get_playlist_full_id(message: str) -> str | None:
 
 async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api: API) -> None:  # noqa: C901
     # Callback for playlist button in main channel
-    @bot.on(events.CallbackQuery(data=b"wait_for_pl_link"))
+    @bot.on(events.CallbackQuery(data=b"wait_for_pl_link"))  # type: ignore[misc]
     async def wait_for_pl_link(event: events.CallbackQuery.Event) -> None:
         await event.answer(PL_NOT_READY)
 
-    @bot.on(events.CallbackQuery(data=b"pl_confirm", func=lambda e: is_current_state(e, State.WAITING_FOR_CHOISE)))
+    @bot.on(events.CallbackQuery(data=b"pl_confirm", func=lambda e: is_current_state(e, State.WAITING_FOR_CHOISE)))  # type: ignore[misc]
     async def new_pl(event: events.CallbackQuery.Event) -> None:
         await event.edit(buttons=Button.clear())
         if not await is_user_authorized(event):
@@ -96,7 +95,7 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
         await event.respond(PL_ADDED_TO_THE_QUEUE)
         raise StopPropagation
 
-    @bot.on(events.NewMessage(pattern=pl_link_pattern, func=lambda e: is_current_state(e, State.WAITING_FOR_LINK)))
+    @bot.on(events.NewMessage(pattern=pl_link_pattern, func=lambda e: is_current_state(e, State.WAITING_FOR_LINK)))  # type: ignore[misc]
     async def on_new_pl(event: NewMessageEvent) -> None:
         if not await is_user_authorized(event):
             raise events.StopPropagation

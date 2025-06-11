@@ -1,12 +1,13 @@
 import gettext
 from typing import Literal
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
     VK_KATE_TOKEN: str
-    VK_OFFICIAL_TOKEN: str
 
     TGM_API_ID: int
     TGM_API_HASH: str
@@ -21,9 +22,6 @@ class Settings(BaseSettings):
     TGM_PL_CHANNEL_ID: int = 0
 
     VTT_LANGUAGE: Literal["en", "ru"] = "en"
-
-    class Config:
-        env_file = ".env"
 
 
 settings = Settings()

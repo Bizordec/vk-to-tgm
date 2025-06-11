@@ -12,12 +12,13 @@ from vtt_common.schemas import VttTaskType
 from vtt_common.tasks import get_queued_task
 
 from app.config import _, settings
-from app.plugins.common import is_current_state, is_user_authorized, state_manager
-from app.state_manager import State
-from app.utils import NewMessageEvent, get_tgm_channel_entity
+from app.state_manager import State, state_manager
+from app.utils import NewMessageEvent, get_tgm_channel_entity, is_current_state, is_user_authorized
 from app.worker import app as celery_app
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from telethon.tl.types.messages import ChannelMessages
 
 
@@ -38,7 +39,7 @@ POST_PATTERN = re.compile(r"(https:\/\/)?(www\.)?(m\.)?vk\.com(\/?|\/\w+\?w=)wal
 
 
 async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api: API) -> None:
-    @bot.on(events.CallbackQuery(data=b"wall_confirm", func=lambda e: is_current_state(e, State.WAITING_FOR_CHOISE)))
+    @bot.on(events.CallbackQuery(data=b"wall_confirm", func=lambda e: is_current_state(e, State.WAITING_FOR_CHOISE)))  # type: ignore[misc]
     async def new_wall(event: NewMessageEvent) -> None:
         await event.edit(buttons=Button.clear())
         if not await is_user_authorized(event):
@@ -58,7 +59,7 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
         state_manager.clear_info(event.sender_id)
         raise StopPropagation
 
-    @bot.on(events.NewMessage(pattern=POST_PATTERN, func=lambda e: is_current_state(e, State.WAITING_FOR_LINK)))
+    @bot.on(events.NewMessage(pattern=POST_PATTERN, func=lambda e: is_current_state(e, State.WAITING_FOR_LINK)))  # type: ignore[misc]
     async def on_new_wall(event: NewMessageEvent) -> None:
         if not await is_user_authorized(event):
             raise events.StopPropagation
@@ -71,7 +72,7 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
 
         full_id = f"{owner_id}_{wall_id}"
 
-        vk_wall_result: list[dict] = (
+        vk_wall_result: list[dict[str, Any]] = (
             await vk_api.request(
                 "wall.getById",
                 {
