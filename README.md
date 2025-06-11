@@ -4,36 +4,36 @@ An application that forwards wall posts and playlists from VK community to Teleg
 
 ![vtt_example](assets/vtt_example.gif)
 
-Working example: <https://t.me/mashup_vk>
+🔗 [Telegram Channel Example](https://t.me/mashup_vk)
 
-## What can it forward
+## Supported Content Types
 
-| VK          | Telegram | Notes                                                                                                                                                                                 |
-|-------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Text        | ✅        | Will be splitted into multpile messages if VK text is too big.                                                                                                                        |
-| Photo       | ✅        | Will be posted with the largest size available.                                                                                                                                       |
-| Video       | ✅        | VK videos will be uploaded directly (up to 720p). External videos (YouTube, Vimeo, etc.) will be at the top in the form of links, so that the first one will be shown in the preview. |
-| Audio       | ✅        | Will be posted in separate message.                                                                                                                                                   |
-| File        | ✅        | Will be posted in separate message.                                                                                                                                                   |
-| Poll        | ✅        | Will be posted in separate message.                                                                                                                                                   |
-| Market      | ✅        | Will be in the form of link.                                                                                                                                                          |
-| Playlist    | ✅        | Additional Telegram channel is required. There will be separate message in the main channel with the link to the message in the playlist channel, where audios will be uploaded.      |
-| Link        | ✅        | Will be shown just as VK link.                                                                                                                                                        |
-| Article     | ✅        | Will be in the form of link.                                                                                                                                                          |
-| Poster      | ✅        | Works the same way as with the photo.                                                                                                                                                 |
-| Graffiti    | ✅        | Works the same way as with the photo.                                                                                                                                                 |
-| Map         | ✅        | Will be posted in separate message.                                                                                                                                                   |
-| Live stream | ✅        | Will be posted at the top in the form of link.                                                                                                                                        |
+| VK Content Type | Notes                                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------------- |
+| Text            | Split into multiple messages if too long.                                                         |
+| Photo           | Posted in the largest available size.                                                             |
+| Video           | Direct VK videos up to 720p; external videos (YouTube, etc.) are shared as links with preview.    |
+| Audio           | Sent as a separate message.                                                                       |
+| File            | Sent as a separate message.                                                                       |
+| Poll            | Sent as a separate message.                                                                       |
+| Market          | Shared as a link.                                                                                 |
+| Playlist        | Requires a dedicated Telegram channel. A link to the playlist will be posted in the main channel. |
+| Link            | Shared as is.                                                                                     |
+| Article         | Shared as a link.                                                                                 |
+| Poster          | Treated like a photo.                                                                             |
+| Graffiti        | Treated like a photo.                                                                             |
+| Map             | Sent as a separate message.                                                                       |
+| Live stream     | Shared as a link at the top of the post.                                                          |
 
 > [!NOTE]
-> if a post was edited in VK, it will NOT be edited in Telegram. As a workaround, you can delete old Telegram messages and reforward edited post through the Telegram bot.
+> Edited posts in VK **won't be updated** in Telegram. To reflect changes, delete the old Telegram messages and re-forward the updated post using the Telegram bot.
 
 ## Requirements
 
 - Docker
 - [VK community token with access to community management](https://vk.com/dev/access_token)
 - VK account
-- Telegram channel (and additional channel if you need playlists)
+- Telegram channel (and an additional one if you plan to use playlist forwarding)
 - Telegram account
 - [Telegram bot token](https://core.telegram.org/bots#3-how-do-i-create-a-bot)
 - [Telegram application](https://core.telegram.org/api/obtaining_api_id)
@@ -76,21 +76,19 @@ docker compose down -v --rmi all --remove-orphans
 
 ## Migration from v1
 
-1. Backup `.env` file.
+1. Backup your current `.env` file.
 2. Run `uninstall.sh` script if vk-to-tgm was installed locally.
-3. Rename environment variables.
-4. [Install with docker](#installation)
-
-## Architecture
-
-It consists of the following services:
-
-- Server that receives VK Callback events
-- Telegram bot that forwards wall posts or playlists by user request
-- Celery worker that forwards wall posts
-- (optional) Celery worker that forwards playlists
-
-![vtt_schema](assets/vtt_schema.png)
+3. Copy `.env` file from the backup and change environment variables:
+   1. Rename variables:
+      - `KATE_TOKEN` to `VK_KATE_TOKEN`
+      - `VK_IGNORE_ADS` to `VTT_IGNORE_ADS`
+      - `NGINX_HOST` to `NGINX_SERVER_NAME`
+   2. Remove deprecated variables:
+      - `VK_LOGIN`
+      - `VK_PASSWORD`
+      - `VK_OFFICIAL_TOKEN`
+      - `VK_API_LANGUAGE`
+4. [Reinstall using Docker](#installation)
 
 ## License
 
