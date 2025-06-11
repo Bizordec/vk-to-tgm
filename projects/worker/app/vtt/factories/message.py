@@ -57,7 +57,7 @@ class VttMessageFactory:
         is_repost: bool = False,
     ) -> VttText:
         text_factory = VttWallTextFactory(
-            vk_api=self.vk_service.kate_user,
+            vk_api=self.vk_service.vk_api,
             wall=wall,
             attachments=attachments,
             groups=groups,

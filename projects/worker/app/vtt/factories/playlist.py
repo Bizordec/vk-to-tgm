@@ -41,7 +41,7 @@ class VttPlaylistFactory:
         playlist: AudioPlaylist,
     ) -> VttText:
         text_factory = VttPlaylistTextFactory(
-            vk_api=self.vk_service.kate_user,
+            vk_api=self.vk_service.vk_api,
             playlist=playlist,
         )
         return await text_factory.create()

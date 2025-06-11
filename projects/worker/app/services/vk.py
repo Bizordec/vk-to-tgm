@@ -3,21 +3,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, cast
 
 from loguru import logger
-from pydantic import Field
 from vkbottle import VKAPIError
 from vkbottle_types.objects import AudioAudio, BasePropertyExists, VideoVideoFiles
-from vkbottle_types.responses.wall import WallGetByIdExtendedResponseModel, WallWallpostFull  # noqa: TC002
 
 from app.vk.schemas import AudioPlaylist
 from app.vtt.schemas import VttVideo
 
 if TYPE_CHECKING:
+    from vkbottle.api import API
     from vkbottle.api.abc import ABCAPI
-
-
-# TODO: remove after fix in vkbottle
-class WallGetByIdExtendedResponseModel(WallGetByIdExtendedResponseModel):  # type: ignore[misc, no-redef]
-    items: list[WallWallpostFull] = Field()
+    from vkbottle_types.responses.wall import WallGetByIdExtendedResponseModel
 
 
 def get_video_url(formats: VideoVideoFiles | None) -> str | None:
@@ -31,9 +26,22 @@ def get_video_url(formats: VideoVideoFiles | None) -> str | None:
 
 
 class VkService:
-    def __init__(self, kate_user: ABCAPI, vk_user: ABCAPI) -> None:
-        self.kate_user = kate_user
-        self.vk_user = vk_user
+    def __init__(self, vk_api: ABCAPI) -> None:
+        self.vk_api = vk_api
+
+    @classmethod
+    async def _request_with_version(cls, method: str, data: dict[str, Any], version: str, api: API) -> dict[str, Any]:
+        data = await api.validate_request(data)
+
+        async with api.token_generator as token:
+            response = await api.http_client.request_text(
+                api.API_URL + method,
+                method="POST",
+                data=data,
+                params={"access_token": token, "v": version},
+            )
+        logger.debug("Request {} with {} data returned {}", method, data, response)
+        return await api.validate_response(method, data, response)  # type: ignore[no-any-return]
 
     async def get_extended_wall(
         self,
@@ -41,16 +49,11 @@ class VkService:
         wall_id: int,
     ) -> WallGetByIdExtendedResponseModel | None:
         try:
-            # TODO: change to `await self.kate_user.wall.get_by_id()` after fix in vkbottle
-            response = await self.kate_user.request(
-                "wall.getById",
-                {
-                    "posts": [f"{owner_id}_{wall_id}"],
-                    "copy_history_depth": 100,
-                    "extended": True,
-                },
+            wall_info = await self.vk_api.wall.get_by_id(
+                posts=[f"{owner_id}_{wall_id}"],
+                copy_history_depth=100,
+                extended=True,
             )
-            wall_info = WallGetByIdExtendedResponseModel(**response["response"])
 
             if not wall_info.items:
                 return None
@@ -70,7 +73,7 @@ class VkService:
             vk_audio_playlist = cast(
                 dict[str, Any],
                 (
-                    await self.kate_user.request(
+                    await self.vk_api.request(
                         "audio.getPlaylistById",
                         {
                             "owner_id": owner_id,
@@ -89,12 +92,9 @@ class VkService:
         else:
             return AudioPlaylist(**vk_audio_playlist)
 
-    async def get_audio_by_ids(self, audio_ids: list[str], *, use_vk_user: bool = False) -> list[AudioAudio]:
-        vk_api = self.kate_user
-        if use_vk_user:
-            vk_api = self.vk_user
+    async def get_audio_by_ids(self, audio_ids: list[str]) -> list[AudioAudio]:
         audios: list[dict[str, Any]] = (
-            await vk_api.request(
+            await self.vk_api.request(
                 "audio.getById",
                 {
                     "audios": ",".join(audio_ids),
@@ -109,14 +109,9 @@ class VkService:
         playlist_id: int,
         access_key: str,
         count: int,
-        *,
-        use_vk_user: bool = False,
     ) -> list[AudioAudio]:
-        vk_api = self.kate_user
-        if use_vk_user:
-            vk_api = self.vk_user
         audios: list[dict[str, Any]] = (
-            await vk_api.request(
+            await self.vk_api.request(
                 "audio.get",
                 {
                     "owner_id": owner_id,
@@ -129,7 +124,7 @@ class VkService:
         return [AudioAudio(**audio) for audio in audios if audio.get("url")]
 
     async def get_video_by_ids(self, video_ids: list[str]) -> list[VttVideo]:
-        videos = (await self.kate_user.video.get(videos=video_ids)).items or []
+        videos = (await self.vk_api.video.get(videos=video_ids)).items or []
 
         vtt_videos = []
         for video in videos:
@@ -147,16 +142,8 @@ class VkService:
             else:
                 url = get_video_url(_video.files)
                 if not url:
-                    logger.warning("VK video url not found, trying with another token...")
-                    video_full_id = f"{_video.owner_id}_{_video.id}_{_video.access_key}"
-                    _video = next(iter((await self.vk_user.video.get(videos=[video_full_id])).items or []), None)
-                    if not _video:
-                        logger.warning("VK video url not found.")
-                        continue
-                    url = get_video_url(_video.files)
-                    if not url:
-                        logger.warning("VK video url not found.")
-                        continue
+                    logger.warning("VK video url not found.")
+                    continue
             vtt_videos.append(
                 VttVideo(
                     title=_video.title or "",

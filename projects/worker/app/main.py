@@ -2,7 +2,6 @@ from aiohttp import ClientSession
 from loguru import logger
 from telethon import TelegramClient
 from telethon.sessions import StringSession
-from vkaudiotoken import supported_clients
 from vkbottle import API, AiohttpClient
 
 from app.config import settings
@@ -15,6 +14,9 @@ from app.vtt.factories.message import VttMessageFactory
 from app.vtt.factories.playlist import VttPlaylistFactory
 from app.worker import worker
 
+KATE_USER_AGENT = "KateMobileAndroid/56 lite-460 (Android 4.4.2; SDK 19; x86; unknown Android SDK built for x86; en)"
+
+
 logger.disable("vkbottle")
 
 
@@ -24,27 +26,17 @@ async def forward_wall(owner_id: int, wall_id: int) -> str:
     with logger.contextualize(owner_id=owner_id, wall_id=wall_id):
         logger.info(f"New VK wall post received: 'https://vk.com/wall{owner_id}_{wall_id}'")
 
-        kate_user = API(
+        vk_api = API(
             token=settings.VK_KATE_TOKEN,
             http_client=AiohttpClient(
                 session=ClientSession(
-                    headers={"User-agent": supported_clients.KATE.user_agent},
+                    headers={"User-agent": KATE_USER_AGENT},
                 ),
             ),
         )
-        kate_user.request_validators.append(VkLangRequestValidator())
+        vk_api.request_validators.append(VkLangRequestValidator())
 
-        vk_user = API(
-            token=settings.VK_OFFICIAL_TOKEN,
-            http_client=AiohttpClient(
-                session=ClientSession(
-                    headers={"User-agent": supported_clients.VK_OFFICIAL.user_agent},
-                ),
-            ),
-        )
-        vk_user.request_validators.append(VkLangRequestValidator())
-
-        vk_service = VkService(kate_user=kate_user, vk_user=vk_user)
+        vk_service = VkService(vk_api=vk_api)
 
         vtt_factory = VttMessageFactory(vk_service=vk_service)
         vtt_message = await vtt_factory.create(owner_id=owner_id, wall_id=wall_id)
@@ -94,27 +86,17 @@ async def forward_playlist(
         pl_url = f"https://vk.com/music/playlist/{owner_id}_{playlist_id}{'_' + access_key if access_key else ''}"
         logger.info(f"New VK playlist received: '{pl_url}'")
 
-        kate_user = API(
+        vk_api = API(
             token=settings.VK_KATE_TOKEN,
             http_client=AiohttpClient(
                 session=ClientSession(
-                    headers={"User-agent": supported_clients.KATE.user_agent},
+                    headers={"User-agent": KATE_USER_AGENT},
                 ),
             ),
         )
-        kate_user.request_validators.append(VkLangRequestValidator())
+        vk_api.request_validators.append(VkLangRequestValidator())
 
-        vk_user = API(
-            token=settings.VK_OFFICIAL_TOKEN,
-            http_client=AiohttpClient(
-                session=ClientSession(
-                    headers={"User-agent": supported_clients.VK_OFFICIAL.user_agent},
-                ),
-            ),
-        )
-        vk_user.request_validators.append(VkLangRequestValidator())
-
-        vk_service = VkService(kate_user=kate_user, vk_user=vk_user)
+        vk_service = VkService(vk_api=vk_api)
 
         vtt_factory = VttPlaylistFactory(vk_service=vk_service)
         vtt_playlist = await vtt_factory.create(
