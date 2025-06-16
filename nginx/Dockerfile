@@ -10,7 +10,7 @@ ENV NGINX_SERVER_NAME=""
 USER root
 
 # Install tools for ssl setup
-RUN apk add --no-cache openssl socat
+RUN apk add --no-cache openssl socat busybox-suid
 
 # The prefix is "0-"
 # to make it run before entrypoint scripts of the nginx image
