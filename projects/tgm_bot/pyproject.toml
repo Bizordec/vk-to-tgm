@@ -14,7 +14,7 @@ cryptg = "^0.4.0"
 pillow = "^10.3.0"
 vtt_common = {path = "../../libs/vtt_common", develop = true}
 loguru = "^0.7.2"
-vkbottle = "^4.5.1"
+vkbottle = "^4.5.2"
 vkaudiotoken = {git = "https://github.com/Bizordec/vkaudiotoken-python.git"}
 pydantic = "^2.11.5"
 celery = {extras = ["redis"], version = "^5.4.0"}
