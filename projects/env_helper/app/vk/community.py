@@ -88,7 +88,7 @@ class Community:
             description="""
             VK community token.
             To get it, go to your VK community,
-            "Manage" > "API usage" > "Access tokens" > "Create token",
+            "Manage" > "Additional" > "API usage" > "Access tokens" > "Create token",
             check "Allow access to community management" permission
             and then click "Create".
             """,
