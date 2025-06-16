@@ -13,7 +13,6 @@ services:
       context: ./projects/env_validator
     environment:
       - VK_KATE_TOKEN=${VK_KATE_TOKEN}
-      - VK_OFFICIAL_TOKEN=${VK_OFFICIAL_TOKEN}
       - VK_COMMUNITY_ID=${VK_COMMUNITY_ID}
       - VK_COMMUNITY_TOKEN=${VK_COMMUNITY_TOKEN}
       - VK_SERVER_TITLE=${VK_SERVER_TITLE}
@@ -69,7 +68,6 @@ services:
       - CELERY_BROKER_URL=redis://redis/0
       - CELERY_RESULT_BACKEND=redis://redis/0
       - VK_KATE_TOKEN=${VK_KATE_TOKEN}
-      - VK_OFFICIAL_TOKEN=${VK_OFFICIAL_TOKEN}
       - TGM_API_ID=${TGM_API_ID}
       - TGM_API_HASH=${TGM_API_HASH}
       - TGM_BOT_TOKEN=${TGM_BOT_TOKEN}
@@ -93,7 +91,6 @@ services:
       - CELERY_BROKER_URL=redis://redis/0
       - CELERY_RESULT_BACKEND=redis://redis/0
       - VK_KATE_TOKEN=${VK_KATE_TOKEN}
-      - VK_OFFICIAL_TOKEN=${VK_OFFICIAL_TOKEN}
       - TGM_API_ID=${TGM_API_ID}
       - TGM_API_HASH=${TGM_API_HASH}
       - TGM_BOT_TOKEN=${TGM_BOT_TOKEN}
@@ -119,7 +116,6 @@ services:
       - CELERY_BROKER_URL=redis://redis/0
       - CELERY_RESULT_BACKEND=redis://redis/0
       - VK_KATE_TOKEN=${VK_KATE_TOKEN}
-      - VK_OFFICIAL_TOKEN=${VK_OFFICIAL_TOKEN}
       - TGM_API_ID=${TGM_API_ID}
       - TGM_API_HASH=${TGM_API_HASH}
       - TGM_BOT_TOKEN=${TGM_BOT_TOKEN}
