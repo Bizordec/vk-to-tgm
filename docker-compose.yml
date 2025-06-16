@@ -1,13 +1,4 @@
 services:
-  env_helper:
-    build:
-      context: ./projects/env_helper
-    volumes:
-      - type: bind
-        source: ${PWD}/.env321
-        target: /code/.env
-    profiles:
-      - create-env
   env_validator:
     build:
       context: ./projects/env_validator
