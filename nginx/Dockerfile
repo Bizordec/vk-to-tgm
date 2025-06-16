@@ -4,7 +4,6 @@ ARG UID=1000
 ARG GID=1000
 
 ENV ENABLE_SSL=0
-ENV ENABLE_CLIENT_SSL=0
 ENV SSL_EMAIL=""
 ENV NGINX_SERVER_NAME=""
 
@@ -20,7 +19,6 @@ COPY ./0-change-default-conf.sh /docker-entrypoint.d/
 # to make it run after entrypoint scripts of the nginx image
 COPY ./40-ssl-setup.sh /docker-entrypoint.d/
 
-COPY --chown=nginx:nginx ./ssl/client-ssl.conf /etc/nginx/ssl/
 COPY --chown=nginx:nginx ./ssl/default-ssl.conf.template /etc/nginx/ssl/
 COPY --chown=nginx:nginx ./default.conf.template /etc/nginx/templates/
 

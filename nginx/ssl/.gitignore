@@ -1,4 +1,3 @@
-client/
 *.crt
 *.key
 *.p12

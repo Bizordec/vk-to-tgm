@@ -27,8 +27,6 @@ If you want to use your SSL certificate, mount your certificate files in the [do
         - /path/to/your/key.pem:/etc/nginx/ssl/key.pem;
   ```
 
-[If you want to add client SSL certificate, read this section](#add-client-ssl-certificate).
-
 Run the app using Docker Compose:
 
   ```sh
@@ -37,21 +35,3 @@ Run the app using Docker Compose:
   # Or, if you also want to handle playlists
   docker compose -f docker-compose.yml -f docker-compose.ssl.yml --profile with-pl up -d --build --remove-orphans
   ```
-
-## Add client SSL certificate
-
-1. Add to your `.env` file this line:
-
-    ```text
-    ENABLE_CLIENT_SSL=1
-    ```
-
-2. Create client SSL certificate (will work for 365 days):
-
-    ```sh
-    ./nginx/ssl/renew.sh
-    ```
-
-3. Go to your VK community page, `"Manage" > "Settings" > "API usage" > "Callback API" > "Server settings"`;
-4. Select a server with the name same as in the `VK_SERVER_TITLE` env variable (by default it's `vk-to-tgm`). If there is no such server, create one or edit the name of an existing server.
-5. Upload `vkapi.p12` file in the `SSL certificate` field.

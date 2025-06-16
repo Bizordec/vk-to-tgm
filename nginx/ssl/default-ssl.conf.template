@@ -7,9 +7,6 @@ server {
     ssl_certificate /etc/nginx/ssl/cert.pem;
     ssl_certificate_key /etc/nginx/ssl/key.pem;
 
-    # Optional client SSL configuration
-    include /etc/nginx/ssl/client-ssl.conf*;
-
     location / {
         proxy_set_header Host $http_host;
         proxy_set_header X-Real-IP $remote_addr;
