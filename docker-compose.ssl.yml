@@ -1,8 +1,7 @@
 services:
   nginx:
     ports:
-      - "80:8080"
-      - "443:8443"
+      - "${NGINX_HTTPS_PORT:-443}:8443"
     environment:
       - ENABLE_SSL=1
       - SSL_EMAIL=${SSL_EMAIL}

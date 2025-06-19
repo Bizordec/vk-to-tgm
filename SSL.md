@@ -15,6 +15,12 @@ By default, an SSL certificate is issued by Let's Encrypt. It requires you to pu
   SSL_EMAIL=my@example.com
   ```
 
+If you want to change Nginx port on host (443 by default), use `NGINX_HTTPS_PORT` environment variable in the `.env` file:
+
+  ```text
+  NGINX_HTTPS_PORT=8443
+  ```
+
 If you want to use your SSL certificate, mount your certificate files in the [docker-compose.ssl.yaml](./docker-compose.ssl.yml):
 
   ```yaml
