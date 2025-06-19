@@ -47,7 +47,7 @@ An application that forwards wall posts and playlists from VK community to Teleg
     cd "$(git rev-parse --show-toplevel)"
 
     # Build env_helper
-    docker build -t env_helper projects/env_helper
+    docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t env_helper projects/env_helper
 
     # Run env_helper
     mkdir -p out && docker run --rm -it -v "$(pwd)/out":/tmp/out env_helper
