@@ -1966,41 +1966,41 @@ files = [
 
 [[package]]
 name = "vkbottle"
-version = "4.4.6"
+version = "4.5.2"
 description = "Homogenic! Customizable asynchronous VK API framework implementing comfort and speed."
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "vkbottle-4.4.6-py3-none-any.whl", hash = "sha256:c5ad1275d58f15f1b4841e0bc08eb13fa4011fab4450e6ba873c7d822bcf3dc2"},
-    {file = "vkbottle-4.4.6.tar.gz", hash = "sha256:fc681faa2e7055a8b21978627b5dbf2a3855ef18dfb6579d9b4d0e5a5dded3ed"},
+    {file = "vkbottle-4.5.2-py3-none-any.whl", hash = "sha256:35f49aaced444e64ec60724c863ec74f10e2906a9e96ae7122b10ae323c984b9"},
+    {file = "vkbottle-4.5.2.tar.gz", hash = "sha256:b495c47a390382e06ef7a1db684112447f5635428b0e25b29dd0fcd141d2d6b8"},
 ]
 
 [package.dependencies]
 aiofiles = "24.1.0"
-aiohttp = ">=3.11.12,<4.0.0"
+aiohttp = ">=3.12.13,<4.0.0"
 choicelib = ">=0.1.5,<0.2.0"
 colorama = ">=0.4.6,<0.5.0"
-pydantic = ">1,<3"
-typing-extensions = ">=4.4.0,<5.0.0"
+pydantic = ">=2.11.7,<3.0.0"
+typing-extensions = ">=4.14.0,<5.0.0"
 vbml = ">=1.1.post1,<2.0"
-vkbottle-types = ">=5.199.93.1"
+vkbottle-types = ">=5.199.99.1,<5.200.0.0"
 
 [[package]]
 name = "vkbottle-types"
-version = "5.199.93.1"
+version = "5.199.99.5"
 description = "VK API methods & types for vkbottle."
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "vkbottle_types-5.199.93.1-py3-none-any.whl", hash = "sha256:1b4ad2f2a8d8779cadf71863c6370bfad5dc1f4ecd42976d39b09e4fd14eded9"},
-    {file = "vkbottle_types-5.199.93.1.tar.gz", hash = "sha256:c08c5ef71fd5a5b2a96c1eb9af4672d387c0dc3054ad52e7c13e94a85f3fb100"},
+    {file = "vkbottle_types-5.199.99.5-py3-none-any.whl", hash = "sha256:9642ee2938a3e9dcc78e7801a6bd58cbcfdca92f951650205f8e94e35fc0b3a3"},
+    {file = "vkbottle_types-5.199.99.5.tar.gz", hash = "sha256:f2dee3017b98ed7ae789e592507b178ecfe8ea738ebabdfb73e7c1b75b972f61"},
 ]
 
 [package.dependencies]
 msgspec = ">=0.19.0,<0.20.0"
-pydantic = ">1,<3"
-typing-extensions = ">=4.4.0,<5.0.0"
-vkbottle = ">=4.4.6,<5.0.0"
+pydantic = ">=2.11.7,<3.0.0"
+typing-extensions = ">=4.14.0,<5.0.0"
+vkbottle = ">=4.5.2,<5.0.0"
 
 [[package]]
 name = "vtt-common"
@@ -2139,4 +2139,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "ea646827259e2543bb3db24e9b88f802ae19a50e7a8f24b7a44c310836f14f62"
+content-hash = "7c6cf6179207220444c55a9450d8c2b6a456dc62da8068d05cb73dd7480fa1a4"

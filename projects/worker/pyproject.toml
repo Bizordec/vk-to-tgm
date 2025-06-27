@@ -13,7 +13,7 @@ celery = {extras = ["redis"], version = "^5.4.0"}
 vtt_common = {path = "../../libs/vtt_common", develop = true}
 loguru = "^0.7.2"
 pydantic = "^2.11.5"
-vkbottle = "4.4.6"
+vkbottle = "^4.5.2"
 telethon = "^1.40.0"
 python-dotenv = "^1.0.1"
 aiofiles = "^24.1.0"
