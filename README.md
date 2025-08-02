@@ -88,7 +88,13 @@ docker compose down -v --rmi all --remove-orphans
       - `VK_PASSWORD`
       - `VK_OFFICIAL_TOKEN`
       - `VK_API_LANGUAGE`
-4. [Reinstall using Docker](#installation)
+4. Create `out/` directory and copy `.env` there:
+
+   ```sh
+   mkdir -p out && cp .env out/.env
+   ```
+
+5. [Reinstall using Docker](#installation)
 
 ## License
 
