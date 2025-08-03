@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 from loguru import logger
 from vkbottle import VKAPIError
-from vkbottle_types.objects import AudioAudio, BasePropertyExists, VideoVideoFiles
+from vkbottle_types.objects import AudioAudio, BasePropertyExists
 
 from app.vk.schemas import AudioPlaylist
 from app.vtt.schemas import VttVideo
@@ -12,6 +12,7 @@ from app.vtt.schemas import VttVideo
 if TYPE_CHECKING:
     from vkbottle.api import API
     from vkbottle.api.abc import ABCAPI
+    from vkbottle_types.objects import VideoVideoFiles, VideoVideoFull
     from vkbottle_types.responses.wall import WallGetByIdExtendedResponseModel
 
 
@@ -124,13 +125,13 @@ class VkService:
         return [AudioAudio(**audio) for audio in audios if audio.get("url")]
 
     async def get_video_by_ids(self, video_ids: list[str]) -> list[VttVideo]:
-        videos = (await self.vk_api.video.get(videos=video_ids)).items or []
+        videos = cast("list[VideoVideoFull]", (await self.vk_api.video.get(videos=video_ids)).items or [])
 
         vtt_videos = []
         for video in videos:
             _video = video
             url: str | None = None
-            is_live = _video.live is BasePropertyExists.property_exists
+            is_live = _video.live is BasePropertyExists.PROPERTY_EXISTS
             if is_live:
                 logger.warning("Found live stream.")
                 url = f"https://vk.com/video{_video.owner_id}_{_video.id}"
