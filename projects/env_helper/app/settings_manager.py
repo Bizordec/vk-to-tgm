@@ -6,7 +6,7 @@ from dotenv import set_key
 
 from app.tgm import BotAuth, MainChannel, PlaylistChannel, UserAuth
 from app.vk import Community, KateAuth
-from app.vtt import Options
+from app.vtt import SSL, Options
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -108,6 +108,18 @@ class SettingsManager:
 
         self.settings.VTT_IGNORE_ADS = vtt_options.ignore_ads
         self.settings.VTT_LANGUAGE = vtt_options.language
+
+    async def prompt_vtt_ssl(self) -> None:
+        vtt_ssl = SSL(
+            server_name=self.settings.NGINX_SERVER_NAME,
+            https_port=self.settings.NGINX_HTTPS_PORT,
+            ssl_email=self.settings.SSL_EMAIL,
+        )
+        await vtt_ssl.prompt_all()
+
+        self.settings.NGINX_SERVER_NAME = vtt_ssl.server_name
+        self.settings.NGINX_HTTPS_PORT = vtt_ssl.https_port
+        self.settings.SSL_EMAIL = vtt_ssl.ssl_email
 
     def save_env(self, env_file: Path) -> None:
         env_file.parent.mkdir(parents=True, exist_ok=True)

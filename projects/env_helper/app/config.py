@@ -67,3 +67,7 @@ class Settings(BaseSettings):
 
     VTT_LANGUAGE: VttLanguage = "en"
     VTT_IGNORE_ADS: bool = True
+
+    NGINX_SERVER_NAME: str = ""
+    NGINX_HTTPS_PORT: Numeric = "443"
+    SSL_EMAIL: str = ""

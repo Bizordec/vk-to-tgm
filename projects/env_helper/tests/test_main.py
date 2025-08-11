@@ -129,6 +129,10 @@ async def test_main(
             "test_pl_channel_name",  # TGM_PL_CHANNEL_USERNAME
             "y",  # VTT_IGNORE_ADS
             "en",  # VTT_LANGUAGE
+            "y",  # use SSL
+            "example.com",  # NGINX_SERVER_NAME
+            "8443",  # NGINX_HTTPS_PORT
+            "test@example.com",  # SSL_EMAIL
         ],
     )
 
@@ -158,3 +162,6 @@ async def test_main(
     assert env_values["VK_SERVER_TITLE"] == "test_server_title"
     assert env_values["VTT_IGNORE_ADS"] == "True"
     assert env_values["VTT_LANGUAGE"] == "en"
+    assert env_values["NGINX_SERVER_NAME"] == "example.com"
+    assert env_values["NGINX_HTTPS_PORT"] == "8443"
+    assert env_values["SSL_EMAIL"] == "test@example.com"

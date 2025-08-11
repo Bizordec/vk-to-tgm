@@ -48,6 +48,12 @@ async def main(arg_list: list[str] | None = None) -> int:
             await settings_manager.prompt_tgm_playlist_channel(tgm_bot_auth=tgm_bot_auth)
 
         await settings_manager.prompt_vtt_options()
+
+        use_ssl = await questionary.confirm(
+            "Do you want to use SSL? Domain name for your server is required",
+        ).unsafe_ask_async()
+        if use_ssl:
+            await settings_manager.prompt_vtt_ssl()
     except (KeyboardInterrupt, FloodControlError):
         console.print("\nInterrupted...")
 
