@@ -92,6 +92,10 @@ class Settings(BaseSettings):
     VTT_LANGUAGE: VttLanguage = "en"
     VTT_IGNORE_ADS: bool = True
 
+    NGINX_SERVER_NAME: str = ""
+    NGINX_HTTPS_PORT: int = 443
+    SSL_EMAIL: str = ""
+
     @model_validator(mode="after")
     @async_to_sync
     async def check_vk_community(self) -> Self:

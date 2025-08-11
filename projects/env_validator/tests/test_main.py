@@ -123,6 +123,9 @@ def test_main(
     VK_SERVER_TITLE="vk-to-tgm"
     VTT_IGNORE_ADS="true"
     VTT_LANGUAGE="en"
+    NGINX_SERVER_NAME="example.com"
+    NGINX_HTTPS_PORT="443"
+    SSL_EMAIL="test@example.com"
     """),
     )
 
