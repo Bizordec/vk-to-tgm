@@ -127,10 +127,8 @@ class UserAuth(Auth):
         return await EnvPasswordPrompt.ask(
             name="TGM_CLIENT_PHONE",
             default=self._access_token,
-            description=(
-                "Telegram client phone. Must be numeric. Used for searching posts in the main Telegram channel."
-            ),
-            pattern=DIGITS_PATTERN,
+            description="Telegram client phone. Used for searching posts in the main Telegram channel.",
+            pattern=r"^\+?[0-9]+$",
         )
 
 

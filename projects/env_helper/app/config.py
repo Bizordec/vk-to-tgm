@@ -57,7 +57,7 @@ class Settings(BaseSettings):
     TGM_BOT_TOKEN: Annotated[str, pattern_validator(TGM_BOT_TOKEN_PATTERN)] = ""
     TGM_BOT_SESSION: str = ""
 
-    TGM_CLIENT_PHONE: Numeric = ""
+    TGM_CLIENT_PHONE: str = ""
     TGM_CLIENT_SESSION: str = ""
 
     TGM_CHANNEL_ID: ChannelId = ""
