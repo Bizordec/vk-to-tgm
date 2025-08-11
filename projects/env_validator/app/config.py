@@ -9,6 +9,7 @@ from pydantic import AfterValidator, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from telethon import TelegramClient
 from telethon.sessions import StringSession
+from telethon.utils import parse_phone
 from vkbottle import API, AiohttpClient, VKAPIError
 from vkbottle_types.codegen.methods.groups import GroupsCategory
 
@@ -65,26 +66,34 @@ async def check_vk_kate_token(value: str) -> str:
     return value
 
 
+def check_tgm_client_phone(value: str) -> str:
+    phone_number = parse_phone(value)
+    if phone_number is None:
+        raise ValueError(f"[{value}] Invalid phone number")
+
+    return phone_number
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore")
 
     VK_KATE_TOKEN: Annotated[str, AfterValidator(check_vk_kate_token)]
 
     VK_COMMUNITY_ID: int
-    VK_COMMUNITY_TOKEN: str
+    VK_COMMUNITY_TOKEN: str = Field(min_length=1)
 
     VK_SERVER_TITLE: str = Field(default="vk-to-tgm", min_length=1, max_length=14)
 
     SERVER_URL: Annotated[str, pattern_validator(SERVER_URL_PATTERN)]
 
     TGM_API_ID: int
-    TGM_API_HASH: str
+    TGM_API_HASH: str = Field(min_length=1)
 
     TGM_BOT_TOKEN: Annotated[str, pattern_validator(TGM_BOT_TOKEN_PATTERN)]
-    TGM_BOT_SESSION: str
+    TGM_BOT_SESSION: str = Field(min_length=1)
 
-    TGM_CLIENT_PHONE: str
-    TGM_CLIENT_SESSION: str
+    TGM_CLIENT_PHONE: Annotated[str, AfterValidator(check_tgm_client_phone)]
+    TGM_CLIENT_SESSION: str = Field(min_length=1)
 
     TGM_CHANNEL_ID: Annotated[int, pattern_validator(TGM_CHANNEL_ID_PATTERN)]
     TGM_PL_CHANNEL_ID: Annotated[int | None, pattern_validator(TGM_CHANNEL_ID_PATTERN)] = None
