@@ -77,7 +77,7 @@ class Community:
         return await EnvTextPrompt.ask(
             name="VK_COMMUNITY_ID",
             default=self._community_id,
-            description="VK community ID. Must be numeric. Read more: https://vk.com/faq18062",
+            description="VK community ID. Must be numeric. Read more: https://vk.ru/faq18062",
             pattern=DIGITS_PATTERN,
         )
 

@@ -59,7 +59,7 @@ class VkService:
             if not wall_info.items:
                 return None
         except VKAPIError as error:
-            logger.warning(f"Failed to get wall post (https://vk.com/wall/{owner_id}_{wall_id}): {error.description}")
+            logger.warning(f"Failed to get wall post (https://vk.ru/wall/{owner_id}_{wall_id}): {error.description}")
             return None
         else:
             return wall_info
@@ -88,7 +88,7 @@ class VkService:
             pl_full_id = f"{owner_id}_{playlist_id}"
             if access_key:
                 pl_full_id += f"_{access_key}"
-            logger.warning(f"Failed to get playlist (https://vk.com/music/album/{pl_full_id}): {error.description}")
+            logger.warning(f"Failed to get playlist (https://vk.ru/music/album/{pl_full_id}): {error.description}")
             return None
         else:
             return AudioPlaylist(**vk_audio_playlist)
@@ -134,7 +134,7 @@ class VkService:
             is_live = _video.live is BasePropertyExists.PROPERTY_EXISTS
             if is_live:
                 logger.warning("Found live stream.")
-                url = f"https://vk.com/video{_video.owner_id}_{_video.id}"
+                url = f"https://vk.ru/video{_video.owner_id}_{_video.id}"
             elif _video.platform:
                 url = _video.files and _video.files.external
                 if not url:

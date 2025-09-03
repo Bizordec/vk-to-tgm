@@ -37,7 +37,7 @@ class VkMockClient(aioresponses):
         reason: str | None = None,
         callback: Callable[..., Any] | None = None,
     ) -> None:
-        url = f"https://api.vk.com/method/{url}?access_token=vk-community-token&v=5.199"
+        url = f"https://api.vk.ru/method/{url}?access_token=vk-community-token&v=5.199"
         if payload is not None:
             payload = {"response": payload}
 

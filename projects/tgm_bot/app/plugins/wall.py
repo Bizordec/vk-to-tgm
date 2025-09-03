@@ -119,7 +119,7 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
         search_result: ChannelMessages = await client(
             SearchRequest(
                 peer=peer,
-                q=f"https://vk.com/wall{full_id}",
+                q=f"https://vk.ru/wall{full_id}",
                 filter=InputMessagesFilterUrl(),
                 min_date=None,
                 max_date=None,

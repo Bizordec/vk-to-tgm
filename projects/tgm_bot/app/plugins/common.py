@@ -19,18 +19,18 @@ INCORRECT_LINK = (
     _("INCORRECT_LINK")
     + (
         ":\n"
-        "\nvk.com/wall{owner_id}_{id}"
-        "\nm.vk.com/wall{owner_id}_{id}"
-        "\nhttps://vk.com/wall{owner_id}_{id}"
-        "\nhttps://m.vk.com/wall{owner_id}_{id}"
+        "\nvk.ru/wall{owner_id}_{id}"
+        "\nm.vk.ru/wall{owner_id}_{id}"
+        "\nhttps://vk.ru/wall{owner_id}_{id}"
+        "\nhttps://m.vk.ru/wall{owner_id}_{id}"
     )
     + (
-        "\nvk.com/music/album/{owner_id}_{id}"
-        "\nvk.com/music/playlist/{owner_id}_{id}"
-        "\nm.vk.com/audio?act=audio_playlist{owner_id}_{id}"
-        "\nhttps://vk.com/music/album/{owner_id}_{id}"
-        "\nhttps://vk.com/music/playlist/{owner_id}_{id}"
-        "\nhttps://m.vk.com/audio?act=audio_playlist{owner_id}_{id}"
+        "\nvk.ru/music/album/{owner_id}_{id}"
+        "\nvk.ru/music/playlist/{owner_id}_{id}"
+        "\nm.vk.ru/audio?act=audio_playlist{owner_id}_{id}"
+        "\nhttps://vk.ru/music/album/{owner_id}_{id}"
+        "\nhttps://vk.ru/music/playlist/{owner_id}_{id}"
+        "\nhttps://m.vk.ru/audio?act=audio_playlist{owner_id}_{id}"
     )
     if settings.TGM_PL_CHANNEL_ID
     else ""
