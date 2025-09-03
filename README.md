@@ -31,7 +31,7 @@ An application that forwards wall posts and playlists from VK community to Teleg
 ## Requirements
 
 - Docker
-- [VK community token with access to community management](https://vk.com/dev/access_token)
+- [VK community token with access to community management](https://vk.ru/dev/access_token)
 - VK account
 - Telegram channel (and an additional one if you plan to use playlist forwarding)
 - Telegram account

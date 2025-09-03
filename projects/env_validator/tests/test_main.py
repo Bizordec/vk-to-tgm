@@ -26,7 +26,7 @@ def _get_vk_method_url(method: str, access_token: str = "", **kwargs: str) -> st
     params.update(kwargs)
     if access_token:
         params["access_token"] = access_token
-    return f"https://api.vk.com/method/{method}?{urlencode(params)}"
+    return f"https://api.vk.ru/method/{method}?{urlencode(params)}"
 
 
 def setup_vk_mocks(mock_aioresponse: aioresponses) -> None:

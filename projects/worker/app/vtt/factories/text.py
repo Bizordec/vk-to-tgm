@@ -40,7 +40,7 @@ def _convert_to_html_link(match: re.Match[str]) -> str:
     title = groupdict.get("title") or url
 
     if VK_ID_PATTERN.fullmatch(url):
-        url = f"https://vk.com/{url}"
+        url = f"https://vk.ru/{url}"
 
     if VK_LINK_PATTERN.fullmatch(url):
         return get_html_link(href=url, title=title)
@@ -94,17 +94,17 @@ class VttWallTextFactory:
         if commentator_id < 0:
             group_id = str(abs(commentator_id))
             commentator = (await self._vk_api.groups.get_by_id(group_id=group_id))[0]
-            commentator_href = f"https://vk.com/public{group_id}"
+            commentator_href = f"https://vk.ru/public{group_id}"
             commentator_fullname = commentator.name
         else:
             commentator = (await self._vk_api.users.get(user_ids=[commentator_id]))[0]
-            commentator_href = f"https://vk.com/id{commentator_id}"
+            commentator_href = f"https://vk.ru/id{commentator_id}"
             commentator_fullname = f"{commentator.first_name} {commentator.last_name}"
         return f"\n\n📝 {get_html_link(commentator_href, commentator_fullname)}"
 
     def _get_market_link(self, market: VttMarket) -> str:
         owner_id = market.owner_id
-        market_link = f"https://vk.com/market{owner_id}?w=product{owner_id}_{market.id}"
+        market_link = f"https://vk.ru/market{owner_id}?w=product{owner_id}_{market.id}"
         return f"\n\n🛍️ {get_html_link(market_link, market.title)}"
 
     def _get_direct_link(self, link: VttLink) -> str:
@@ -116,18 +116,18 @@ class VttWallTextFactory:
     async def _get_signer_link(self, signer_id: int) -> str:
         signer = (await self._vk_api.users.get(user_ids=[signer_id]))[0]
         signer_fullname = f"{signer.first_name} {signer.last_name}"
-        return f'\n\n👤 {get_html_link(f"https://vk.com/id{signer_id}", signer_fullname)}'
+        return f'\n\n👤 {get_html_link(f"https://vk.ru/id{signer_id}", signer_fullname)}'
 
     async def _get_post_link(self, post_type: WallPostType) -> str:
-        post_href = f"https://vk.com/wall{self._wall.owner_id}_{self._wall.id}"
+        post_href = f"https://vk.ru/wall{self._wall.owner_id}_{self._wall.id}"
 
         if not self._is_repost:
             return f"\n\n📌 {get_html_link(post_href, VK_POST)}"
 
         if post_type == WallPostType.VIDEO:
-            post_href = f"https://vk.com/video{self._wall.owner_id}_{self._wall.id}"
+            post_href = f"https://vk.ru/video{self._wall.owner_id}_{self._wall.id}"
         elif post_type == WallPostType.PHOTO:
-            post_href = f"https://vk.com/photo{self._wall.owner_id}_{self._wall.id}"
+            post_href = f"https://vk.ru/photo{self._wall.owner_id}_{self._wall.id}"
 
         repost_text = VK_REPOST
         group_name = next((group.name for group in self._groups if group.id == abs(self._wall.owner_id)), None)
@@ -182,7 +182,7 @@ class VttPlaylistTextFactory:
         return header_text
 
     async def _create_footer_text(self) -> str:
-        post_href = f"https://vk.com/music/playlist/{self._playlist.owner_id}_{self._playlist.id}"
+        post_href = f"https://vk.ru/music/playlist/{self._playlist.owner_id}_{self._playlist.id}"
         if self._playlist.access_key:
             post_href += f"_{self._playlist.access_key}"
         return f"\n\n📌 {get_html_link(post_href, VK_PLAYLIST)}"

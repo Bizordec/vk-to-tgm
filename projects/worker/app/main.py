@@ -24,7 +24,7 @@ logger.disable("vkbottle")
 @async_to_sync
 async def forward_wall(owner_id: int, wall_id: int) -> str:
     with logger.contextualize(owner_id=owner_id, wall_id=wall_id):
-        logger.info(f"New VK wall post received: 'https://vk.com/wall{owner_id}_{wall_id}'")
+        logger.info(f"New VK wall post received: 'https://vk.ru/wall{owner_id}_{wall_id}'")
 
         vk_api = API(
             token=settings.VK_KATE_TOKEN,
@@ -83,7 +83,7 @@ async def forward_playlist(
         reply_channel_id=reply_channel_id,
         reply_message_id=reply_message_id,
     ):
-        pl_url = f"https://vk.com/music/playlist/{owner_id}_{playlist_id}{'_' + access_key if access_key else ''}"
+        pl_url = f"https://vk.ru/music/playlist/{owner_id}_{playlist_id}{'_' + access_key if access_key else ''}"
         logger.info(f"New VK playlist received: '{pl_url}'")
 
         vk_api = API(
