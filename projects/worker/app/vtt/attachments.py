@@ -161,15 +161,15 @@ class LinkHandler(AttachmentHandler):
         parsed_link = urlparse(link.url)
 
         # Not a VK link
-        if parsed_link.netloc not in {"vk.com", "m.vk.com"}:
+        if parsed_link.netloc not in {"vk.ru", "m.vk.ru"}:
             vtt_attachments.link = VttLink(
                 caption=link.caption or parsed_link.netloc,
                 url=link.url,
             )
             return
 
-        if parsed_link.netloc == "m.vk.com":
-            parsed_link = parsed_link._replace(netloc="vk.com")
+        if parsed_link.netloc == "m.vk.ru":
+            parsed_link = parsed_link._replace(netloc="vk.ru")
 
         # Playlist
         link_query = parse_qs(parsed_link.query)

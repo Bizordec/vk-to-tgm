@@ -13,7 +13,7 @@ pydantic = "^2.11.5"
 loguru = "^0.7.2"
 python-dotenv = "^1.0.1"
 telethon = "^1.35.0"
-vkbottle = "^4.5.2"
+vkbottle = "^4.6.0"
 pydantic-settings = "^2.9.1"
 
 
