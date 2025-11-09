@@ -37,7 +37,7 @@ async def _handle_2fa_app(redirect_uri: str) -> AuthParams:
             access_token = parse_qs(parsed_url.fragment)["access_token"][0]
         except KeyError:
             access_token = None
-        if parsed_url.hostname != "oauth.vk.com" or not access_token:
+        if parsed_url.hostname != "oauth.vk.ru" or not access_token:
             console.print("[prompt.invalid]Incorrect URL.")
             continue
         return AuthParams(token=access_token)

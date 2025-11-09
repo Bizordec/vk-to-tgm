@@ -9,7 +9,7 @@ license = "GPL-3.0-or-later"
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.115.2"
-vkbottle = "^4.6.0"
+vkbottle = "^4.6.2"
 loguru = "^0.7.2"
 celery = {extras = ["redis"], version = "^5.4.0"}
 python-dotenv = "^1.0.1"

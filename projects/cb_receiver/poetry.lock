@@ -1542,14 +1542,14 @@ test = ["pytest", "pytest-xdist", "setuptools"]
 
 [[package]]
 name = "pydantic"
-version = "2.11.7"
+version = "2.11.10"
 description = "Data validation using Python type hints"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "pydantic-2.11.7-py3-none-any.whl", hash = "sha256:dde5df002701f6de26248661f6835bbe296a47bf73990135c7d07ce741b9623b"},
-    {file = "pydantic-2.11.7.tar.gz", hash = "sha256:d989c3c6cb79469287b1569f7447a17848c998458d49ebe294e975b9baf0f0db"},
+    {file = "pydantic-2.11.10-py3-none-any.whl", hash = "sha256:802a655709d49bd004c31e865ef37da30b540786a46bfce02333e0e24b5fe29a"},
+    {file = "pydantic-2.11.10.tar.gz", hash = "sha256:dc280f0982fbda6c38fada4e476dc0a4f3aeaf9c6ad4c28df68a666ec3c61423"},
 ]
 
 [package.dependencies]
@@ -2323,14 +2323,14 @@ files = [
 
 [[package]]
 name = "vkbottle"
-version = "4.6.0"
+version = "4.6.2"
 description = "Homogenic! Customizable asynchronous VK API framework implementing comfort and speed."
 optional = false
 python-versions = "<4.0,>=3.9"
 groups = ["main"]
 files = [
-    {file = "vkbottle-4.6.0-py3-none-any.whl", hash = "sha256:7f654ca52f0a6475e1c2242c899fb6bc9f9e2183b49ca20106d6865fb8b2840b"},
-    {file = "vkbottle-4.6.0.tar.gz", hash = "sha256:e1a8d25950fe6bff9f242e9e4144f579cf55079297d2cf72cacee67defe194ef"},
+    {file = "vkbottle-4.6.2-py3-none-any.whl", hash = "sha256:b51d3393cb8359f36c2c8624d3cb5f1c211455a5ce92826c9ab935a6f7ae63fb"},
+    {file = "vkbottle-4.6.2.tar.gz", hash = "sha256:e6bc47ba278e1283e607e7258c6d7d133ed7f223899ff0df707d16a7c66538ca"},
 ]
 
 [package.dependencies]
@@ -2338,28 +2338,28 @@ aiofiles = "24.1.0"
 aiohttp = ">=3.12.15,<4.0.0"
 choicelib = ">=0.1.5,<0.2.0"
 colorama = ">=0.4.6,<0.5.0"
-pydantic = ">=2.11.7,<3.0.0"
+pydantic = ">=2.11.10,<3.0.0"
 typing-extensions = ">=4.15.0,<5.0.0"
 vbml = ">=1.1.post1,<2.0"
-vkbottle-types = ">=5.199.99.8,<5.200.0.0"
+vkbottle-types = ">=5.199.99.12,<5.200.0.0"
 
 [[package]]
 name = "vkbottle-types"
-version = "5.199.99.9"
+version = "5.199.99.12"
 description = "VK API methods & types for vkbottle."
 optional = false
 python-versions = "<4.0,>=3.9"
 groups = ["main"]
 files = [
-    {file = "vkbottle_types-5.199.99.9-py3-none-any.whl", hash = "sha256:7552316aee65e79ed229452d0c947f1f41ef4fb7e3d23fa870be6a546c84061b"},
-    {file = "vkbottle_types-5.199.99.9.tar.gz", hash = "sha256:c189ff5f662ece53f5c3bdd291348256c62bd2cf74882fc9cd63972db71f780e"},
+    {file = "vkbottle_types-5.199.99.12-py3-none-any.whl", hash = "sha256:ca973bf61536f087963cff51e55a25c0dd435b6487ecaf7baa4c4241f33032f7"},
+    {file = "vkbottle_types-5.199.99.12.tar.gz", hash = "sha256:861b38329232afb886148714e65deb5988067fe6c488c3f3aab2fb70fce5d8aa"},
 ]
 
 [package.dependencies]
 msgspec = ">=0.19.0,<0.20.0"
-pydantic = ">=2.11.7,<3.0.0"
-typing-extensions = ">=4.14.1,<5.0.0"
-vkbottle = ">=4.5.2,<5.0.0"
+pydantic = ">=2.11.9,<3.0.0"
+typing-extensions = ">=4.15.0,<5.0.0"
+vkbottle = ">=4.6.0,<5.0.0"
 
 [[package]]
 name = "vtt-common"
@@ -2723,4 +2723,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "f7ae46acd866532fd709376345792a0c7cfcecf9f06830907097357fc9ad2fb3"
+content-hash = "16513dfc01b41e0b7549ce0542097e96bea4b73c462d963530cd5c0015063847"

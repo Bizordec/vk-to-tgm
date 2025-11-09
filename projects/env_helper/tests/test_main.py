@@ -30,7 +30,7 @@ def _get_vk_method_url(method: str, access_token: str = "", **kwargs: str) -> st
 
 def _setup_vk_2fa_sms_mocks(mock_aioresponse: aioresponses, sid: str, token: str) -> None:
     mock_aioresponse.post(
-        "https://oauth.vk.com/token",
+        "https://oauth.vk.ru/token",
         payload={
             "error": "need_validation",
             "error_description": "open redirect_uri in browser [5]. Also you can use 2fa_supported param",
@@ -57,7 +57,7 @@ def _setup_vk_2fa_sms_mocks(mock_aioresponse: aioresponses, sid: str, token: str
     )
 
     mock_aioresponse.post(
-        "https://oauth.vk.com/token",
+        "https://oauth.vk.ru/token",
         payload={
             "access_token": token,
         },
