@@ -2,7 +2,6 @@ services:
   nginx:
     ports:
       - "${NGINX_HTTPS_PORT:-443}:8443"
-      - "${ACME_HTTP_PORT:-8888}:8888"
     environment:
       - ENABLE_SSL=1
       - SSL_EMAIL=${SSL_EMAIL}

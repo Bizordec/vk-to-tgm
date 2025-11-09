@@ -21,12 +21,6 @@ If you want to change Nginx port on host (443 by default), use `NGINX_HTTPS_PORT
   NGINX_HTTPS_PORT=8443
   ```
 
-If you want to change port for acme.sh standalone HTTP server on host (8888 by default), use `ACME_PORT` environment variable in the `.env` file:
-
-  ```text
-  ACME_HTTP_PORT=8088
-  ```
-
 If you want to use your SSL certificate, mount your certificate files in the [docker-compose.ssl.yaml](./docker-compose.ssl.yml):
 
   ```yaml
