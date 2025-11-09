@@ -28,7 +28,8 @@ cd $HOME
 curl https://get.acme.sh | sh -s email=$SSL_EMAIL
 
 $HOME/.acme.sh/acme.sh --set-default-ca --server letsencrypt
-$HOME/.acme.sh/acme.sh --issue -d "$NGINX_SERVER_NAME" --standalone --httpport 8080
+$HOME/.acme.sh/acme.sh --issue -d "$NGINX_SERVER_NAME" --standalone --httpport 8888
 $HOME/.acme.sh/acme.sh --install-cert -d "$NGINX_SERVER_NAME" \
     --key-file /etc/nginx/ssl/key.pem \
     --fullchain-file /etc/nginx/ssl/cert.pem
+    --reloadcmd "nginx -s reload"
