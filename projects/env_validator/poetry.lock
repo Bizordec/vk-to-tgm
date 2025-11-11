@@ -453,6 +453,69 @@ files = [
 toml = ["tomli ; python_full_version <= \"3.11.0a6\""]
 
 [[package]]
+name = "cryptg"
+version = "0.5.2"
+description = "Cryptographic utilities for Telegram."
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "cryptg-0.5.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:bbabe74b321415d5dbea58a30ef96ba53a196de57dd48c876266e0304ddaeb5d"},
+    {file = "cryptg-0.5.2-cp310-cp310-manylinux_2_28_aarch64.whl", hash = "sha256:928264608c721032d407541fb2e6119a6e5b5d87d8ee244de5a68263301fcad7"},
+    {file = "cryptg-0.5.2-cp310-cp310-manylinux_2_28_x86_64.whl", hash = "sha256:f05d56fe5aef63e3fcfc76714d41fb2b2378730551a455dd615d0fdd49fd9037"},
+    {file = "cryptg-0.5.2-cp310-cp310-win32.whl", hash = "sha256:c6806680964cad8723d110228fcf1cbdb40eebfbd19e91e4f55ebf48ce95a223"},
+    {file = "cryptg-0.5.2-cp310-cp310-win_amd64.whl", hash = "sha256:195a9f5f1a834ad8ac9989dcf95563f37e0332d734c64b4150e99cdb71f0bb53"},
+    {file = "cryptg-0.5.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:40e6002f3dd522711b33fd8ace2424f295dd557251d255c6f0ab1cd7a6f8c662"},
+    {file = "cryptg-0.5.2-cp311-cp311-manylinux_2_28_aarch64.whl", hash = "sha256:ef778055445d451b4467cda4252a23cb659666012b97c43cce25d08b55f8fb4a"},
+    {file = "cryptg-0.5.2-cp311-cp311-manylinux_2_28_x86_64.whl", hash = "sha256:682b19897ebef8a910fdfe5fc379689334fdc197cb17bb13763f27153c856cb2"},
+    {file = "cryptg-0.5.2-cp311-cp311-win32.whl", hash = "sha256:e83a0c9f141af8fe426c9967cec802ab01e207edb6aeb3fb8f0d94f9fbb76b92"},
+    {file = "cryptg-0.5.2-cp311-cp311-win_amd64.whl", hash = "sha256:b677d8e3be717c740a05eaf042e92e6f3e0f07dd3383bc4b1878b71cf4048d84"},
+    {file = "cryptg-0.5.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:eb28fcde47e02421926dbb83dbb0793d21d783125b95bda68414e46c76b1c9e1"},
+    {file = "cryptg-0.5.2-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:5f51de5fa87cca9c3b2c019eae0ba7f4a27fd0ac23a6b52970e14ab6e590c11f"},
+    {file = "cryptg-0.5.2-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:207c6c717c5e2d544f11523ce8c56982e40fbfc4b3a6eebf70e3e7b37c2be14e"},
+    {file = "cryptg-0.5.2-cp312-cp312-win32.whl", hash = "sha256:3c0c1edd348bbbebc5a6fd553cdeb861d85016c73dd5dfc368a0bee343a6fb25"},
+    {file = "cryptg-0.5.2-cp312-cp312-win_amd64.whl", hash = "sha256:c9b6ae5d30c3c164ac44b6b212887ed7d56f55e2fb207c7f93332ef2624fd936"},
+    {file = "cryptg-0.5.2-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:78256ecd112b16e2f2bd7b74bfce9b79068cb2304f3a7e847a2440908f780c36"},
+    {file = "cryptg-0.5.2-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:62cc487da7f842362619a839cf13e27cc7f59b4870f3dcbb58c3dd71649322e9"},
+    {file = "cryptg-0.5.2-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:1797c006ac9d4ddd08f141fc6718e16040eabca8defb6bdf7ded5946359aa375"},
+    {file = "cryptg-0.5.2-cp313-cp313-win32.whl", hash = "sha256:8c0e9a58c8db6795e674130bbc0c055a0eff887075707e6b6285f6f52581442b"},
+    {file = "cryptg-0.5.2-cp313-cp313-win_amd64.whl", hash = "sha256:5dc1e0c39a243710773b834dc8880182bba6a0ff8da4ba7cd2a53c67e70dfa4e"},
+    {file = "cryptg-0.5.2-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:b57ca6c19dbd59eb2dd72d3ca289621b8f06db1073704dc9ac6fba2fbad7b782"},
+    {file = "cryptg-0.5.2-cp314-cp314-manylinux_2_28_aarch64.whl", hash = "sha256:a4475a567bf728b85a5c0399f487ec1e683bfb4a5dad9c3f4e771be1caa712fb"},
+    {file = "cryptg-0.5.2-cp314-cp314-manylinux_2_28_x86_64.whl", hash = "sha256:bffb88636f2d00f8773bb6ae5d90e9963ce2e4dc49d4d108e813ed75ad2fb4c0"},
+    {file = "cryptg-0.5.2-cp314-cp314-win32.whl", hash = "sha256:721dfb2cd109a89e28d9bb3da892c56b16983cc59cf9b2268bacf94bd4d5abf3"},
+    {file = "cryptg-0.5.2-cp314-cp314-win_amd64.whl", hash = "sha256:9269ad512124dd4a41824ab5dcc0a8e6697f8aa8f5fcd71fb34f8a4eebd5ec67"},
+    {file = "cryptg-0.5.2-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:cc0e519e31b61633305ffd34803da3ea5c3414221a838ae85b487bcdee71a388"},
+    {file = "cryptg-0.5.2-cp314-cp314t-manylinux_2_28_aarch64.whl", hash = "sha256:b67ce4d22532454aceac6c5afc30ba2cefb4b95fcfe74eea9affdb697fe59cc1"},
+    {file = "cryptg-0.5.2-cp314-cp314t-manylinux_2_28_x86_64.whl", hash = "sha256:4e2273d41eb8d3be60e190f0ae30c1492db41b6a49d4d3e769f9ba24da4402f5"},
+    {file = "cryptg-0.5.2-cp314-cp314t-win32.whl", hash = "sha256:427ee363344a71882a3ba853c179b1d7d1ed0991e4fa8cf09e6f7418eda86237"},
+    {file = "cryptg-0.5.2-cp314-cp314t-win_amd64.whl", hash = "sha256:ce37d3634b56f5cacc8419f1f907589fee89bd8e2a37aa208a2f0eed32773da3"},
+    {file = "cryptg-0.5.2-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:777da80d316506fd2dce8ff8109dc18631e5040d0a44036d081ecc47b4d9906b"},
+    {file = "cryptg-0.5.2-cp38-cp38-manylinux_2_28_aarch64.whl", hash = "sha256:af32e22ff946ca4a9b2b82d44a5dc6b228fb7072cf83bf5988a8e757e8a7aa7b"},
+    {file = "cryptg-0.5.2-cp38-cp38-manylinux_2_28_x86_64.whl", hash = "sha256:cc3c4fbdfe8e11dead503226d0d6f2f0e7e712a9ee544543212a6ff3956fa9fc"},
+    {file = "cryptg-0.5.2-cp38-cp38-win32.whl", hash = "sha256:57582e7272809d6ec8c8e8b71ef49b611d16978992e53ad2703a4e67d9d4fc2b"},
+    {file = "cryptg-0.5.2-cp38-cp38-win_amd64.whl", hash = "sha256:865be56a7878dfbdecacc4b151872703b6d8c52ac17859fd714e0ecca043fef6"},
+    {file = "cryptg-0.5.2-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:b5cfc6254ee80a1f97d73194c34d585762cb88cf4158ffc95833aa574b2db1c9"},
+    {file = "cryptg-0.5.2-cp39-cp39-manylinux_2_28_aarch64.whl", hash = "sha256:752169e5c8783183fef0aada6c1c594786451f18d692f4f5cc52254cc19e6602"},
+    {file = "cryptg-0.5.2-cp39-cp39-manylinux_2_28_x86_64.whl", hash = "sha256:ef429dc5197a7dce91ffa85f56194e847a758039d5ac96298bd5948399b50922"},
+    {file = "cryptg-0.5.2-cp39-cp39-win32.whl", hash = "sha256:12282521227d90c356a5caff66fc496ddf0725083553af6c0669b80a49de3277"},
+    {file = "cryptg-0.5.2-cp39-cp39-win_amd64.whl", hash = "sha256:16e5193894302a65719699511b6a30d4e2b6b31afb9c72f91924c80b72d27725"},
+    {file = "cryptg-0.5.2-pp310-pypy310_pp73-macosx_11_0_arm64.whl", hash = "sha256:fdbeea1fb061b5a7bc273f6c6ed40cd7b7a05600305d4a8f7002c29b2555c95c"},
+    {file = "cryptg-0.5.2-pp310-pypy310_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:08b15f841691fc71735aeace24107c0975c3a0e8806e65762492c961013d6e5d"},
+    {file = "cryptg-0.5.2-pp310-pypy310_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:ee0d1c5371c34f31ec1bf0fba3c86257b5f19cf8e1411138ebc771e21509bd6a"},
+    {file = "cryptg-0.5.2-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:11d3b512db21905d8b26bc1493ee45bbc73e3dd285cbb412539c05e256cd46aa"},
+    {file = "cryptg-0.5.2-pp311-pypy311_pp73-macosx_11_0_arm64.whl", hash = "sha256:7da6a02027684c1c56d8e3a13a2341ec2fc67792036ed356dcc54bd08fdee485"},
+    {file = "cryptg-0.5.2-pp311-pypy311_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:973e67117296bf0ad4dc21607fd699d9da3b95d66f6f39d981b522523e778f3f"},
+    {file = "cryptg-0.5.2-pp311-pypy311_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:74a6416ebff5af10f0d837c2790a55086efe3ae5115c0da50948d0c95f144c03"},
+    {file = "cryptg-0.5.2-pp311-pypy311_pp73-win_amd64.whl", hash = "sha256:bd2ea1261454ac415e4127a5bf3f4795bd404c9f1041bf98cf02a7e23ff253b7"},
+    {file = "cryptg-0.5.2-pp39-pypy39_pp73-macosx_11_0_arm64.whl", hash = "sha256:02c887a8fd2d28b0438f9e9620c824cb384a3ca2d442f32d1502bb64c1fa0252"},
+    {file = "cryptg-0.5.2-pp39-pypy39_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:67d2e0857c9c0eb31992c34b3fcfdb79798f88ba56a5322202c7701469f57a7a"},
+    {file = "cryptg-0.5.2-pp39-pypy39_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:32d3b8c45c9c0e90916dc8fc428a0ac392271258a872d831950a876a343195f6"},
+    {file = "cryptg-0.5.2-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:d33e27e5c24d8088b1c1918293277526a28537629432d3919d3e55c3731400bf"},
+    {file = "cryptg-0.5.2.tar.gz", hash = "sha256:d1577e219d040695f34ae7c2636c9ed769fe623813009e27dbc735beed69bd16"},
+]
+
+[[package]]
 name = "decli"
 version = "0.6.3"
 description = "Minimal, easy-to-use, declarative cli tool"
@@ -1514,14 +1577,14 @@ files = [
 
 [[package]]
 name = "telethon"
-version = "1.41.0"
+version = "1.42.0"
 description = "Full-featured Telegram client library for Python 3"
 optional = false
 python-versions = ">=3.5"
 groups = ["main"]
 files = [
-    {file = "telethon-1.41.0-py3-none-any.whl", hash = "sha256:28a2da7e7e1d063a901123dd7b2cf3015fd4839cba41dc6737a8bcf240885e16"},
-    {file = "telethon-1.41.0.tar.gz", hash = "sha256:2a4a47309c1cfec565a7f984b5023fe9e3eab276c2b11c8e946f937e0abcd5ff"},
+    {file = "telethon-1.42.0-py3-none-any.whl", hash = "sha256:cf361c94586bcacd6d0fc8959a2bce509d1bb37007fe6476a80c4fb4a2decc29"},
+    {file = "telethon-1.42.0.tar.gz", hash = "sha256:032e95511261d5ead719f75494c6c85ece2ce71816b54f3c65d6ccc371d6994d"},
 ]
 
 [package.dependencies]
@@ -1790,4 +1853,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "4611b61a7d8cfbc76736b222bff9c82b15a9798d5e2b8ad708864e3f8d02346d"
+content-hash = "7984da4797475e55f3e1b74634d4c773d6735179e13566ad0dfd8a48c66a4463"
