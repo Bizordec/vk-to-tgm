@@ -32,7 +32,7 @@ class VkMockClient(aioresponses):
         payload: dict[str, Any] | None = None,
         headers: dict[str, Any] | None = None,
         response_class: type[ClientResponse] | None = None,
-        repeat: bool = False,  # noqa: FBT002
+        repeat: bool | int = False,  # noqa: FBT002
         timeout: bool = False,  # noqa: FBT002
         reason: str | None = None,
         callback: Callable[..., Any] | None = None,
