@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DEFAULT_TIMEOUT=120 \
     VIRTUAL_ENV=/venv
 
-RUN pip install poetry==1.8.3
+RUN pip install poetry==2.2.1
 
 COPY ./pyproject.toml ./poetry.lock* ./
 RUN python -m venv $VIRTUAL_ENV \
