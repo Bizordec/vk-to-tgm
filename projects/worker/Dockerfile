@@ -1,4 +1,4 @@
-FROM python:3.12.7-alpine3.20 AS build-stage
+FROM python:3.12.12-alpine3.22 AS build-stage
 
 WORKDIR /code/projects/worker
 
@@ -19,7 +19,7 @@ RUN sed -i "s/\(develop\s*=\s*\)true/\1false/" poetry.lock \
     && poetry install --no-root --without=dev --no-interaction --no-ansi
 
 
-FROM python:3.12.7-alpine3.20
+FROM python:3.12.12-alpine3.22
 
 ARG UID=1000
 ARG GID=1000

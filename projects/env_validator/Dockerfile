@@ -1,4 +1,4 @@
-FROM python:3.11.7-alpine3.19 AS build-stage
+FROM python:3.12.12-alpine3.22 AS build-stage
 
 WORKDIR /code
 
@@ -16,7 +16,7 @@ RUN python -m venv $VIRTUAL_ENV \
     && poetry install --no-root --without=dev --no-interaction --no-ansi
 
 
-FROM python:3.11.7-alpine3.19
+FROM python:3.12.12-alpine3.22
 
 ARG UID=1000
 ARG GID=1000
