@@ -43,6 +43,10 @@ services:
       - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
       - CELERY_BROKER_URL=redis://redis/0
       - CELERY_RESULT_BACKEND=redis://redis/0
+
+      # SSL envs
+      - VIRTUAL_HOST=${NGINX_SERVER_NAME}
+      - LETSENCRYPT_HOST=${NGINX_SERVER_NAME}
     depends_on:
       env_validator:
         condition: service_completed_successfully
@@ -131,3 +135,28 @@ services:
     depends_on:
       cb_receiver:
         condition: service_started
+    profiles:
+      - http
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy:1.9.0-alpine
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+      - "${NGINX_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    profiles:
+      - https
+  nginx-proxy-acme:
+    image: nginxproxy/acme-companion:2.6.1
+    volumes_from:
+      - nginx
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - acme:/etc/acme.sh
+    environment:
+      - DEFAULT_EMAIL=${SSL_EMAIL}
+    profiles:
+      - https
+      - acme
