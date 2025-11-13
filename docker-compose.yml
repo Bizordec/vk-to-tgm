@@ -154,7 +154,7 @@ services:
   nginx-proxy-acme:
     image: nginxproxy/acme-companion:2.6.1
     volumes_from:
-      - nginx
+      - nginx-proxy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - acme:/etc/acme.sh
