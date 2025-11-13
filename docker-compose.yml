@@ -1,3 +1,6 @@
+volumes:
+  html:
+  acme:
 services:
   env_validator:
     build:
