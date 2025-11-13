@@ -24,17 +24,17 @@ If you want to change Nginx port on host (443 by default), use `NGINX_HTTPS_PORT
 Run the app using Docker Compose:
 
   ```sh
-  docker compose -f docker-compose.yml --profile https,acme up -d --build --remove-orphans
+  COMPOSE_PROFILES=https,acme docker compose -f docker-compose.yml up -d --build --remove-orphans
 
   # Or, if you also want to handle playlists
-  docker compose -f docker-compose.yml --profile https,acme,with-pl up -d --build --remove-orphans
+  COMPOSE_PROFILES=https,acme,with-pl docker compose -f docker-compose.yml up -d --build --remove-orphans
   ```
 
 If you want to use your own SSL certificate files, add them to the `certs` directory and run Docker Compose without `acme` profile:
 
   ```sh
-  docker compose -f docker-compose.yml --profile https up -d --build --remove-orphans
+  COMPOSE_PROFILES=https docker compose -f docker-compose.yml up -d --build --remove-orphans
 
   # Or, if you also want to handle playlists
-  docker compose -f docker-compose.yml --profile https,with-pl up -d --build --remove-orphans
+  COMPOSE_PROFILES=https,with-pl docker compose -f docker-compose.yml up -d --build --remove-orphans
   ```

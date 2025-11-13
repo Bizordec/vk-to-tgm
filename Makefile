@@ -18,13 +18,13 @@ tunnel:
 	$(MAKE) -C projects/cb_receiver tunnel ARGS="80 $(PWD)/.env"
 
 compose:
-	docker compose -f docker-compose.yml --profile http,with-pl up --build --remove-orphans $(ARGS)
+	COMPOSE_PROFILES=http,with-pl docker compose -f docker-compose.yml up --build --remove-orphans $(ARGS)
 
 compose-ssl:
-	docker compose -f docker-compose.yml --profile https,acme,with-pl up --build --remove-orphans $(ARGS)
+	COMPOSE_PROFILES=https,acme,with-pl docker compose -f docker-compose.yml up --build --remove-orphans $(ARGS)
 
 compose-debug:
-	docker compose -f docker-compose.yml -f docker-compose.debug.yml --profile http,with-pl up --build --remove-orphans $(ARGS)
+	COMPOSE_PROFILES=http,with-pl docker compose -f docker-compose.yml -f docker-compose.debug.yml up --build --remove-orphans $(ARGS)
 
 ############
 
