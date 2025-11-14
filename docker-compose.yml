@@ -49,6 +49,7 @@ services:
 
       # SSL envs
       - VIRTUAL_HOST=${NGINX_SERVER_NAME}
+      - VIRTUAL_PORT=8000
       - LETSENCRYPT_HOST=${NGINX_SERVER_NAME}
     depends_on:
       env_validator:
