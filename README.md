@@ -60,10 +60,10 @@ An application that forwards wall posts and playlists from VK community to Teleg
    - Run the application without SSL certificate:
 
         ```sh
-        docker compose up -d --build --remove-orphans
+        COMPOSE_PROFILES=http docker compose up -d --build --remove-orphans
 
         # Or, if you also want to handle playlists
-        docker compose --profile with-pl up -d --build --remove-orphans
+        COMPOSE_PROFILES=http,with-pl docker compose up -d --build --remove-orphans
         ```
 
    - Run the application with SSL certificate - read [this guide](SSL.md).
