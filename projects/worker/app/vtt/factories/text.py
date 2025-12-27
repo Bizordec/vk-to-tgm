@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 
 VK_BRACKETS_PATTERN = re.compile(r"\[(?P<url>[^\[|]+)\|(?P<title>[^\]]+)\]")
 VK_ID_PATTERN = re.compile(r"(id|club)\d+")
-VK_LINK_PATTERN = re.compile(r"(https?:\/\/)?(m\.)?vk\.com(\/[\w\-\.~:\/?#[\]@&()*+,;%=\"ёЁа-яА-Я]*)?")
 
 SOURCE = _("SOURCE")
 VK_POST = _("VK_POST")
@@ -42,10 +41,7 @@ def _convert_to_html_link(match: re.Match[str]) -> str:
     if VK_ID_PATTERN.fullmatch(url):
         url = f"https://vk.ru/{url}"
 
-    if VK_LINK_PATTERN.fullmatch(url):
-        return get_html_link(href=url, title=title)
-
-    return f"[{url}|{title}]"
+    return get_html_link(href=url, title=title)
 
 
 def convert_vk_links(text: str) -> str:
@@ -111,12 +107,12 @@ class VttWallTextFactory:
         return f"\n\n🔗 {get_html_link(link.url, link.caption)}"
 
     def _get_copyright_link(self, wall_copyright: WallPostCopyright) -> str:
-        return f'\n\n📎 {get_html_link(wall_copyright.link, f"{SOURCE}: {wall_copyright.name}")}'
+        return f"\n\n📎 {get_html_link(wall_copyright.link, f'{SOURCE}: {wall_copyright.name}')}"
 
     async def _get_signer_link(self, signer_id: int) -> str:
         signer = (await self._vk_api.users.get(user_ids=[signer_id]))[0]
         signer_fullname = f"{signer.first_name} {signer.last_name}"
-        return f'\n\n👤 {get_html_link(f"https://vk.ru/id{signer_id}", signer_fullname)}'
+        return f"\n\n👤 {get_html_link(f'https://vk.ru/id{signer_id}', signer_fullname)}"
 
     async def _get_post_link(self, post_type: WallPostType) -> str:
         post_href = f"https://vk.ru/wall{self._wall.owner_id}_{self._wall.id}"
