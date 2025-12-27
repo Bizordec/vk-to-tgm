@@ -35,7 +35,7 @@ WALL_UNKNOWN_CHANNEL = _("WALL_UNKNOWN_CHANNEL")
 WALL_YES = _("WALL_YES")
 WALL_CANCEL = _("WALL_CANCEL")
 
-POST_PATTERN = re.compile(r"(https:\/\/)?(www\.)?(m\.)?vk\.com(\/?|\/\w+\?w=)wall(?P<owner_id>-\d+)_(?P<id>\d+)")
+POST_PATTERN = re.compile(r"(https:\/\/)?(www\.)?(m\.)?vk\.(ru|com)(\/?|\/\w+\?w=)wall(?P<owner_id>-\d+)_(?P<id>\d+)")
 
 
 async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api: API) -> None:

@@ -34,11 +34,11 @@ PL_UNKNOWN_CHANNEL = _("PL_UNKNOWN_CHANNEL")
 PL_YES = _("PL_YES")
 PL_CANCEL = _("PL_CANCEL")
 
-pl_link_pattern = re.compile(
-    r"(https:\/\/)?(www\.)?(m\.)?vk\.com\/(music(/(playlist|album)|/?\?.+audio_playlist)|\w+/?\?.+audio_playlist)",
+PL_LINK_PATTERN = re.compile(
+    r"(https:\/\/)?(www\.)?(m\.)?vk\.(ru|com)\/(music(/(playlist|album)|/?\?.+audio_playlist)|\w+/?\?.+audio_playlist)",
 )
 
-playlist_full_id = re.compile(r"(?P<owner_id>-?\d+)_(?P<playlist_id>\d+)((_|\/)(?P<access_key>[a-z0-9]+))?")
+PLAYLIST_FULL_ID = re.compile(r"(?P<owner_id>-?\d+)_(?P<playlist_id>\d+)((_|\/)(?P<access_key>[a-z0-9]+))?")
 
 
 def _get_playlist_full_id(message: str) -> str | None:
@@ -95,7 +95,7 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
         await event.respond(PL_ADDED_TO_THE_QUEUE)
         raise StopPropagation
 
-    @bot.on(events.NewMessage(pattern=pl_link_pattern, func=lambda e: is_current_state(e, State.WAITING_FOR_LINK)))  # type: ignore[misc]
+    @bot.on(events.NewMessage(pattern=PL_LINK_PATTERN, func=lambda e: is_current_state(e, State.WAITING_FOR_LINK)))  # type: ignore[misc]
     async def on_new_pl(event: NewMessageEvent) -> None:
         if not await is_user_authorized(event):
             raise events.StopPropagation
@@ -103,7 +103,7 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
         await event.respond(PL_SEARCHING)
         sender = event.sender_id
         full_id = _get_playlist_full_id(message=event.message.message)
-        if not full_id or not (match := playlist_full_id.fullmatch(full_id)):
+        if not full_id or not (match := PLAYLIST_FULL_ID.fullmatch(full_id)):
             await event.respond("Icorrect link!")
             raise StopPropagation
 
