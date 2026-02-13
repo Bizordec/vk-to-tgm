@@ -16,6 +16,7 @@ telethon = "^1.42.0"
 vkbottle = "^4.6.2"
 pydantic-settings = "^2.9.1"
 vtt_common = {path = "../../libs/vtt_common", develop = true}
+python-socks = {extras = ["asyncio"], version = "^2.8.0"}
 
 
 [tool.poetry.group.dev.dependencies]

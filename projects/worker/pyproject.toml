@@ -23,6 +23,7 @@ hachoir = "^3.3.0"
 cryptg = "^0.5.2"
 mutagen = "^1.47.0"
 pydantic-settings = "^2.6.1"
+python-socks = {extras = ["asyncio"], version = "^2.8.0"}
 
 
 [tool.poetry.group.dev.dependencies]
