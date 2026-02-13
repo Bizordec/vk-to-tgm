@@ -7,6 +7,7 @@ from telethon.sessions import StringSession
 from vkaudiotoken import supported_clients
 from vkbottle import AiohttpClient
 from vkbottle.api.api import API
+from vtt_common.proxy import get_tgm_proxy_config
 
 from app import plugins
 from app.config import settings
@@ -28,6 +29,14 @@ async def main() -> None:
         session=StringSession(settings.TGM_CLIENT_SESSION),
         api_id=settings.TGM_API_ID,
         api_hash=settings.TGM_API_HASH,
+        proxy=get_tgm_proxy_config(
+            proxy_type=settings.TGM_PROXY_TYPE,
+            proxy_addr=settings.TGM_PROXY_ADDR,
+            proxy_port=settings.TGM_PROXY_PORT,
+            proxy_user=settings.TGM_PROXY_USER,
+            proxy_pass=settings.TGM_PROXY_PASS,
+            proxy_rdns=settings.TGM_PROXY_RDNS,
+        ),
     )
     client.parse_mode = "html"
     await client.start(phone=lambda: settings.TGM_CLIENT_PHONE)
@@ -36,6 +45,14 @@ async def main() -> None:
         session=StringSession(settings.TGM_BOT_SESSION),
         api_id=settings.TGM_API_ID,
         api_hash=settings.TGM_API_HASH,
+        proxy=get_tgm_proxy_config(
+            proxy_type=settings.TGM_PROXY_TYPE,
+            proxy_addr=settings.TGM_PROXY_ADDR,
+            proxy_port=settings.TGM_PROXY_PORT,
+            proxy_user=settings.TGM_PROXY_USER,
+            proxy_pass=settings.TGM_PROXY_PASS,
+            proxy_rdns=settings.TGM_PROXY_RDNS,
+        ),
     )
     bot.parse_mode = "html"
     await bot.start(bot_token=settings.TGM_BOT_TOKEN)
