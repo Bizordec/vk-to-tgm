@@ -99,12 +99,18 @@ class Settings(BaseSettings):
     TGM_CHANNEL_ID: Annotated[int, pattern_validator(TGM_CHANNEL_ID_PATTERN)]
     TGM_PL_CHANNEL_ID: Annotated[int | None, pattern_validator(TGM_CHANNEL_ID_PATTERN)] = None
 
-    TGM_PROXY_TYPE: Literal["socks5", "socks4", "http"] = "socks5"
+    TGM_PROXY_TYPE: Literal["socks5", "socks4", "http", "mtproto"] = "socks5"
     TGM_PROXY_ADDR: str | None = None
     TGM_PROXY_PORT: int | None = None
     TGM_PROXY_RDNS: bool = True
     TGM_PROXY_USER: str | None = None
     TGM_PROXY_PASS: str | None = None
+    TGM_PROXY_MTPROTO_SECRET: str | None = None
+    TGM_PROXY_MTPROTO_CONNECTION: Literal[
+        "abridged",
+        "intermediate",
+        "randomized_intermediate",
+    ] = "randomized_intermediate"
 
     VTT_LANGUAGE: VttLanguage = "en"
     VTT_IGNORE_ADS: bool = True
@@ -138,13 +144,15 @@ class Settings(BaseSettings):
             StringSession(string=self.TGM_BOT_SESSION),
             self.TGM_API_ID,
             self.TGM_API_HASH,
-            proxy=get_tgm_proxy_config(
+            **get_tgm_proxy_config(
                 proxy_type=self.TGM_PROXY_TYPE,
                 proxy_addr=self.TGM_PROXY_ADDR,
                 proxy_port=self.TGM_PROXY_PORT,
                 proxy_user=self.TGM_PROXY_USER,
                 proxy_pass=self.TGM_PROXY_PASS,
                 proxy_rdns=self.TGM_PROXY_RDNS,
+                proxy_mtproto_secret=self.TGM_PROXY_MTPROTO_SECRET,
+                proxy_mtproto_connection=self.TGM_PROXY_MTPROTO_CONNECTION,
             ),
         )
         values = self.model_dump()
@@ -185,13 +193,15 @@ class Settings(BaseSettings):
             StringSession(string=self.TGM_CLIENT_SESSION),
             self.TGM_API_ID,
             self.TGM_API_HASH,
-            proxy=get_tgm_proxy_config(
+            **get_tgm_proxy_config(
                 proxy_type=self.TGM_PROXY_TYPE,
                 proxy_addr=self.TGM_PROXY_ADDR,
                 proxy_port=self.TGM_PROXY_PORT,
                 proxy_user=self.TGM_PROXY_USER,
                 proxy_pass=self.TGM_PROXY_PASS,
                 proxy_rdns=self.TGM_PROXY_RDNS,
+                proxy_mtproto_secret=self.TGM_PROXY_MTPROTO_SECRET,
+                proxy_mtproto_connection=self.TGM_PROXY_MTPROTO_CONNECTION,
             ),
         )
         values = self.model_dump()

@@ -31,6 +31,8 @@ services:
       - TGM_PROXY_RDNS=${TGM_PROXY_RDNS}
       - TGM_PROXY_USER=${TGM_PROXY_USER}
       - TGM_PROXY_PASS=${TGM_PROXY_PASS}
+      - TGM_PROXY_MTPROTO_SECRET=${TGM_PROXY_MTPROTO_SECRET}
+      - TGM_PROXY_MTPROTO_CONNECTION=${TGM_PROXY_MTPROTO_CONNECTION}
   redis:
     image: redis:7.2.3-alpine3.19
     restart: always
@@ -93,6 +95,8 @@ services:
       - TGM_PROXY_RDNS=${TGM_PROXY_RDNS}
       - TGM_PROXY_USER=${TGM_PROXY_USER}
       - TGM_PROXY_PASS=${TGM_PROXY_PASS}
+      - TGM_PROXY_MTPROTO_SECRET=${TGM_PROXY_MTPROTO_SECRET}
+      - TGM_PROXY_MTPROTO_CONNECTION=${TGM_PROXY_MTPROTO_CONNECTION}
     depends_on:
       env_validator:
         condition: service_completed_successfully
@@ -124,6 +128,8 @@ services:
       - TGM_PROXY_RDNS=${TGM_PROXY_RDNS}
       - TGM_PROXY_USER=${TGM_PROXY_USER}
       - TGM_PROXY_PASS=${TGM_PROXY_PASS}
+      - TGM_PROXY_MTPROTO_SECRET=${TGM_PROXY_MTPROTO_SECRET}
+      - TGM_PROXY_MTPROTO_CONNECTION=${TGM_PROXY_MTPROTO_CONNECTION}
     depends_on:
       env_validator:
         condition: service_completed_successfully
@@ -158,6 +164,8 @@ services:
       - TGM_PROXY_RDNS=${TGM_PROXY_RDNS}
       - TGM_PROXY_USER=${TGM_PROXY_USER}
       - TGM_PROXY_PASS=${TGM_PROXY_PASS}
+      - TGM_PROXY_MTPROTO_SECRET=${TGM_PROXY_MTPROTO_SECRET}
+      - TGM_PROXY_MTPROTO_CONNECTION=${TGM_PROXY_MTPROTO_CONNECTION}
     depends_on:
       env_validator:
         condition: service_completed_successfully
