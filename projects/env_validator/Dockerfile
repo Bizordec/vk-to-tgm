@@ -1,6 +1,6 @@
 FROM python:3.12.12-alpine3.22 AS build-stage
 
-WORKDIR /code
+WORKDIR /code/projects/env_validator
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
