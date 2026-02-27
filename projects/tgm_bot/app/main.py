@@ -25,20 +25,25 @@ async def main() -> None:
     )
     vk_api.request_validators.append(VkLangRequestValidator())
 
-    client = TelegramClient(
-        session=StringSession(settings.TGM_CLIENT_SESSION),
-        api_id=settings.TGM_API_ID,
-        api_hash=settings.TGM_API_HASH,
-        **get_tgm_proxy_config(
+    proxy_config = (
+        get_tgm_proxy_config(
             proxy_type=settings.TGM_PROXY_TYPE,
             proxy_addr=settings.TGM_PROXY_ADDR,
             proxy_port=settings.TGM_PROXY_PORT,
             proxy_user=settings.TGM_PROXY_USER,
             proxy_pass=settings.TGM_PROXY_PASS,
             proxy_rdns=settings.TGM_PROXY_RDNS,
-            proxy_mtproto_secret=settings.TGM_PROXY_MTPROTO_SECRET,
-            proxy_mtproto_connection=settings.TGM_PROXY_MTPROTO_CONNECTION,
-        ),
+        )
+        # NOTE: MTProto proxy not working with user client
+        # (ValueError: readexactly size can not be less than zero)
+        if settings.TGM_PROXY_TYPE != "mtproto"
+        else {}
+    )
+    client = TelegramClient(
+        session=StringSession(settings.TGM_CLIENT_SESSION),
+        api_id=settings.TGM_API_ID,
+        api_hash=settings.TGM_API_HASH,
+        **proxy_config,
     )
     client.parse_mode = "html"
     await client.start(phone=lambda: settings.TGM_CLIENT_PHONE)

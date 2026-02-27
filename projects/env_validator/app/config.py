@@ -5,7 +5,8 @@ from functools import partial
 from typing import TYPE_CHECKING, Annotated, Literal
 
 from aiohttp import ClientSession
-from pydantic import AfterValidator, Field, model_validator
+from loguru import logger
+from pydantic import AfterValidator, Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from telethon import TelegramClient
 from telethon.sessions import StringSession
@@ -112,6 +113,16 @@ class Settings(BaseSettings):
         "randomized_intermediate",
     ] = "randomized_intermediate"
 
+    @field_validator("TGM_PROXY_TYPE", mode="before")
+    @classmethod
+    def validate_proxy_type(cls, value: str | None) -> str | None:
+        return value if value else "socks5"
+
+    @field_validator("TGM_PROXY_PORT", mode="before")
+    @classmethod
+    def validate_proxy_port(cls, value: str | int | None) -> int | None:
+        return int(value) if value else None
+
     VTT_LANGUAGE: VttLanguage = "en"
     VTT_IGNORE_ADS: bool = True
 
@@ -122,6 +133,7 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     @async_to_sync
     async def check_vk_community(self) -> Self:
+        logger.info("Validating VK community settings...")
         vk_groups = GroupsCategory(API(token=self.VK_COMMUNITY_TOKEN, http_client=AiohttpClient()))
         try:
             token_permissions = await vk_groups.get_token_permissions()
@@ -140,6 +152,7 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     @async_to_sync
     async def check_tgm_bot(self) -> Self:
+        logger.info("Validating Telegram bot client settings...")
         client = TelegramClient(
             StringSession(string=self.TGM_BOT_SESSION),
             self.TGM_API_ID,
@@ -189,20 +202,26 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     @async_to_sync
     async def check_tgm_user(self) -> Self:
-        client = TelegramClient(
-            StringSession(string=self.TGM_CLIENT_SESSION),
-            self.TGM_API_ID,
-            self.TGM_API_HASH,
-            **get_tgm_proxy_config(
+        logger.info("Validating Telegram user client settings...")
+        proxy_config = (
+            get_tgm_proxy_config(
                 proxy_type=self.TGM_PROXY_TYPE,
                 proxy_addr=self.TGM_PROXY_ADDR,
                 proxy_port=self.TGM_PROXY_PORT,
                 proxy_user=self.TGM_PROXY_USER,
                 proxy_pass=self.TGM_PROXY_PASS,
                 proxy_rdns=self.TGM_PROXY_RDNS,
-                proxy_mtproto_secret=self.TGM_PROXY_MTPROTO_SECRET,
-                proxy_mtproto_connection=self.TGM_PROXY_MTPROTO_CONNECTION,
-            ),
+            )
+            # NOTE: MTProto proxy not working with user client
+            # (ValueError: readexactly size can not be less than zero)
+            if self.TGM_PROXY_TYPE != "mtproto"
+            else {}
+        )
+        client = TelegramClient(
+            StringSession(string=self.TGM_CLIENT_SESSION),
+            self.TGM_API_ID,
+            self.TGM_API_HASH,
+            **proxy_config,
         )
         values = self.model_dump()
         async with await client.start(phone=lambda: self.TGM_CLIENT_PHONE):
