@@ -176,6 +176,7 @@ class Settings(BaseSettings):
                     continue
 
                 try:
+                    logger.info(f"Validating the Telegram channel '{channel_id}' by bot client...")
                     await client.get_input_entity(channel_id)
                 except ValueError:
                     raise ValueError(
@@ -183,6 +184,7 @@ class Settings(BaseSettings):
                         "If your channel is private, make sure to add your bot as an admin.",
                     ) from None
 
+                logger.info(f"Validating bot permissions in the Telegram channel '{channel_id}'...")
                 permissions = await client.get_permissions(
                     channel_id,
                     user=await client.get_me(input_peer=True),
@@ -231,6 +233,7 @@ class Settings(BaseSettings):
                     continue
 
                 try:
+                    logger.info(f"Validating the Telegram channel '{channel_id}' by user client...")
                     await client.get_input_entity(channel_id)
                 except ValueError:
                     raise ValueError(
