@@ -25,6 +25,7 @@ async def main() -> None:
     )
     vk_api.request_validators.append(VkLangRequestValidator())
 
+    logger.info("Creating Telegram user client...")
     proxy_config = (
         get_tgm_proxy_config(
             proxy_type=settings.TGM_PROXY_TYPE,
@@ -48,6 +49,7 @@ async def main() -> None:
     client.parse_mode = "html"
     await client.start(phone=lambda: settings.TGM_CLIENT_PHONE)
 
+    logger.info("Creating Telegram bot client...")
     bot = TelegramClient(
         session=StringSession(settings.TGM_BOT_SESSION),
         api_id=settings.TGM_API_ID,
@@ -68,6 +70,8 @@ async def main() -> None:
 
     async with client:
         await plugins.add_event_handlers(bot=bot, client=client, vk_api=vk_api)
+
+        logger.info("Starting bot event loop")
         await bot.run_until_disconnected()
         await vk_api.http_client.close()
 
