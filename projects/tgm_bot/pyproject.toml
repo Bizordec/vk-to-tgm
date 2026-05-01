@@ -19,6 +19,7 @@ vkaudiotoken = {git = "https://github.com/Bizordec/vkaudiotoken-python.git"}
 pydantic = "^2.11.5"
 celery = {extras = ["redis"], version = "^5.4.0"}
 pydantic-settings = "^2.9.1"
+python-socks = {extras = ["asyncio"], version = "^2.8.0"}
 
 
 [tool.poetry.group.dev.dependencies]

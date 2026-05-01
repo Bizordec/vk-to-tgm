@@ -5,6 +5,8 @@ services:
   env_validator:
     build:
       context: ./projects/env_validator
+      additional_contexts:
+        - libs=./libs
     environment:
       - VK_KATE_TOKEN=${VK_KATE_TOKEN}
       - VK_COMMUNITY_ID=${VK_COMMUNITY_ID}
@@ -21,6 +23,16 @@ services:
       - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
       - VTT_LANGUAGE=${VTT_LANGUAGE}
       - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
+
+      # Proxy envs
+      - TGM_PROXY_TYPE=${TGM_PROXY_TYPE:-}
+      - TGM_PROXY_ADDR=${TGM_PROXY_ADDR:-}
+      - TGM_PROXY_PORT=${TGM_PROXY_PORT:-}
+      - TGM_PROXY_RDNS=${TGM_PROXY_RDNS:-true}
+      - TGM_PROXY_USER=${TGM_PROXY_USER:-}
+      - TGM_PROXY_PASS=${TGM_PROXY_PASS:-}
+      - TGM_PROXY_MTPROTO_SECRET=${TGM_PROXY_MTPROTO_SECRET:-}
+      - TGM_PROXY_MTPROTO_CONNECTION=${TGM_PROXY_MTPROTO_CONNECTION:-randomized_intermediate}
   redis:
     image: redis:7.2.3-alpine3.19
     restart: always
@@ -75,6 +87,16 @@ services:
       - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
       - VTT_LANGUAGE=${VTT_LANGUAGE}
       - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
+
+      # Proxy envs
+      - TGM_PROXY_TYPE=${TGM_PROXY_TYPE:-}
+      - TGM_PROXY_ADDR=${TGM_PROXY_ADDR:-}
+      - TGM_PROXY_PORT=${TGM_PROXY_PORT:-}
+      - TGM_PROXY_RDNS=${TGM_PROXY_RDNS:-true}
+      - TGM_PROXY_USER=${TGM_PROXY_USER:-}
+      - TGM_PROXY_PASS=${TGM_PROXY_PASS:-}
+      - TGM_PROXY_MTPROTO_SECRET=${TGM_PROXY_MTPROTO_SECRET:-}
+      - TGM_PROXY_MTPROTO_CONNECTION=${TGM_PROXY_MTPROTO_CONNECTION:-randomized_intermediate}
     depends_on:
       env_validator:
         condition: service_completed_successfully
@@ -98,6 +120,16 @@ services:
       - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
       - VTT_LANGUAGE=${VTT_LANGUAGE}
       - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
+
+      # Proxy envs
+      - TGM_PROXY_TYPE=${TGM_PROXY_TYPE:-}
+      - TGM_PROXY_ADDR=${TGM_PROXY_ADDR:-}
+      - TGM_PROXY_PORT=${TGM_PROXY_PORT:-}
+      - TGM_PROXY_RDNS=${TGM_PROXY_RDNS:-true}
+      - TGM_PROXY_USER=${TGM_PROXY_USER:-}
+      - TGM_PROXY_PASS=${TGM_PROXY_PASS:-}
+      - TGM_PROXY_MTPROTO_SECRET=${TGM_PROXY_MTPROTO_SECRET:-}
+      - TGM_PROXY_MTPROTO_CONNECTION=${TGM_PROXY_MTPROTO_CONNECTION:-randomized_intermediate}
     depends_on:
       env_validator:
         condition: service_completed_successfully
@@ -124,6 +156,16 @@ services:
       - TGM_CHANNEL_ID=${TGM_CHANNEL_ID}
       - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
       - VTT_LANGUAGE=${VTT_LANGUAGE}
+
+      # Proxy envs
+      - TGM_PROXY_TYPE=${TGM_PROXY_TYPE:-}
+      - TGM_PROXY_ADDR=${TGM_PROXY_ADDR:-}
+      - TGM_PROXY_PORT=${TGM_PROXY_PORT:-}
+      - TGM_PROXY_RDNS=${TGM_PROXY_RDNS:-true}
+      - TGM_PROXY_USER=${TGM_PROXY_USER:-}
+      - TGM_PROXY_PASS=${TGM_PROXY_PASS:-}
+      - TGM_PROXY_MTPROTO_SECRET=${TGM_PROXY_MTPROTO_SECRET:-}
+      - TGM_PROXY_MTPROTO_CONNECTION=${TGM_PROXY_MTPROTO_CONNECTION:-randomized_intermediate}
     depends_on:
       env_validator:
         condition: service_completed_successfully

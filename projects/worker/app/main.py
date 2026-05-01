@@ -3,6 +3,7 @@ from loguru import logger
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from vkbottle import API, AiohttpClient
+from vtt_common.proxy import get_tgm_proxy_config
 
 from app.config import settings
 from app.decorators import async_to_sync
@@ -49,6 +50,16 @@ async def forward_wall(owner_id: int, wall_id: int) -> str:
             session=StringSession(settings.TGM_BOT_SESSION),
             api_id=settings.TGM_API_ID,
             api_hash=settings.TGM_API_HASH,
+            **get_tgm_proxy_config(
+                proxy_type=settings.TGM_PROXY_TYPE,
+                proxy_addr=settings.TGM_PROXY_ADDR,
+                proxy_port=settings.TGM_PROXY_PORT,
+                proxy_user=settings.TGM_PROXY_USER,
+                proxy_pass=settings.TGM_PROXY_PASS,
+                proxy_rdns=settings.TGM_PROXY_RDNS,
+                proxy_mtproto_secret=settings.TGM_PROXY_MTPROTO_SECRET,
+                proxy_mtproto_connection=settings.TGM_PROXY_MTPROTO_CONNECTION,
+            ),
         )
         tgm_bot.parse_mode = "html"
 
@@ -112,6 +123,16 @@ async def forward_playlist(
             session=StringSession(settings.TGM_BOT_SESSION),
             api_id=settings.TGM_API_ID,
             api_hash=settings.TGM_API_HASH,
+            **get_tgm_proxy_config(
+                proxy_type=settings.TGM_PROXY_TYPE,
+                proxy_addr=settings.TGM_PROXY_ADDR,
+                proxy_port=settings.TGM_PROXY_PORT,
+                proxy_user=settings.TGM_PROXY_USER,
+                proxy_pass=settings.TGM_PROXY_PASS,
+                proxy_rdns=settings.TGM_PROXY_RDNS,
+                proxy_mtproto_secret=settings.TGM_PROXY_MTPROTO_SECRET,
+                proxy_mtproto_connection=settings.TGM_PROXY_MTPROTO_CONNECTION,
+            ),
         )
         tgm_bot.parse_mode = "html"
 

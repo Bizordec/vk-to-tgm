@@ -18,6 +18,19 @@ class Settings(BaseSettings):
     TGM_CHANNEL_ID: int
     TGM_PL_CHANNEL_ID: int = 0
 
+    TGM_PROXY_TYPE: Literal["socks5", "socks4", "http", "mtproto"] = "socks5"
+    TGM_PROXY_ADDR: str | None = None
+    TGM_PROXY_PORT: int | None = None
+    TGM_PROXY_RDNS: bool = True
+    TGM_PROXY_USER: str | None = None
+    TGM_PROXY_PASS: str | None = None
+    TGM_PROXY_MTPROTO_SECRET: str | None = None
+    TGM_PROXY_MTPROTO_CONNECTION: Literal[
+        "abridged",
+        "intermediate",
+        "randomized_intermediate",
+    ] = "randomized_intermediate"
+
     VTT_LANGUAGE: Literal["en", "ru"] = "en"
     VTT_IGNORE_ADS: bool = True
 
