@@ -3,7 +3,7 @@ from __future__ import annotations
 import inspect
 import re
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import questionary
 from rich.text import Text
@@ -15,8 +15,6 @@ if TYPE_CHECKING:
 
     from questionary.prompts.common import Choice
 
-PromptType = TypeVar("PromptType", str, bool)
-
 
 def int_validator(value: str) -> bool | str:
     try:
@@ -27,7 +25,7 @@ def int_validator(value: str) -> bool | str:
     return True
 
 
-class BaseEnvPrompt(ABC, Generic[PromptType]):
+class BaseEnvPrompt[PromptType: (str, bool)](ABC):
     def __init__(
         self,
         prompt: str,
@@ -149,16 +147,16 @@ async def prompt_env(
     prompt_text = prompt or f"Enter {name}"
 
     if is_confirm:
-        return cast(bool, await questionary.confirm(prompt_text, default=bool(default)).unsafe_ask_async())
+        return cast("bool", await questionary.confirm(prompt_text, default=bool(default)).unsafe_ask_async())
 
     if is_password:
-        return cast(str, await questionary.password(prompt_text).unsafe_ask_async())
+        return cast("str", await questionary.password(prompt_text).unsafe_ask_async())
 
     if isinstance(default, bool):
         default = str(default)
 
     if choices:
-        return cast(str, await questionary.select(prompt_text, choices=choices, default=default).unsafe_ask_async())
+        return cast("str", await questionary.select(prompt_text, choices=choices, default=default).unsafe_ask_async())
 
     validator = None
     if re_pattern:
@@ -171,4 +169,7 @@ async def prompt_env(
 
         validator = validate
 
-    return cast(str, await questionary.text(prompt_text, default=default or "", validate=validator).unsafe_ask_async())
+    return cast(
+        "str",
+        await questionary.text(prompt_text, default=default or "", validate=validator).unsafe_ask_async(),
+    )

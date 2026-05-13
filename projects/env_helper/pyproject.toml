@@ -1,40 +1,51 @@
-[tool.poetry]
-package-mode = false
+[project]
 name = "env-helper"
 version = "1.2.0"
 description = "Service that helps to set environment variables in .env file"
-authors = ["Ilia Boyazitov"]
-license = "GPL-3.0-or-later"
+authors = [{ name = "Ilia Boyazitov" }]
+requires-python = ">=3.14,<4"
 readme = "README.md"
+license = "GPL-3.0-or-later"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "rich>=15.0.0,<16",
+    "telethon>=1.43.2,<2",
+    "vkbottle>=4.8.2,<5",
+    "aiohttp>=3.13.5,<4",
+    "pydantic>=2.13.4,<3",
+    "pydantic-settings>=2.14.1,<3",
+    "python-dotenv>=1.2.2,<2",
+    "loguru>=0.7.3,<0.8",
+    "uvloop>=0.22.1,<0.23",
+    "questionary>=2.1.1,<3",
+    "python-socks[asyncio]>=2.8.1,<3",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-rich = "^13.9.4"
-telethon = "^1.42.0"
-vkbottle = "^4.6.2"
-aiohttp = "^3.12.12"
-pydantic = "^2.11.5"
-pydantic-settings = "^2.6.1"
-python-dotenv = "^1.0.1"
-loguru = "^0.7.2"
-uvloop = "^0.19.0"
-questionary = "^2.1.0"
+[dependency-groups]
+dev = [
+    "mypy>=2.1.0,<3",
+    "ruff>=0.15.12,<0.16",
+    "commitizen>=4.16.0,<5",
+    "pytest>=9.0.3,<10",
+    "pytest-cov>=7.1.0,<8",
+    "aioresponses>=0.7.8,<0.8",
+    "pytest-mock>=3.15.1,<4",
+]
 
+[tool.uv]
+package = false
+default-groups = "all"
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.3.4"
-pytest-cov = "^6.0.0"
-ruff = "^0.8.0"
-mypy = "^1.16.0"
-commitizen = "^4.0.0"
-pytest-socket = "^0.7.0"
-pytest-mock = "^3.14.0"
-aioresponses = "^0.7.7"
-pytest-asyncio = "^1.0.0"
+[build-system]
+requires = ["uv_build>=0.11.14,<0.12.0"]
+build-backend = "uv_build"
 
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.14"
 ignore_missing_imports = true
 plugins = [
     "pydantic.mypy"
@@ -42,7 +53,7 @@ plugins = [
 strict = true
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py314"
 line-length = 120
 
 [tool.ruff.lint]
@@ -101,7 +112,3 @@ exclude_also = [
     "if TYPE_CHECKING:",
     'if __name__ == "__main__":'
 ]
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"

@@ -26,7 +26,7 @@ class Options:
 
     async def prompt_language(self) -> VttLanguage:
         return cast(
-            VttLanguage,
+            "VttLanguage",
             await EnvSelectPrompt.ask(
                 name="VTT_LANGUAGE",
                 default=self.language,

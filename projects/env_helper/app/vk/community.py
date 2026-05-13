@@ -60,10 +60,12 @@ class Community:
         return True
 
     async def is_valid_id(self, community_id: str) -> bool:
-        vk_groups = GroupsCategory(API(token=self._community_token, http_client=AiohttpClient()))
+        vk_groups = GroupsCategory(
+            API(token=self._community_token, http_client=AiohttpClient()),
+        )
         try:
             console.print("Checking if VK community id is valid...")
-            await vk_groups.get_callback_servers(group_id=community_id)
+            await vk_groups.get_callback_servers(group_id=int(community_id))
             console.print("VK community id is valid.")
         except VKAPIError as error:
             error_msg = error.error_msg

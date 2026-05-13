@@ -23,7 +23,10 @@ async def _handle_2fa_sms(user_auth: UserAuth, validation_sid: str) -> AuthParam
 
     console.print("[yellow]SMS should be sent")
 
-    auth_code: str = await questionary.text("Enter auth code:", validate=int_validator).unsafe_ask_async()
+    auth_code: str = await questionary.text(
+        "Enter auth code:",
+        validate=int_validator,
+    ).unsafe_ask_async()
 
     return AuthParams(auth_code=auth_code, need_creds=False)
 
@@ -31,7 +34,9 @@ async def _handle_2fa_sms(user_auth: UserAuth, validation_sid: str) -> AuthParam
 async def _handle_2fa_app(redirect_uri: str) -> AuthParams:
     console.print(f"Enter code from 2FA app here: {redirect_uri}")
     while True:
-        url = await EnvPasswordPrompt.ask(prompt="Enter OAuth URL from VK after signin in")
+        url = await EnvPasswordPrompt.ask(
+            prompt="Enter OAuth URL from VK after signin in",
+        )
         parsed_url = urlparse(url=url)
         try:
             access_token = parse_qs(parsed_url.fragment)["access_token"][0]
@@ -44,8 +49,14 @@ async def _handle_2fa_app(redirect_uri: str) -> AuthParams:
 
 
 async def _handle_captcha(error: CaptchaError) -> AuthParams:
-    captcha_key = await questionary.text(f"Enter captcha key from image ({error.captcha_img}):").unsafe_ask_async()
-    return AuthParams(captcha_sid=error.captcha_sid, captcha_key=captcha_key, need_creds=False)
+    captcha_key = await questionary.text(
+        f"Enter captcha key from image ({error.captcha_img}):",
+    ).unsafe_ask_async()
+    return AuthParams(
+        captcha_sid=error.captcha_sid,
+        captcha_key=captcha_key,
+        need_creds=False,
+    )
 
 
 async def handle_token_exception(user_auth: UserAuth, error: VKAPIError) -> AuthParams:
@@ -54,9 +65,12 @@ async def handle_token_exception(user_auth: UserAuth, error: VKAPIError) -> Auth
     if isinstance(error, APIAuthError):
         validation_type = error.validation_type
         if validation_type == "2fa_sms":
-            return await _handle_2fa_sms(user_auth=user_auth, validation_sid=error.validation_sid)
+            return await _handle_2fa_sms(
+                user_auth=user_auth,
+                validation_sid=error.validation_sid or "",
+            )
         if validation_type == "2fa_app":
-            return await _handle_2fa_app(redirect_uri=error.redirect_uri)
+            return await _handle_2fa_app(redirect_uri=error.redirect_uri or "")
     if isinstance(error, AuthError):
         error_name = error.error_msg
         if error_name == "invalid_client":

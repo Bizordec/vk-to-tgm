@@ -54,7 +54,7 @@ async def main(arg_list: list[str] | None = None) -> int:
         ).unsafe_ask_async()
         if use_ssl:
             await settings_manager.prompt_vtt_ssl()
-    except (KeyboardInterrupt, FloodControlError):
+    except KeyboardInterrupt, FloodControlError:
         console.print("\nInterrupted...")
 
     console.rule()

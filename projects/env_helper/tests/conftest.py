@@ -10,6 +10,6 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-def mock_aioresponse() -> Generator[aioresponses, None, None]:
+def mock_aioresponse() -> Generator[aioresponses]:
     with aioresponses() as m:
         yield m

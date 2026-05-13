@@ -69,7 +69,9 @@ class Auth(ABC):
     @staticmethod
     async def prompt_login() -> str:
         while True:
-            login: str = await questionary.text("Enter VK login (used to create tokens):").unsafe_ask_async()
+            login: str = await questionary.text(
+                "Enter VK login (used to create tokens):",
+            ).unsafe_ask_async()
             if login:
                 return login
             console.print("[prompt.invalid]VK login must not be empty")
@@ -77,7 +79,9 @@ class Auth(ABC):
     @staticmethod
     async def prompt_password() -> str:
         while True:
-            password: str = await questionary.password("Enter VK password (used to create tokens):").unsafe_ask_async()
+            password: str = await questionary.password(
+                "Enter VK password (used to create tokens):",
+            ).unsafe_ask_async()
             if password:
                 return password
             console.print("[prompt.invalid]VK password must not be empty")
@@ -109,7 +113,9 @@ class Auth(ABC):
         user_auth = UserAuth(
             client_id=self.client_id,
             client_secret=self.client_secret,
-            http_client=AiohttpClient(session=ClientSession(headers={"User-agent": self.user_agent})),
+            http_client=AiohttpClient(
+                session=ClientSession(headers={"User-agent": self.user_agent}),
+            ),
         )
         while True:
             if params.need_creds:
@@ -117,7 +123,7 @@ class Auth(ABC):
                 self._password = await self.prompt_password()
             try:
                 console.print(f"Getting new '{self.token_name}'...")
-                return await user_auth.get_token(  # type: ignore[no-any-return]
+                return await user_auth.get_token(
                     login=self._login,
                     password=self._password,
                     auth_code=params.auth_code,
@@ -125,7 +131,9 @@ class Auth(ABC):
                     captcha_key=params.captcha_key,
                 )
             except VKAPIError as error:
-                console.print(f"Error on getting new '{self.token_name}': {error.error_msg}")
+                console.print(
+                    f"Error on getting new '{self.token_name}': {error.error_msg}",
+                )
 
                 params = await handle_token_exception(user_auth=user_auth, error=error)
                 token = params.token
