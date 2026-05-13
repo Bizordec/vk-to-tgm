@@ -4,9 +4,8 @@
 
 .DEFAULT_GOAL := run
 
-poetry.lock:
-.venv/bin/activate: poetry.lock
-	POETRY_VIRTUALENVS_IN_PROJECT=true env -u VIRTUAL_ENV poetry install --no-root; \
+.venv/bin/activate: pyproject.toml uv.lock
+	uv sync; \
 	\
 	# Update timestamp for this target
 	touch .venv/bin/activate
