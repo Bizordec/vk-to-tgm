@@ -1,24 +1,31 @@
-[tool.poetry]
+[project]
 name = "vtt_common"
 version = "0.1.0"
 description = ""
-authors = ["Ilia Boyazitov"]
+authors = [{ name = "Ilia Boyazitov" }]
+requires-python = ">=3.14,<4"
 license = "GPL-3.0-or-later"
-packages = [
-    {include = "vtt_common"},
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
 ]
+dependencies = ["telethon"]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-telethon = "*"
+[tool.uv.build-backend]
+module-name = ["vtt_common"]
+module-root = ""
+
+[build-system]
+requires = ["uv_build>=0.11.14,<0.12.0"]
+build-backend = "uv_build"
 
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.14"
 ignore_missing_imports = true
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py314"
 line-length = 120
 
 [tool.ruff.lint]
@@ -70,7 +77,3 @@ allow-star-arg-any = true
 exclude_also = [
     "if TYPE_CHECKING:"
 ]
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
