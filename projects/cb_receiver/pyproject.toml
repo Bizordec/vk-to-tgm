@@ -1,39 +1,54 @@
-[tool.poetry]
-package-mode = false
+[project]
 name = "cb-receiver"
 version = "0.1.0"
 description = "Service that receives messages from VK Callback API"
-authors = ["Ilia Boyazitov"]
+authors = [{ name = "Ilia Boyazitov" }]
+requires-python = ">=3.14,<4"
 license = "GPL-3.0-or-later"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "fastapi>=0.136.1,<0.137",
+    "vkbottle>=4.8.2,<5",
+    "loguru>=0.7.3,<0.8",
+    "celery[redis]>=5.6.3,<6",
+    "python-dotenv>=1.2.2,<2",
+    "pydantic-settings>=2.14.1,<3",
+    "uvicorn[standard]>=0.46.0,<0.47",
+    "vtt_common",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-fastapi = "^0.115.2"
-vkbottle = "^4.6.2"
-loguru = "^0.7.2"
-celery = {extras = ["redis"], version = "^5.4.0"}
-python-dotenv = "^1.0.1"
-pydantic-settings = "^2.6.1"
-uvicorn = {extras = ["standard"], version = "^0.32.0"}
-vtt_common = {path = "../../libs/vtt_common", develop = true}
+[dependency-groups]
+dev = [
+    "mypy>=2.1.0,<3",
+    "ruff>=0.15.12,<0.16",
+    "commitizen>=4.16.0,<5",
+    "pytest>=9.0.3,<10",
+    "pytest-cov>=7.1.0,<8",
+    "httpx>=0.28.1,<0.29",
+    "pytest-socket>=0.7.0,<0.8",
+    "aioresponses>=0.7.8,<0.8",
+    "pytest-asyncio>=1.3.0,<2",
+    "pytest-celery>=1.3.0,<2",
+    "pytest-mock>=3.15.1,<4",
+]
 
+[tool.uv]
+package = false
+default-groups = "all"
 
-[tool.poetry.group.dev.dependencies]
-mypy = "^1.13.0"
-ruff = "^0.8.0"
-commitizen = "^3.31.0"
-pytest = "^8.3.3"
-pytest-cov = "^6.0.0"
-httpx = "^0.27.2"
-pytest-socket = "^0.7.0"
-aioresponses = "^0.7.6"
-pytest-asyncio = "^0.24.0"
-pytest-celery = "^1.1.3"
-pytest-mock = "^3.14.0"
+[tool.uv.sources]
+vtt_common = { path = "../../libs/vtt_common", editable = true }
+
+[build-system]
+requires = ["uv_build>=0.11.14,<0.12.0"]
+build-backend = "uv_build"
 
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.14"
 ignore_missing_imports = true
 plugins = [
     "pydantic.mypy"
@@ -41,7 +56,7 @@ plugins = [
 strict = true
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py314"
 line-length = 120
 
 [tool.ruff.lint]
@@ -87,6 +102,9 @@ ignore = [
 [tool.ruff.lint.flake8-annotations]
 allow-star-arg-any = true
 
+[tool.ruff.lint.flake8-type-checking]
+runtime-evaluated-base-classes = ["pydantic.BaseModel"]
+
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
 addopts = [
@@ -98,7 +116,3 @@ addopts = [
 exclude_also = [
     "if TYPE_CHECKING:"
 ]
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"

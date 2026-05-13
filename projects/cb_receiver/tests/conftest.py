@@ -59,27 +59,27 @@ class VkMockClient(aioresponses):
 
 
 @pytest.fixture
-def mock_vk() -> Generator[aioresponses, None, None]:
+def mock_vk() -> Generator[aioresponses]:
     with VkMockClient() as m:
         yield m
 
 
 @pytest.fixture
-def caplog(caplog: LogCaptureFixture) -> Generator[LogCaptureFixture, None, None]:
+def caplog(caplog: LogCaptureFixture) -> Generator[LogCaptureFixture]:
     handler_id = logger.add(caplog.handler, format=format_record)
     yield caplog
     logger.remove(handler_id)
 
 
 @pytest.fixture
-def celery_broker_cluster(celery_redis_broker: RedisTestBroker) -> Generator[CeleryBrokerCluster, None, None]:
+def celery_broker_cluster(celery_redis_broker: RedisTestBroker) -> Generator[CeleryBrokerCluster]:
     cluster = CeleryBrokerCluster(celery_redis_broker)
     yield cluster
     cluster.teardown()
 
 
 @pytest.fixture
-def celery_backend_cluster(celery_redis_backend: RedisTestBackend) -> Generator[CeleryBackendCluster, None, None]:
+def celery_backend_cluster(celery_redis_backend: RedisTestBackend) -> Generator[CeleryBackendCluster]:
     cluster = CeleryBackendCluster(celery_redis_backend)
     yield cluster
     cluster.teardown()

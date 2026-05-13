@@ -3,8 +3,8 @@
 
 .DEFAULT_GOAL := run
 
-.venv/bin/activate: poetry.lock
-	POETRY_VIRTUALENVS_IN_PROJECT=true env -u VIRTUAL_ENV poetry install --no-root; \
+.venv/bin/activate: pyproject.toml uv.lock
+	uv sync; \
 	\
 	# Update timestamp for this target
 	touch .venv/bin/activate
@@ -22,7 +22,7 @@ build-image:
 	echo "Building a new image..."; \
 	docker build -t cb_receiver --build-context libs=../../libs $(OPTS) .
 	\
-	NEW_IMAGE_ID=$$(docker images env_helper -q); \
+	NEW_IMAGE_ID=$$(docker images cb_receiver -q); \
 	if [ -n "$$OLD_IMAGE_ID" ] && [ "$$OLD_IMAGE_ID" != "$$NEW_IMAGE_ID" ]; then \
 		echo "Removing an old image..."; \
 		docker rmi $$OLD_IMAGE_ID; \

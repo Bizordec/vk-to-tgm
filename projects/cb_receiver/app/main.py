@@ -44,7 +44,7 @@ def vk_callback(
         return Response(confirmation_code)
 
     if event_type == CallbackType.WALL_POST_NEW:
-        post = WallWallpostFull(**body.object)
+        post = WallWallpostFull(**(body.object or {}))
         owner_id = post.owner_id
         if not owner_id:
             ctx_logger.warning("Post does not have an owner_id")
@@ -98,7 +98,7 @@ def vk_callback(
 
 def create_app(settings: Settings | None = None, celery_app: Celery | None = None) -> FastAPI:
     @asynccontextmanager
-    async def lifespan(_: FastAPI) -> AsyncGenerator[Mapping[str, Any], None]:
+    async def lifespan(_: FastAPI) -> AsyncGenerator[Mapping[str, Any]]:
         yield {"confirmation_code": await setup_vk_server(settings=settings)}
 
     app = FastAPI(lifespan=lifespan)

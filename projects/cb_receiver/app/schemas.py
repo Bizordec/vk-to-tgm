@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -22,9 +21,3 @@ class VkCallback(BaseModel):
     """Property `CallbackBase.secret`."""
 
     object: dict[str, Any] | None = Field(default=None)
-
-
-class VttTaskType(Enum):
-    wall = 0
-    playlist = 1
-    unknown = 2
