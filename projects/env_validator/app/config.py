@@ -116,7 +116,7 @@ class Settings(BaseSettings):
     @field_validator("TGM_PROXY_TYPE", mode="before")
     @classmethod
     def validate_proxy_type(cls, value: str | None) -> str | None:
-        return value if value else "socks5"
+        return value or "socks5"
 
     @field_validator("TGM_PROXY_PORT", mode="before")
     @classmethod

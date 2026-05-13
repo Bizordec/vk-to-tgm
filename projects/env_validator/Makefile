@@ -3,8 +3,8 @@
 
 .DEFAULT_GOAL := run
 
-.venv/bin/activate: poetry.lock
-	POETRY_VIRTUALENVS_IN_PROJECT=true env -u VIRTUAL_ENV poetry install --no-root; \
+.venv/bin/activate: pyproject.toml uv.lock
+	uv sync; \
 	\
 	# Update timestamp for this target
 	touch .venv/bin/activate
@@ -20,7 +20,7 @@ build-image:
 	OLD_IMAGE_ID=$$(docker images env_validator -q); \
 	\
 	echo "Building a new image..."; \
-	docker build -t env_validator $(OPTS) .; \
+	docker build --build-context libs=../../libs -t env_validator $(OPTS) .; \
 	\
 	NEW_IMAGE_ID=$$(docker images env_validator -q); \
 	if [ -n "$$OLD_IMAGE_ID" ] && [ "$$OLD_IMAGE_ID" != "$$NEW_IMAGE_ID" ]; then \

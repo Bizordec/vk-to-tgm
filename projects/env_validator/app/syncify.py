@@ -6,13 +6,9 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine
-    from typing import ParamSpec, TypeVar
-
-    P = ParamSpec("P")
-    Ret = TypeVar("Ret")
 
 
-def async_to_sync(func: Callable[P, Coroutine[None, None, Ret]]) -> Callable[P, Ret]:
+def async_to_sync[**P, Ret](func: Callable[P, Coroutine[None, None, Ret]]) -> Callable[P, Ret]:
     @wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Ret:
         try:

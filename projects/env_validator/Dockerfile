@@ -1,25 +1,22 @@
-FROM python:3.12.12-alpine3.22 AS build-stage
+FROM ghcr.io/astral-sh/uv:python3.14-alpine3.23 AS build-stage
 
 WORKDIR /code/projects/env_validator
 
-ENV PYTHONUNBUFFERED=1 \
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_NO_CACHE=1 \
+    PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    PIP_DEFAULT_TIMEOUT=120 \
-    VIRTUAL_ENV=/venv
-
-RUN pip install poetry==2.2.1
+    UV_HTTP_TIMEOUT=120 \
+    UV_PROJECT_ENVIRONMENT=/venv
 
 # Using additional build context 'libs'
 COPY --from=libs ./vtt_common /code/libs/vtt_common
-COPY ./pyproject.toml ./poetry.lock* ./
-RUN sed -i "s/\(develop\s*=\s*\)true/\1false/" poetry.lock \
-    && python -m venv $VIRTUAL_ENV \
-    && poetry install --no-root --without=dev --no-interaction --no-ansi
+
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --no-dev --no-editable
 
 
-FROM python:3.12.12-alpine3.22
+FROM python:3.14.5-alpine3.23
 
 ARG UID=1000
 ARG GID=1000
