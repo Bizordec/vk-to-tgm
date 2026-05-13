@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import re
 from typing import TYPE_CHECKING, cast
@@ -5,9 +7,7 @@ from typing import TYPE_CHECKING, cast
 from telethon import Button, TelegramClient, events
 from telethon.events import StopPropagation
 from telethon.tl.functions.messages import SearchRequest
-from telethon.tl.patched import Message
 from telethon.tl.types import InputMessagesFilterUrl
-from vkbottle.api.api import API
 from vtt_common.schemas import VttTaskType
 from vtt_common.tasks import get_queued_task
 
@@ -19,7 +19,9 @@ from app.worker import app as celery_app
 if TYPE_CHECKING:
     from typing import Any
 
+    from telethon.tl.patched import Message
     from telethon.tl.types.messages import ChannelMessages
+    from vkbottle.api.api import API
 
 
 logger = logging.getLogger(__name__)
@@ -39,7 +41,7 @@ POST_PATTERN = re.compile(r"(https:\/\/)?(www\.)?(m\.)?vk\.(ru|com)(\/?|\/\w+\?w
 
 
 async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api: API) -> None:
-    @bot.on(events.CallbackQuery(data=b"wall_confirm", func=lambda e: is_current_state(e, State.WAITING_FOR_CHOISE)))  # type: ignore[misc]
+    @bot.on(events.CallbackQuery(data=b"wall_confirm", func=lambda e: is_current_state(e, State.WAITING_FOR_CHOISE)))  # type: ignore[untyped-decorator]
     async def new_wall(event: NewMessageEvent) -> None:
         await event.edit(buttons=Button.clear())
         if not await is_user_authorized(event):
@@ -59,7 +61,7 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
         state_manager.clear_info(event.sender_id)
         raise StopPropagation
 
-    @bot.on(events.NewMessage(pattern=POST_PATTERN, func=lambda e: is_current_state(e, State.WAITING_FOR_LINK)))  # type: ignore[misc]
+    @bot.on(events.NewMessage(pattern=POST_PATTERN, func=lambda e: is_current_state(e, State.WAITING_FOR_LINK)))  # type: ignore[untyped-decorator]
     async def on_new_wall(event: NewMessageEvent) -> None:
         if not await is_user_authorized(event):
             raise events.StopPropagation
@@ -135,11 +137,11 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
         waiting_text = WALL_NOT_FOUND_IN_TGM
         if search_result.messages:
             waiting_text = WALL_FOUND_IN_TGM
-            message = cast(Message, search_result.messages[0])
+            message = cast("Message", search_result.messages[0])
             await bot.forward_messages(sender, message.id, from_peer=message.chat_id)
 
         message = cast(
-            Message,
+            "Message",
             await event.respond(
                 waiting_text,
                 buttons=[

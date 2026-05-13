@@ -3,6 +3,8 @@ from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+KATE_USER_AGENT = "KateMobileAndroid/56 lite-460 (Android 4.4.2; SDK 19; x86; unknown Android SDK built for x86; en)"
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")

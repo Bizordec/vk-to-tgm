@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypeAlias, cast
+from typing import TYPE_CHECKING, cast
 
 from loguru import logger
 from telethon import events
-from telethon.client.telegramclient import TelegramClient
 from telethon.errors.rpcbaseerrors import RPCError
 from telethon.tl.custom.button import Button
 
@@ -12,10 +11,11 @@ from app.config import _, settings
 from app.state_manager import State, state_manager
 
 if TYPE_CHECKING:
+    from telethon.client.telegramclient import TelegramClient
     from telethon.tl.types import TypeInputPeer
 
 # Somewhat fixed type for NewMessage event
-NewMessageEvent: TypeAlias = events.NewMessage.Event | events.CallbackQuery.Event
+type NewMessageEvent = events.NewMessage.Event | events.CallbackQuery.Event
 
 
 NO_PERMISSION = _("NO_PERMISSION")
@@ -24,7 +24,7 @@ PERMISSION_CHECK_FAILED = _("PERMISSION_CHECK_FAILED")
 
 
 def check_is_chat(event: NewMessageEvent) -> bool | None:
-    return cast(bool | None, event.is_private)
+    return cast("bool | None", event.is_private)
 
 
 async def is_current_state(event: NewMessageEvent, expected_state: State) -> bool:
@@ -37,7 +37,7 @@ async def is_current_state(event: NewMessageEvent, expected_state: State) -> boo
 
 async def is_user_authorized(event: NewMessageEvent) -> bool:
     sender = event.sender_id
-    client = cast(TelegramClient, event.client)
+    client = cast("TelegramClient", event.client)
     try:
         perm = await client.get_permissions(settings.TGM_CHANNEL_ID, sender)
     except RPCError as error:

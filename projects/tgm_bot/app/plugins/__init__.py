@@ -1,8 +1,13 @@
-from telethon import TelegramClient
-from vkbottle import API
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from app.config import settings
 from app.plugins import common, playlist, wall
+
+if TYPE_CHECKING:
+    from telethon import TelegramClient
+    from vkbottle import API
 
 
 async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api: API) -> None:

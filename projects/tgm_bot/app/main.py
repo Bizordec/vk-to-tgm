@@ -4,13 +4,12 @@ from aiohttp import ClientSession
 from loguru import logger
 from telethon import TelegramClient
 from telethon.sessions import StringSession
-from vkaudiotoken import supported_clients
 from vkbottle import AiohttpClient
 from vkbottle.api.api import API
 from vtt_common.proxy import get_tgm_proxy_config
 
 from app import plugins
-from app.config import settings
+from app.config import KATE_USER_AGENT, settings
 from app.vk.request_validators import VkLangRequestValidator
 
 
@@ -19,7 +18,7 @@ async def main() -> None:
         token=settings.VK_KATE_TOKEN,
         http_client=AiohttpClient(
             session=ClientSession(
-                headers={"User-agent": supported_clients.KATE.user_agent},
+                headers={"User-agent": KATE_USER_AGENT},
             ),
         ),
     )

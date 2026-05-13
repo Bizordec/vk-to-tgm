@@ -1,13 +1,17 @@
-from typing import TypeAlias
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from telethon import events
-from telethon.client.telegramclient import TelegramClient
-from telethon.events.common import EventCommon
 from telethon.tl.custom.button import Button
 
 from app.config import _, settings
 from app.state_manager import State, state_manager
 from app.utils import is_current_state, is_user_authorized
+
+if TYPE_CHECKING:
+    from telethon.client.telegramclient import TelegramClient
+    from telethon.events.common import EventCommon
 
 HELLO = _("HELLO")
 PERMISSION_CHECK_FAILED = _("PERMISSION_CHECK_FAILED")
@@ -38,7 +42,7 @@ INCORRECT_LINK = (
 
 
 # Somewhat fixed type for NewMessage event
-Event: TypeAlias = events.NewMessage.Event | events.CallbackQuery.Event
+type Event = events.NewMessage.Event | events.CallbackQuery.Event
 
 
 def is_user_chat(event: EventCommon) -> bool:
@@ -46,7 +50,7 @@ def is_user_chat(event: EventCommon) -> bool:
 
 
 async def add_initial_event_handlers(bot: TelegramClient) -> None:
-    @bot.on(events.NewMessage(pattern="/start", func=is_user_chat))  # type: ignore[misc]
+    @bot.on(events.NewMessage(pattern="/start", func=is_user_chat))  # type: ignore[untyped-decorator]
     async def start(event: Event) -> None:
         await event.respond(HELLO)
         if not await is_user_authorized(event):
@@ -56,21 +60,21 @@ async def add_initial_event_handlers(bot: TelegramClient) -> None:
         await event.respond(WAITING_FOR_LINK)
         raise events.StopPropagation
 
-    @bot.on(events.NewMessage(pattern="/cancel"))  # type: ignore[misc]
+    @bot.on(events.NewMessage(pattern="/cancel"))  # type: ignore[untyped-decorator]
     async def cancel(event: Event) -> None:
         state_manager.set_info(event.sender_id, State.WAITING_FOR_LINK)
         await event.edit(buttons=Button.clear())
         await event.respond(CANCELLED)
         raise events.StopPropagation
 
-    @bot.on(events.CallbackQuery(data=b"cancel"))  # type: ignore[misc]
+    @bot.on(events.CallbackQuery(data=b"cancel"))  # type: ignore[untyped-decorator]
     async def btn_cancel(event: events.CallbackQuery.Event) -> None:
         state_manager.set_info(event.sender_id, State.WAITING_FOR_LINK)
         await event.edit(buttons=Button.clear())
         await event.respond(CANCELLED)
         raise events.StopPropagation
 
-    @bot.on(events.NewMessage(func=lambda e: is_current_state(e, State.WAITING_FOR_CHOISE)))  # type: ignore[misc]
+    @bot.on(events.NewMessage(func=lambda e: is_current_state(e, State.WAITING_FOR_CHOISE)))  # type: ignore[untyped-decorator]
     async def waiting_for_choice(event: Event) -> None:
         if not await is_user_authorized(event):
             raise events.StopPropagation
@@ -81,7 +85,7 @@ async def add_initial_event_handlers(bot: TelegramClient) -> None:
 
 
 async def add_last_event_handlers(bot: TelegramClient) -> None:
-    @bot.on(events.NewMessage(func=lambda e: is_current_state(e, State.WAITING_FOR_LINK)))  # type: ignore[misc]
+    @bot.on(events.NewMessage(func=lambda e: is_current_state(e, State.WAITING_FOR_LINK)))  # type: ignore[untyped-decorator]
     async def incorrect_link(event: Event) -> None:
         if not await is_user_authorized(event):
             raise events.StopPropagation

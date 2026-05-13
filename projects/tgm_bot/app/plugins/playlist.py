@@ -1,15 +1,14 @@
+from __future__ import annotations
+
 import re
 from typing import TYPE_CHECKING, cast
 from urllib.parse import parse_qs, urlparse
 
 from telethon import events
-from telethon.client.telegramclient import TelegramClient
 from telethon.events import StopPropagation
 from telethon.tl.custom.button import Button
 from telethon.tl.functions.messages import SearchRequest
-from telethon.tl.patched import Message
 from telethon.tl.types import InputMessagesFilterUrl
-from vkbottle.api.api import API
 from vtt_common.schemas import VttTaskType
 from vtt_common.tasks import get_queued_task
 
@@ -20,7 +19,10 @@ from app.vk.api import is_playlist_exists
 from app.worker import app as celery_app
 
 if TYPE_CHECKING:
+    from telethon.client.telegramclient import TelegramClient
+    from telethon.tl.patched import Message
     from telethon.tl.types.messages import ChannelMessages
+    from vkbottle.api.api import API
 
 PL_NOT_READY = _("PL_NOT_READY")
 PL_SEARCHING = _("PL_SEARCHING")
@@ -70,11 +72,11 @@ def _get_playlist_full_id(message: str) -> str | None:
 
 async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api: API) -> None:  # noqa: C901
     # Callback for playlist button in main channel
-    @bot.on(events.CallbackQuery(data=b"wait_for_pl_link"))  # type: ignore[misc]
+    @bot.on(events.CallbackQuery(data=b"wait_for_pl_link"))  # type: ignore[untyped-decorator]
     async def wait_for_pl_link(event: events.CallbackQuery.Event) -> None:
         await event.answer(PL_NOT_READY)
 
-    @bot.on(events.CallbackQuery(data=b"pl_confirm", func=lambda e: is_current_state(e, State.WAITING_FOR_CHOISE)))  # type: ignore[misc]
+    @bot.on(events.CallbackQuery(data=b"pl_confirm", func=lambda e: is_current_state(e, State.WAITING_FOR_CHOISE)))  # type: ignore[untyped-decorator]
     async def new_pl(event: events.CallbackQuery.Event) -> None:
         await event.edit(buttons=Button.clear())
         if not await is_user_authorized(event):
@@ -95,7 +97,7 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
         await event.respond(PL_ADDED_TO_THE_QUEUE)
         raise StopPropagation
 
-    @bot.on(events.NewMessage(pattern=PL_LINK_PATTERN, func=lambda e: is_current_state(e, State.WAITING_FOR_LINK)))  # type: ignore[misc]
+    @bot.on(events.NewMessage(pattern=PL_LINK_PATTERN, func=lambda e: is_current_state(e, State.WAITING_FOR_LINK)))  # type: ignore[untyped-decorator]
     async def on_new_pl(event: NewMessageEvent) -> None:
         if not await is_user_authorized(event):
             raise events.StopPropagation
@@ -168,7 +170,7 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
         waiting_text = PL_NOT_FOUND_IN_TGM
         if search_result.messages:
             waiting_text = PL_FOUND_IN_TGM
-            message = cast(Message, search_result.messages[0])
+            message = cast("Message", search_result.messages[0])
             await bot.forward_messages(sender, message.id, from_peer=message.chat_id)
 
         message = await event.respond(
