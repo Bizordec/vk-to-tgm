@@ -21,8 +21,6 @@ dependencies = [
 [dependency-groups]
 dev = [
     "vtt_common[test]",
-    "pytest-asyncio>=1.3.0,<2",
-    "pytest-socket>=0.7.0,<0.8",
     "babel>=2.18.0,<3",
     "types-aiofiles>=24.1.0.20250822,<25",
 ]

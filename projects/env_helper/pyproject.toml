@@ -19,7 +19,9 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["vtt_common[test]"]
+dev = [
+    "vtt_common[test]"
+]
 
 [tool.uv]
 package = false
