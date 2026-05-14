@@ -1,6 +1,6 @@
 FROM ghcr.io/astral-sh/uv:python3.14-alpine3.23 AS build-stage
 
-WORKDIR /code/projects/cb_receiver
+WORKDIR /code
 
 ENV UV_COMPILE_BYTECODE=1 \
     UV_NO_CACHE=1 \
@@ -9,11 +9,12 @@ ENV UV_COMPILE_BYTECODE=1 \
     UV_HTTP_TIMEOUT=120 \
     UV_PROJECT_ENVIRONMENT=/venv
 
-# Using additional build context 'libs'
-COPY --from=libs ./vtt_common /code/libs/vtt_common
+COPY pyproject.toml ./
+COPY uv.lock ./
+COPY libs ./libs/
+COPY projects ./projects/
 
-COPY pyproject.toml uv.lock ./
-RUN uv sync --locked --no-dev --no-editable
+RUN uv sync --project projects/cb_receiver --locked --no-dev --no-editable
 
 
 FROM python:3.14.5-alpine3.23
@@ -34,6 +35,6 @@ RUN addgroup -g $GID user \
 USER user
 
 COPY --from=build-stage /venv /venv
-COPY ./app ./app
+COPY projects/cb_receiver/app ./app
 
 CMD [ "uvicorn", "--factory", "app.main:create_app", "--host", "0.0.0.0" ]

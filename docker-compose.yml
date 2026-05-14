@@ -4,9 +4,8 @@ volumes:
 services:
   env_validator:
     build:
-      context: ./projects/env_validator
-      additional_contexts:
-        - libs=./libs
+      context: .
+      dockerfile: projects/env_validator/Dockerfile
     environment:
       - VK_KATE_TOKEN=${VK_KATE_TOKEN}
       - VK_COMMUNITY_ID=${VK_COMMUNITY_ID}
@@ -46,9 +45,8 @@ services:
         condition: service_completed_successfully
   cb_receiver:
     build:
-      context: ./projects/cb_receiver
-      additional_contexts:
-        - libs=./libs
+      context: .
+      dockerfile: projects/cb_receiver/Dockerfile
     restart: always
     environment:
       - VK_COMMUNITY_ID=${VK_COMMUNITY_ID}
@@ -70,9 +68,8 @@ services:
         condition: service_healthy
   worker_main:
     build:
-      context: ./projects/worker
-      additional_contexts:
-        - libs=./libs
+      context: .
+      dockerfile: projects/worker/Dockerfile
     restart: always
     command: celery -A app.main worker -n worker-main -Q vtt-wall -c 1 -l INFO
     environment:
@@ -104,9 +101,8 @@ services:
         condition: service_healthy
   worker_pl:
     build:
-      context: ./projects/worker
-      additional_contexts:
-        - libs=./libs
+      context: .
+      dockerfile: projects/worker/Dockerfile
     command: celery -A app.main worker -n worker-pl -Q vtt-playlist -c 1 -l INFO
     environment:
       - CELERY_BROKER_URL=redis://redis/0
@@ -139,9 +135,8 @@ services:
       - with-pl
   tgm_bot:
     build:
-      context: ./projects/tgm_bot
-      additional_contexts:
-        - libs=./libs
+      context: .
+      dockerfile: projects/tgm_bot/Dockerfile
     restart: always
     environment:
       - CELERY_BROKER_URL=redis://redis/0

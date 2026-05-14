@@ -1,0 +1,10 @@
+*
+!pyproject.toml
+!uv.lock
+!libs/
+!projects/
+**/__pycache__
+**/.venv
+**/.mypy_cache
+**/.ruff_cache
+**/*.pyc

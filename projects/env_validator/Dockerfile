@@ -1,6 +1,6 @@
 FROM ghcr.io/astral-sh/uv:python3.14-alpine3.23 AS build-stage
 
-WORKDIR /code/projects/env_validator
+WORKDIR /code
 
 ENV UV_COMPILE_BYTECODE=1 \
     UV_NO_CACHE=1 \
@@ -9,11 +9,15 @@ ENV UV_COMPILE_BYTECODE=1 \
     UV_HTTP_TIMEOUT=120 \
     UV_PROJECT_ENVIRONMENT=/venv
 
-# Using additional build context 'libs'
-COPY --from=libs ./vtt_common /code/libs/vtt_common
+# Required for cryptg
+RUN apk --no-cache add cargo
 
-COPY pyproject.toml uv.lock ./
-RUN uv sync --locked --no-dev --no-editable
+COPY pyproject.toml ./
+COPY uv.lock ./
+COPY libs ./libs/
+COPY projects ./projects/
+
+RUN uv sync --project projects/env_validator --locked --no-dev --no-editable
 
 
 FROM python:3.14.5-alpine3.23
@@ -34,6 +38,6 @@ RUN addgroup -g $GID user \
 USER user
 
 COPY --from=build-stage /venv /venv
-COPY ./app ./app
+COPY projects/env_validator/app ./app
 
 CMD [ "python3", "-m", "app.main" ]

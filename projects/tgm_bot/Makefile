@@ -3,9 +3,8 @@
 
 .DEFAULT_GOAL := run
 
-.venv/bin/activate: pyproject.toml uv.lock
-	uv sync; \
-	\
+.venv/bin/activate: pyproject.toml ../../uv.lock
+	UV_PROJECT_ENVIRONMENT=$$(pwd)/.venv uv sync --project .
 	# Update timestamp for this target
 	touch .venv/bin/activate
 
@@ -26,7 +25,7 @@ build-image:
 	OLD_IMAGE_ID=$$(docker images tgm_bot -q); \
 	\
 	echo "Building a new image..."; \
-	docker build -t tgm_bot --build-context libs=../../libs $(OPTS) .; \
+	docker build -t tgm_bot -f Dockerfile $(OPTS) ../..; \
 	\
 	NEW_IMAGE_ID=$$(docker images tgm_bot -q); \
 	if [ -n "$$OLD_IMAGE_ID" ] && [ "$$OLD_IMAGE_ID" != "$$NEW_IMAGE_ID" ]; then \

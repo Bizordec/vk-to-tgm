@@ -9,8 +9,15 @@ ENV UV_COMPILE_BYTECODE=1 \
     UV_HTTP_TIMEOUT=120 \
     UV_PROJECT_ENVIRONMENT=/venv
 
-COPY pyproject.toml uv.lock ./
-RUN uv sync --locked --no-dev
+# Required for cryptg
+RUN apk --no-cache add cargo
+
+COPY pyproject.toml ./
+COPY uv.lock ./
+COPY libs ./libs/
+COPY projects ./projects/
+
+RUN uv sync --project projects/env_helper --locked --no-dev
 
 
 FROM python:3.14.5-alpine3.23
@@ -32,7 +39,7 @@ RUN addgroup -g $GID user \
 USER user
 
 COPY --from=build-stage /venv /venv
-COPY ./app ./app
+COPY projects/env_helper/app ./app
 
 ENTRYPOINT [ "python3", "-m", "app.main" ]
 CMD [ "--env-file", "/tmp/out/.env" ]
