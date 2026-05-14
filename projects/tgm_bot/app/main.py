@@ -1,27 +1,18 @@
 import asyncio
 
-from aiohttp import ClientSession
 from loguru import logger
 from telethon import TelegramClient
 from telethon.sessions import StringSession
-from vkbottle import AiohttpClient
 from vkbottle.api.api import API
 from vtt_common.proxy import get_tgm_proxy_config
 
 from app import plugins
-from app.config import KATE_USER_AGENT, settings
+from app.config import settings
 from app.vk.request_validators import VkLangRequestValidator
 
 
 async def main() -> None:
-    vk_api = API(
-        token=settings.VK_KATE_TOKEN,
-        http_client=AiohttpClient(
-            session=ClientSession(
-                headers={"User-agent": KATE_USER_AGENT},
-            ),
-        ),
-    )
+    vk_api = API(token=settings.VK_TOKEN)
     vk_api.request_validators.append(VkLangRequestValidator())
 
     logger.info("Creating Telegram user client...")

@@ -4,8 +4,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Protocol
 
 import questionary
-from aiohttp import ClientSession
-from vkbottle import API, AiohttpClient, UserAuth, VKAPIError
+from vkbottle import API, AuthError, UserAuth, VKAPIError
 
 from app.console import console
 from app.vk.exception import handle_token_exception
@@ -48,11 +47,7 @@ class Auth(ABC):
 
     @property
     @abstractmethod
-    def client_secret(self) -> str: ...
-
-    @property
-    @abstractmethod
-    def user_agent(self) -> str: ...
+    def client_secret(self) -> str | None: ...
 
     @property
     def login(self) -> str:
@@ -70,7 +65,7 @@ class Auth(ABC):
     async def prompt_login() -> str:
         while True:
             login: str = await questionary.text(
-                "Enter VK login (used to create tokens):",
+                "Enter VK login (used to create token):",
             ).unsafe_ask_async()
             if login:
                 return login
@@ -80,7 +75,7 @@ class Auth(ABC):
     async def prompt_password() -> str:
         while True:
             password: str = await questionary.password(
-                "Enter VK password (used to create tokens):",
+                "Enter VK password (used to create token):",
             ).unsafe_ask_async()
             if password:
                 return password
@@ -90,12 +85,7 @@ class Auth(ABC):
         if not token:
             return False
 
-        vk_api = API(
-            token=token,
-            http_client=AiohttpClient(
-                session=ClientSession(headers={"User-agent": self.user_agent}),
-            ),
-        )
+        vk_api = API(token=token)
         try:
             console.print(f"Checking if {self.token_name} is valid...")
             await vk_api.request("audio.get", data={})
@@ -110,13 +100,7 @@ class Auth(ABC):
 
     async def get_new_token(self) -> str:
         params = AuthParams(need_creds=self._need_creds)
-        user_auth = UserAuth(
-            client_id=self.client_id,
-            client_secret=self.client_secret,
-            http_client=AiohttpClient(
-                session=ClientSession(headers={"User-agent": self.user_agent}),
-            ),
-        )
+        user_auth = UserAuth(client_id=self.client_id, client_secret=self.client_secret)
         while True:
             if params.need_creds:
                 self._login = await self.prompt_login()
@@ -131,9 +115,10 @@ class Auth(ABC):
                     captcha_key=params.captcha_key,
                 )
             except VKAPIError as error:
-                console.print(
-                    f"Error on getting new '{self.token_name}': {error.error_msg}",
-                )
+                error_msg = f"Error on getting new '{self.token_name}': [{error.error_msg}]"
+                if isinstance(error, AuthError):
+                    error_msg += f" {error.error_description}"
+                console.print(error_msg)
 
                 params = await handle_token_exception(user_auth=user_auth, error=error)
                 token = params.token
@@ -147,19 +132,15 @@ class Auth(ABC):
         self._token = await self.get_new_token()
 
 
-class KateAuth(Auth):
+class MarusiaAuth(Auth):
     @property
     def token_name(self) -> str:
-        return "VK Kate token"
+        return "VK Marusia token"
 
     @property
     def client_id(self) -> int:
-        return 2685278
+        return 6463690
 
     @property
-    def client_secret(self) -> str:
-        return "lxhD8OD7dMsqtXIm5IUY"
-
-    @property
-    def user_agent(self) -> str:
-        return "KateMobileAndroid/56 lite-460 (Android 4.4.2; SDK 19; x86; unknown Android SDK built for x86; en)"
+    def client_secret(self) -> str | None:
+        return None

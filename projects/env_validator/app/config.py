@@ -4,7 +4,6 @@ import re
 from functools import partial
 from typing import TYPE_CHECKING, Annotated, Literal
 
-from aiohttp import ClientSession
 from loguru import logger
 from pydantic import AfterValidator, Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -26,8 +25,6 @@ SERVER_URL_PATTERN = re.compile(r"^https?://.+$")
 TGM_CHANNEL_USERNAME_PATTERN = re.compile(r"^[a-zA-Z][\w\d]{3,30}[a-zA-Z\d]$")
 TGM_CHANNEL_ID_PATTERN = re.compile(r"^-100[0-9]+$")
 TGM_BOT_TOKEN_PATTERN = re.compile(r"^.+:.+$")
-
-KATE_USER_AGENT = "KateMobileAndroid/56 lite-460 (Android 4.4.2; SDK 19; x86; unknown Android SDK built for x86; en)"
 
 
 VttLanguage = Literal["en", "ru"]
@@ -53,13 +50,8 @@ ChannelName = Annotated[str, pattern_validator(TGM_CHANNEL_USERNAME_PATTERN)]
 
 
 @async_to_sync
-async def check_vk_kate_token(value: str) -> str:
-    vk_api = API(
-        token=value,
-        http_client=AiohttpClient(
-            session=ClientSession(headers={"User-agent": KATE_USER_AGENT}),
-        ),
-    )
+async def check_vk_token(value: str) -> str:
+    vk_api = API(token=value)
     try:
         await vk_api.request("audio.get", data={})
     except VKAPIError as error:
@@ -79,7 +71,7 @@ def check_tgm_client_phone(value: str) -> str:
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore")
 
-    VK_KATE_TOKEN: Annotated[str, AfterValidator(check_vk_kate_token)]
+    VK_TOKEN: Annotated[str, AfterValidator(check_vk_token)]
 
     VK_COMMUNITY_ID: int
     VK_COMMUNITY_TOKEN: str = Field(min_length=1)

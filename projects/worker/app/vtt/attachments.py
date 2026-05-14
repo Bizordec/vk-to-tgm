@@ -44,15 +44,17 @@ class PhotoHandler(AttachmentHandler):
         if not sizes:
             return None
 
-        max_photo = (None, None)
+        best_index = -1
+        best_url: str | None = None
         for size in sizes:
             try:
                 current_index = PHOTO_SIZES.index(size.type)
             except ValueError:
                 continue
-            if not max_photo[0] or (current_index > PHOTO_SIZES.index(max_photo[0])):
-                max_photo = (size.type, size.url)
-        return max_photo[1]
+            if current_index > best_index:
+                best_index = current_index
+                best_url = size.url
+        return best_url
 
     def add_to_message(self, vtt_attachments: VttAttachments) -> None:
         photo = self.attachment.photo

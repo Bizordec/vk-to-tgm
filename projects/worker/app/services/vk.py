@@ -12,17 +12,16 @@ from app.vtt.schemas import VttVideo
 if TYPE_CHECKING:
     from vkbottle.api import API
     from vkbottle.api.abc import ABCAPI
+    from vkbottle_types.codegen.responses.wall import WallGetByIdExtendedResponseModel
     from vkbottle_types.objects import VideoVideoFiles, VideoVideoFull
-    from vkbottle_types.responses.wall import WallGetByIdExtendedResponseModel
 
 
 def get_video_url(formats: VideoVideoFiles | None) -> str | None:
     if not formats:
         return None
 
-    return cast(
-        str | None,
-        formats.mp4_720 or formats.mp4_480 or formats.mp4_360 or formats.mp4_240 or formats.mp4_144 or formats.flv_320,
+    return (
+        formats.mp4_720 or formats.mp4_480 or formats.mp4_360 or formats.mp4_240 or formats.mp4_144 or formats.flv_320
     )
 
 
@@ -59,10 +58,10 @@ class VkService:
             if not wall_info.items:
                 return None
         except VKAPIError as error:
-            logger.warning(f"Failed to get wall post (https://vk.ru/wall/{owner_id}_{wall_id}): {error.description}")
+            logger.warning(f"Failed to get wall post (https://vk.ru/wall/{owner_id}_{wall_id}): {error.error_msg}")
             return None
         else:
-            return wall_info
+            return wall_info  # type: ignore[no-any-return]
 
     async def get_audio_playlist(
         self,
@@ -72,7 +71,7 @@ class VkService:
     ) -> AudioPlaylist | None:
         try:
             vk_audio_playlist = cast(
-                dict[str, Any],
+                "dict[str, Any]",
                 (
                     await self.vk_api.request(
                         "audio.getPlaylistById",
@@ -88,7 +87,7 @@ class VkService:
             pl_full_id = f"{owner_id}_{playlist_id}"
             if access_key:
                 pl_full_id += f"_{access_key}"
-            logger.warning(f"Failed to get playlist (https://vk.ru/music/album/{pl_full_id}): {error.description}")
+            logger.warning(f"Failed to get playlist (https://vk.ru/music/album/{pl_full_id}): {error.error_msg}")
             return None
         else:
             return AudioPlaylist(**vk_audio_playlist)
@@ -136,7 +135,7 @@ class VkService:
                 logger.warning("Found live stream.")
                 url = f"https://vk.ru/video{_video.owner_id}_{_video.id}"
             elif _video.platform:
-                url = _video.files and _video.files.external
+                url = _video.files.external if _video.files else None
                 if not url:
                     logger.warning("External video url not found.")
                     continue

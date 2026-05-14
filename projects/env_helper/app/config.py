@@ -43,7 +43,7 @@ ChannelName = Annotated[str, pattern_validator(TGM_CHANNEL_USERNAME_PATTERN)]
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore")
 
-    VK_KATE_TOKEN: str = ""
+    VK_TOKEN: str = ""
 
     VK_COMMUNITY_ID: Numeric = ""
     VK_COMMUNITY_TOKEN: str = ""

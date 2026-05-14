@@ -69,8 +69,8 @@ async def test_main(
     mock_aioresponse: aioresponses,
     tmp_path: Path,
 ) -> None:
-    # VK_KATE_TOKEN
-    _setup_vk_2fa_sms_mocks(mock_aioresponse, "2fa_735098214_5367109_3c8f2a9bde514ee781", "vk-kate-token")
+    # VK_TOKEN
+    _setup_vk_2fa_sms_mocks(mock_aioresponse, "2fa_735098214_5367109_3c8f2a9bde514ee781", "vk-token")
 
     # VK_COMMUNITY_TOKEN
     mock_aioresponse.post(
@@ -111,9 +111,9 @@ async def test_main(
     mocker.patch(
         "questionary.question.Question.unsafe_ask_async",
         side_effect=[
-            "vk-login",  # vk login for kate token
-            "vk-password",  # vk login for kate token
-            "1234",  # 2fa sms auth code for kate token
+            "vk-login",  # vk login for vk token
+            "vk-password",  # vk password for vk token
+            "1234",  # 2fa sms auth code for vk token
             "vk-community-token",  # VK_COMMUNITY_TOKEN
             "123456789",  # VK_COMMUNITY_ID
             "https://example.com",  # SERVER_URL
@@ -158,7 +158,7 @@ async def test_main(
     assert env_values["TGM_PL_CHANNEL_USERNAME"] == "test_pl_channel_name"
     assert env_values["VK_COMMUNITY_ID"] == "123456789"
     assert env_values["VK_COMMUNITY_TOKEN"] == "vk-community-token"  # noqa: S105
-    assert env_values["VK_KATE_TOKEN"] == "vk-kate-token"  # noqa: S105
+    assert env_values["VK_TOKEN"] == "vk-token"  # noqa: S105
     assert env_values["VK_SERVER_TITLE"] == "test_server_title"
     assert env_values["VTT_IGNORE_ADS"] == "True"
     assert env_values["VTT_LANGUAGE"] == "en"

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import asyncio
-import cgi
 import re
 import tempfile
+from email.message import EmailMessage
 from mimetypes import guess_extension
 from pathlib import Path
 from secrets import randbelow
@@ -73,8 +73,12 @@ class Downloader:
                     logger.warning("Header 'Content-Disposition' not found.")
                     return None
 
-                _, opts = cgi.parse_header(content_disposition)
-                filename = opts["filename"]
+                msg = EmailMessage()
+                msg["Content-Disposition"] = content_disposition
+                filename = msg.get_filename()
+                if not filename:
+                    logger.warning("Filename not found in Content-Disposition header.")
+                    return None
             else:
                 content_type = response.headers.get("content-type")
                 if not content_type:
@@ -106,6 +110,10 @@ class Downloader:
         url = audio.url
         audio_full_id = f"{audio.owner_id}_{audio.id}_{audio.access_key}"
         audio_full_title = f"{audio.artist} - {audio.title}"
+
+        if not url:
+            logger.warning(f"No URL for audio [{audio_full_id}]")
+            return None
 
         logger.info(f"Downloading audio [{audio_full_id}] from URL: {url}")
 

@@ -30,9 +30,9 @@ def _get_vk_method_url(method: str, access_token: str = "", **kwargs: str) -> st
 
 
 def setup_vk_mocks(mock_aioresponse: aioresponses) -> None:
-    # VK_KATE_TOKEN
+    # VK_TOKEN
     mock_aioresponse.post(
-        _get_vk_method_url("audio.get", access_token="vk-kate-token"),  # noqa: S106
+        _get_vk_method_url("audio.get", access_token="vk-token"),  # noqa: S106
         payload={
             "response": {
                 "count": 0,
@@ -119,7 +119,7 @@ def test_main(
     TGM_PL_CHANNEL_USERNAME="test_pl_channel_name"
     VK_COMMUNITY_ID="123456789"
     VK_COMMUNITY_TOKEN="vk-community-token"
-    VK_KATE_TOKEN="vk-kate-token"
+    VK_TOKEN="vk-token"
     VK_SERVER_TITLE="vk-to-tgm"
     VTT_IGNORE_ADS="true"
     VTT_LANGUAGE="en"

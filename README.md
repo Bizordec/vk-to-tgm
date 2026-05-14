@@ -80,7 +80,7 @@ docker compose down -v --rmi all --remove-orphans
 2. Run `uninstall.sh` script if vk-to-tgm was installed locally.
 3. Copy `.env` file from the backup and change environment variables:
    1. Rename variables:
-      - `KATE_TOKEN` to `VK_KATE_TOKEN`
+      - `KATE_TOKEN` to `VK_TOKEN`
       - `VK_IGNORE_ADS` to `VTT_IGNORE_ADS`
       - `NGINX_HOST` to `NGINX_SERVER_NAME`
    2. Remove deprecated variables:

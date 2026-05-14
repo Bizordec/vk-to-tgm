@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from loguru import logger
 
@@ -28,7 +28,7 @@ class VttMessageFactory:
 
         vtt_attachments.geo = wall.geo
 
-        for attachment in wall.attachments:
+        for attachment in wall.attachments or []:
             handler = get_attachment_handler(attachment=attachment)
             handler.add_to_message(vtt_attachments=vtt_attachments)
 
@@ -75,7 +75,7 @@ class VttMessageFactory:
             logger.warning("Wall post not found.")
             return "NOT_FOUND"
 
-        wall = extended_wall.items[0]
+        wall = cast("WallWallpostFull", extended_wall.items[0])
 
         if wall.donut and wall.donut.is_donut:
             logger.warning("Skipping donut wall post.")

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from dotenv import set_key
 
 from app.tgm import BotAuth, MainChannel, PlaylistChannel, UserAuth
-from app.vk import Community, KateAuth
+from app.vk import Community, MarusiaAuth
 from app.vtt import SSL, Options
 
 if TYPE_CHECKING:
@@ -24,10 +24,10 @@ class SettingsManager:
         self.settings.TGM_BOT_SESSION = tgm_bot_auth.session
 
     async def prompt_vk_auth(self) -> None:
-        vk_kate_auth = KateAuth(token=self.settings.VK_KATE_TOKEN)
-        await vk_kate_auth.prompt_all()
+        vk_auth = MarusiaAuth(token=self.settings.VK_TOKEN)
+        await vk_auth.prompt_all()
 
-        self.settings.VK_KATE_TOKEN = vk_kate_auth.token
+        self.settings.VK_TOKEN = vk_auth.token
 
     async def prompt_vk_community(self) -> None:
         vk_community = Community(

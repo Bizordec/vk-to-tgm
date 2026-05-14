@@ -1,8 +1,7 @@
-from aiohttp import ClientSession
 from loguru import logger
 from telethon import TelegramClient
 from telethon.sessions import StringSession
-from vkbottle import API, AiohttpClient
+from vkbottle import API
 from vtt_common.proxy import get_tgm_proxy_config
 
 from app.config import settings
@@ -15,26 +14,16 @@ from app.vtt.factories.message import VttMessageFactory
 from app.vtt.factories.playlist import VttPlaylistFactory
 from app.worker import worker
 
-KATE_USER_AGENT = "KateMobileAndroid/56 lite-460 (Android 4.4.2; SDK 19; x86; unknown Android SDK built for x86; en)"
-
-
 logger.disable("vkbottle")
 
 
-@worker.task()  # type: ignore[misc]
+@worker.task()  # type: ignore[untyped-decorator]
 @async_to_sync
 async def forward_wall(owner_id: int, wall_id: int) -> str:
     with logger.contextualize(owner_id=owner_id, wall_id=wall_id):
         logger.info(f"New VK wall post received: 'https://vk.ru/wall{owner_id}_{wall_id}'")
 
-        vk_api = API(
-            token=settings.VK_KATE_TOKEN,
-            http_client=AiohttpClient(
-                session=ClientSession(
-                    headers={"User-agent": KATE_USER_AGENT},
-                ),
-            ),
-        )
+        vk_api = API(token=settings.VK_TOKEN)
         vk_api.request_validators.append(VkLangRequestValidator())
 
         vk_service = VkService(vk_api=vk_api)
@@ -77,7 +66,7 @@ async def forward_wall(owner_id: int, wall_id: int) -> str:
                 return error_msg
 
 
-@worker.task()  # type: ignore[misc]
+@worker.task()  # type: ignore[untyped-decorator]
 @async_to_sync
 async def forward_playlist(
     *,
@@ -97,14 +86,7 @@ async def forward_playlist(
         pl_url = f"https://vk.ru/music/playlist/{owner_id}_{playlist_id}{'_' + access_key if access_key else ''}"
         logger.info(f"New VK playlist received: '{pl_url}'")
 
-        vk_api = API(
-            token=settings.VK_KATE_TOKEN,
-            http_client=AiohttpClient(
-                session=ClientSession(
-                    headers={"User-agent": KATE_USER_AGENT},
-                ),
-            ),
-        )
+        vk_api = API(token=settings.VK_TOKEN)
         vk_api.request_validators.append(VkLangRequestValidator())
 
         vk_service = VkService(vk_api=vk_api)

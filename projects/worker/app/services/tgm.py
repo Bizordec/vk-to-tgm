@@ -6,7 +6,6 @@ from loguru import logger
 from telethon.extensions import html
 from telethon.tl.custom.button import Button
 from telethon.tl.types import Channel, InputGeoPoint, InputMediaGeoLive
-from telethon.tl.types import Message as TelethonMessage
 
 from app.config import _, settings
 from app.services.downloader import Downloader
@@ -14,6 +13,7 @@ from app.worker import worker
 
 if TYPE_CHECKING:
     from telethon import TelegramClient
+    from telethon.tl.types import Message as TelethonMessage
     from telethon.tl.types import TypeMessageEntity
     from vkbottle_types.objects import AudioAudio
 
@@ -58,7 +58,7 @@ class TelegramWallSender:
                 if videos:
                     files.extend(await downloader.download_files(videos=videos))
                 main_msg = cast(
-                    TelethonMessage,
+                    "TelethonMessage",
                     (
                         await self.tgm_client.send_file(
                             self.channel_id,
@@ -74,7 +74,7 @@ class TelegramWallSender:
                 is_caption = True
                 current_videos = await downloader.download_files(videos=videos)
                 main_msg = cast(
-                    TelethonMessage,
+                    "TelethonMessage",
                     (
                         await self.tgm_client.send_file(
                             self.channel_id,
@@ -99,7 +99,7 @@ class TelegramWallSender:
                 document = attachments.documents.pop(0)
                 downloaded_documents = await downloader.download_media(document.url)
                 main_msg = cast(
-                    TelethonMessage,
+                    "TelethonMessage",
                     await self.tgm_client.send_file(
                         self.channel_id,
                         file=downloaded_documents,
@@ -112,7 +112,7 @@ class TelegramWallSender:
                 is_caption = True
                 downloaded_audios = await downloader.download_files(audios=attachments.audios[:10])
                 main_msg = cast(
-                    TelethonMessage,
+                    "TelethonMessage",
                     (
                         await self.tgm_client.send_file(
                             self.channel_id,
@@ -376,7 +376,7 @@ class TelegramPlaylistSender:
             message_id=pl_main_message.id,
         )
         wall_message = cast(
-            TelethonMessage,
+            "TelethonMessage",
             await self.tgm_client.get_messages(
                 self.wall_channel_id,
                 ids=self.wall_message_id,

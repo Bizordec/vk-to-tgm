@@ -114,7 +114,7 @@ class VttWallTextFactory:
         signer_fullname = f"{signer.first_name} {signer.last_name}"
         return f"\n\n👤 {get_html_link(f'https://vk.ru/id{signer_id}', signer_fullname)}"
 
-    async def _get_post_link(self, post_type: WallPostType) -> str:
+    async def _get_post_link(self, post_type: WallPostType | None) -> str:
         post_href = f"https://vk.ru/wall{self._wall.owner_id}_{self._wall.id}"
 
         if not self._is_repost:
@@ -126,7 +126,7 @@ class VttWallTextFactory:
             post_href = f"https://vk.ru/photo{self._wall.owner_id}_{self._wall.id}"
 
         repost_text = VK_REPOST
-        group_name = next((group.name for group in self._groups if group.id == abs(self._wall.owner_id)), None)
+        group_name = next((group.name for group in self._groups if group.id == abs(self._wall.owner_id or 0)), None)
         if group_name:
             repost_text += f": {group_name}"
         return f"\n\n🔁 {get_html_link(post_href, repost_text)}"
