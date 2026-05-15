@@ -1,6 +1,6 @@
 [project]
 name = "env-helper"
-version = "1.2.0"
+version = "0.1.0"
 description = "Service that helps to set environment variables in .env file"
 authors = [{ name = "Ilia Boyazitov" }]
 requires-python = ">=3.14,<4"
