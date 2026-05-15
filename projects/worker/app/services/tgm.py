@@ -96,7 +96,7 @@ class TelegramWallSender:
                 )
             elif attachments.documents:
                 is_caption = True
-                document = attachments.documents.pop(0)
+                document = attachments.documents[0]
                 downloaded_documents = await downloader.download_media(document.url)
                 main_msg = cast(
                     "TelethonMessage",
@@ -183,9 +183,9 @@ class TelegramWallSender:
                 )
                 logger.info("Audios sent successfully.")
 
-            if attachments.documents:
+            if attachments.documents[1:]:
                 logger.info("Sending documents...")
-                document_urls = [doc.url for doc in attachments.documents]
+                document_urls = [doc.url for doc in attachments.documents[1:]]
                 document_paths = await downloader.download_files(urls=document_urls)
                 await self.tgm_client.send_file(
                     self.channel_id,

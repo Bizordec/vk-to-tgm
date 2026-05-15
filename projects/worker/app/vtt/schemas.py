@@ -36,15 +36,11 @@ def split_text(
 
     strip_len = tgm_limit - len(p_footer_text)
     if len(p_header_text) > strip_len:
-        s_header_text, s_header_entities = next(
-            telethon_split_text(p_header_text, p_header_entities, limit=strip_len),
-            ("", None),
-        )
+        split_gen = telethon_split_text(p_header_text, p_header_entities, limit=strip_len)
+        s_header_text, s_header_entities = next(split_gen, ("", None))
         if s_header_text and s_header_entities is not None:
             main_text = html.unparse(s_header_text, s_header_entities)
-            main_text_offset = len(main_text)
-            p_rest_text, p_rest_entities = html.parse(header_text[main_text_offset:])
-            rest_texts = list(telethon_split_text(p_rest_text, p_rest_entities))
+            rest_texts = list(split_gen)
 
     main_text += footer_text
     return [html.parse(main_text), *rest_texts]

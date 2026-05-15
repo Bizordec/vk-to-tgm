@@ -144,12 +144,7 @@ class Downloader:
         elif try_fallback:
             logger.warning(f"Broken audio [{audio_full_id}] [{audio_full_title}], trying with another token...")
             fallback_audio = next(
-                iter(
-                    await self.vk_service.get_audio_by_ids(
-                        audio_ids=[audio_full_id],
-                        use_vk_user=True,
-                    ),
-                ),
+                iter(await self.vk_service.get_audio_by_ids(audio_ids=[audio_full_id])),
                 None,
             )
             if not fallback_audio:
