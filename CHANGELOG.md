@@ -1,3 +1,9 @@
+## v1.2.1 (2023-08-10)
+
+### Fix
+
+- **docker**: Fix docker image build error caused by old poetry
+
 ## v1.2.0 (2023-08-06)
 
 ### Feat
