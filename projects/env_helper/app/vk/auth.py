@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Protocol
 
 import questionary
 from vkbottle import API, AuthError, UserAuth, VKAPIError
+from vkbottle.http import AiohttpClient
 
 from app.console import console
 from app.vk.exception import handle_token_exception
@@ -85,7 +86,7 @@ class Auth(ABC):
         if not token:
             return False
 
-        vk_api = API(token=token)
+        vk_api = API(token=token, http_client=AiohttpClient())
         try:
             console.print(f"Checking if {self.token_name} is valid...")
             await vk_api.request("audio.get", data={})

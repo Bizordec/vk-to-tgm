@@ -51,7 +51,7 @@ ChannelName = Annotated[str, pattern_validator(TGM_CHANNEL_USERNAME_PATTERN)]
 
 @async_to_sync
 async def check_vk_token(value: str) -> str:
-    vk_api = API(token=value)
+    vk_api = API(token=value, http_client=AiohttpClient())
     try:
         await vk_api.request("audio.get", data={})
     except VKAPIError as error:

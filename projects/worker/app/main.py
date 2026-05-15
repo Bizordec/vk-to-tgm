@@ -2,6 +2,7 @@ from loguru import logger
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from vkbottle import API
+from vkbottle.http import AiohttpClient
 from vtt_common.proxy import get_tgm_proxy_config
 
 from app.config import settings
@@ -23,7 +24,7 @@ async def forward_wall(owner_id: int, wall_id: int) -> str:
     with logger.contextualize(owner_id=owner_id, wall_id=wall_id):
         logger.info(f"New VK wall post received: 'https://vk.ru/wall{owner_id}_{wall_id}'")
 
-        vk_api = API(token=settings.VK_TOKEN)
+        vk_api = API(token=settings.VK_TOKEN, http_client=AiohttpClient())
         vk_api.request_validators.append(VkLangRequestValidator())
 
         vk_service = VkService(vk_api=vk_api)
@@ -86,7 +87,7 @@ async def forward_playlist(
         pl_url = f"https://vk.ru/music/playlist/{owner_id}_{playlist_id}{'_' + access_key if access_key else ''}"
         logger.info(f"New VK playlist received: '{pl_url}'")
 
-        vk_api = API(token=settings.VK_TOKEN)
+        vk_api = API(token=settings.VK_TOKEN, http_client=AiohttpClient())
         vk_api.request_validators.append(VkLangRequestValidator())
 
         vk_service = VkService(vk_api=vk_api)

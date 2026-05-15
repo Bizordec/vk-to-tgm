@@ -4,6 +4,7 @@ from loguru import logger
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from vkbottle.api.api import API
+from vkbottle.http import AiohttpClient
 from vtt_common.proxy import get_tgm_proxy_config
 
 from app import plugins
@@ -12,7 +13,7 @@ from app.vk.request_validators import VkLangRequestValidator
 
 
 async def main() -> None:
-    vk_api = API(token=settings.VK_TOKEN)
+    vk_api = API(token=settings.VK_TOKEN, http_client=AiohttpClient())
     vk_api.request_validators.append(VkLangRequestValidator())
 
     logger.info("Creating Telegram user client...")
