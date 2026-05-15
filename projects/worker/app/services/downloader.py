@@ -12,10 +12,10 @@ from urllib.parse import urlparse
 
 import aiofiles
 import ffmpeg
-from aiofiles.tempfile import NamedTemporaryFile
 from aiohttp import ClientSession, ClientTimeout
 from loguru import logger
 from mutagen.easyid3 import EasyID3
+from pathvalidate import sanitize_filename
 
 from app.exceptions import VttError
 
@@ -117,10 +117,16 @@ class Downloader:
 
         logger.info(f"Downloading audio [{audio_full_id}] from URL: {url}")
 
-        filepath = None
-
         await asyncio.sleep(randbelow(3))
-        async with NamedTemporaryFile(suffix=".mp3", delete=False) as temp:
+
+        safe_name = sanitize_filename(f"{audio_full_title}.mp3")
+        filepath = Path(tempfile.gettempdir(), safe_name)
+        counter = 1
+        while await asyncio.to_thread(filepath.exists):
+            filepath = Path(tempfile.gettempdir(), f"{safe_name.removesuffix('.mp3')}_{counter}.mp3")
+            counter += 1
+
+        async with aiofiles.open(filepath, "w+b") as temp:
             if not urlparse(url).path.endswith("m3u8"):
                 logger.info("Downloading audio by http...")
                 async with self.session.get(url) as response:
@@ -132,8 +138,6 @@ class Downloader:
                 stream = ffmpeg.output(stream, "-", c="copy", f="mp3")
                 out, _ = ffmpeg.run(stream, capture_stdout=True, quiet=True)
                 await temp.write(out)
-
-            filepath = Path(str(temp.name))
 
         # Setting audio metadata
         audiofile = EasyID3(filepath)  # type: ignore[no-untyped-call]
