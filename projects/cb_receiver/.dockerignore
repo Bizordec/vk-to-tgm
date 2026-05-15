@@ -1,0 +1,5 @@
+*
+!app/**
+!pyproject.toml
+!uv.lock
+!Dockerfile

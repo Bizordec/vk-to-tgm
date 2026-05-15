@@ -1,0 +1,25 @@
+{
+    "folders": [
+        {
+            "path": "."
+        },
+        {
+            "path": "projects/env_helper"
+        },
+        {
+            "path": "projects/env_validator"
+        },
+        {
+            "path": "projects/cb_receiver"
+        },
+        {
+            "path": "projects/worker"
+        },
+        {
+            "path": "projects/tgm_bot"
+        }
+    ],
+    "settings": {
+        "files.insertFinalNewline": true
+    }
+}

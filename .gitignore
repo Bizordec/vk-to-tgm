@@ -2,7 +2,6 @@ venv
 .venv
 __pycache__
 vk_config.v2.json
-celeryconfig.py
 .env*
 !.env.example
 node_modules
@@ -10,3 +9,6 @@ node_modules
 *.session
 *.session-journal
 celerybeat-*
+*.pyz
+out/
+certs/

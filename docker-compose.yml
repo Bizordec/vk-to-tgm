@@ -1,100 +1,131 @@
-version: "3.8"
+x-env-file: &env-file
+  - path: .env
+    required: false
+  # For Portainer
+  - path: stack.env
+    required: false
+
 volumes:
-  vtt:
-networks:
-  net_vtt:
+  html:
+  acme:
 services:
-  sign_in:
-    build: .
-    volumes:
-      - vtt:/vk-to-tgm/tgm_sessions/
-      - ./.env:/vk-to-tgm/.env
-    profiles:
-      - sign_in
-    command: python -m app.sign_in
-  rabbitmq:
-    image: rabbitmq:3.10.5-alpine
-    networks:
-      - net_vtt
-  cb-receiver:
-    build: .
+  env_validator:
+    build:
+      context: projects/env_validator
+      additional_contexts:
+        libs: ./libs
+    env_file: *env-file
+  redis:
+    image: redis:7.2.3-alpine3.19
     restart: always
-    environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-    volumes:
-      - vtt:/vk-to-tgm/tgm_sessions/
-      - ./.env:/vk-to-tgm/.env
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-config app/logging_config.yaml
+    healthcheck:
+      test: sh -c "redis-cli ping | grep PONG"
+      interval: 1s
+      timeout: 3s
+      retries: 5
     depends_on:
-      - rabbitmq
-    networks:
-      - net_vtt
+      env_validator:
+        condition: service_completed_successfully
+  cb_receiver:
+    build:
+      context: projects/cb_receiver
+      additional_contexts:
+        libs: ./libs
+    restart: always
+    env_file: *env-file
+    environment:
+      - CELERY_BROKER_URL=redis://redis/0
+      - CELERY_RESULT_BACKEND=redis://redis/0
+
+      # SSL envs
+      - VIRTUAL_HOST=${NGINX_SERVER_NAME}
+      - VIRTUAL_PORT=8000
+      - LETSENCRYPT_HOST=${NGINX_SERVER_NAME}
+    depends_on:
+      env_validator:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+  worker_main:
+    build:
+      context: projects/worker
+      additional_contexts:
+        libs: ./libs
+    restart: always
+    command: celery -A app.main worker -n worker-main -Q vtt-wall -c 1 -l INFO
+    env_file: *env-file
+    environment:
+      - CELERY_BROKER_URL=redis://redis/0
+      - CELERY_RESULT_BACKEND=redis://redis/0
+    depends_on:
+      env_validator:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+  worker_pl:
+    build:
+      context: projects/worker
+      additional_contexts:
+        libs: ./libs
+    command: celery -A app.main worker -n worker-pl -Q vtt-playlist -c 1 -l INFO
+    env_file: *env-file
+    environment:
+      - CELERY_BROKER_URL=redis://redis/0
+      - CELERY_RESULT_BACKEND=redis://redis/0
+    depends_on:
+      env_validator:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    profiles:
+      - with-pl
+  tgm_bot:
+    build:
+      context: projects/tgm_bot
+      additional_contexts:
+        libs: ./libs
+    restart: always
+    env_file: *env-file
+    environment:
+      - CELERY_BROKER_URL=redis://redis/0
+      - CELERY_RESULT_BACKEND=redis://redis/0
+    depends_on:
+      env_validator:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+  nginx:
+    build:
+      context: ./nginx
     ports:
-      - "127.0.0.1:8000:8000"
-  tgm-bot:
-    build: .
-    restart: always
+      - "${NGINX_HTTP_PORT:-80}:8080"
     environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-    volumes:
-      - vtt:/vk-to-tgm/tgm_sessions/
-      - ./.env:/vk-to-tgm/.env
-    command: python3 -m app.bot.main
+      - NGINX_PROXY_PASS=http://cb_receiver:8000
     depends_on:
-      - rabbitmq
-    networks:
-      - net_vtt
-  worker-wall:
-    build: .
-    restart: always
-    environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-    volumes:
-      - vtt:/vk-to-tgm/tgm_sessions/
-      - ./.env:/vk-to-tgm/.env
-    command: celery -A app.celery_worker worker -n vtt-worker-wall@%%h -Q vtt-wall --pool=solo --loglevel=INFO
-    depends_on:
-      - rabbitmq
-    networks:
-      - net_vtt
-  worker-pl:
-    build: .
-    restart: always
-    environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-    volumes:
-      - vtt:/vk-to-tgm/tgm_sessions/
-      - ./.env:/vk-to-tgm/.env
-    command: celery -A app.celery_worker worker -n vtt-worker-pl@%%h -Q vtt-playlist --pool=solo --loglevel=INFO
-    depends_on:
-      - rabbitmq
-    networks:
-      - net_vtt
+      cb_receiver:
+        condition: service_started
     profiles:
-      - with_pl
-  worker-dbc:
-    build: .
-    restart: always
-    environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - http
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy:1.9.0-alpine
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+      - "${NGINX_HTTPS_PORT:-443}:443"
     volumes:
-      - vtt:/vk-to-tgm/tgm_sessions/
-      - ./.env:/vk-to-tgm/.env
-    command: celery -A app.celery_worker worker -n vtt-worker-dbc@%%h -Q celery --pool=solo --loglevel=INFO
-    depends_on:
-      - rabbitmq
-    networks:
-      - net_vtt
-  dbc-scheduler:
-    build: .
-    restart: always
-    environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - ./certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    profiles:
+      - https
+  nginx-proxy-acme:
+    image: nginxproxy/acme-companion:2.6.1
+    volumes_from:
+      - nginx-proxy
     volumes:
-      - vtt:/vk-to-tgm/tgm_sessions/
-      - ./.env:/vk-to-tgm/.env
-    command: celery -A app.celery_worker beat --loglevel=INFO --logfile=logs/vtt-dbc-scheduler.log
-    depends_on:
-      - rabbitmq
-    networks:
-      - net_vtt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - acme:/etc/acme.sh
+    environment:
+      - DEFAULT_EMAIL=${SSL_EMAIL}
+    profiles:
+      - https
+      - acme
