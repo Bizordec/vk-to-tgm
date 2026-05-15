@@ -3,8 +3,8 @@
 
 .DEFAULT_GOAL := run
 
-.venv/bin/activate: pyproject.toml ../../uv.lock
-	UV_PROJECT_ENVIRONMENT=$$(pwd)/.venv uv sync --project .
+.venv/bin/activate: pyproject.toml uv.lock
+	uv sync
 	# Update timestamp for this target
 	touch .venv/bin/activate
 
