@@ -11,8 +11,9 @@ volumes:
 services:
   env_validator:
     build:
-      context: .
-      dockerfile: projects/env_validator/Dockerfile
+      context: projects/env_validator
+      additional_contexts:
+        libs: ./libs
     env_file: *env-file
   redis:
     image: redis:7.2.3-alpine3.19
@@ -27,8 +28,9 @@ services:
         condition: service_completed_successfully
   cb_receiver:
     build:
-      context: .
-      dockerfile: projects/cb_receiver/Dockerfile
+      context: projects/cb_receiver
+      additional_contexts:
+        libs: ./libs
     restart: always
     env_file: *env-file
     environment:
@@ -46,8 +48,9 @@ services:
         condition: service_healthy
   worker_main:
     build:
-      context: .
-      dockerfile: projects/worker/Dockerfile
+      context: projects/worker
+      additional_contexts:
+        libs: ./libs
     restart: always
     command: celery -A app.main worker -n worker-main -Q vtt-wall -c 1 -l INFO
     env_file: *env-file
@@ -61,8 +64,9 @@ services:
         condition: service_healthy
   worker_pl:
     build:
-      context: .
-      dockerfile: projects/worker/Dockerfile
+      context: projects/worker
+      additional_contexts:
+        libs: ./libs
     command: celery -A app.main worker -n worker-pl -Q vtt-playlist -c 1 -l INFO
     env_file: *env-file
     environment:
@@ -77,8 +81,9 @@ services:
       - with-pl
   tgm_bot:
     build:
-      context: .
-      dockerfile: projects/tgm_bot/Dockerfile
+      context: projects/tgm_bot
+      additional_contexts:
+        libs: ./libs
     restart: always
     env_file: *env-file
     environment:

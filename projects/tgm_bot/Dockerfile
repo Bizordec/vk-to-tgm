@@ -1,6 +1,8 @@
+# syntax=docker/dockerfile:1.7
+
 FROM ghcr.io/astral-sh/uv:python3.14-alpine3.23 AS build-stage
 
-WORKDIR /code
+WORKDIR /code/projects/tgm_bot
 
 ENV UV_COMPILE_BYTECODE=1 \
     UV_NO_CACHE=1 \
@@ -12,12 +14,9 @@ ENV UV_COMPILE_BYTECODE=1 \
 # Required for cryptg
 RUN apk --no-cache add cargo
 
-COPY pyproject.toml ./
-COPY uv.lock ./
-COPY libs ./libs/
-COPY projects ./projects/
-
-RUN uv sync --project projects/tgm_bot --locked --no-dev --no-editable
+COPY --from=libs . /code/libs/
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --no-dev --no-editable
 
 
 FROM python:3.14.5-alpine3.23
@@ -38,7 +37,7 @@ RUN addgroup -g $GID user \
 USER user
 
 COPY --from=build-stage /venv /venv
-COPY projects/tgm_bot/locales ./locales
-COPY projects/tgm_bot/app ./app
+COPY app ./app/
+COPY locales ./locales/
 
-CMD ["python", "-m", "app.main"]
+CMD [ "python", "-m", "app.main" ]

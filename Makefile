@@ -9,7 +9,11 @@ PRECOMMIT_VERSION := 3.7.1
 env-helper:
 	mkdir -p out/
 	if [ -f .env ]; then cp .env out/.env; fi
-	docker build -t env_helper -f projects/env_helper/Dockerfile .
+	docker build \
+	  --build-context libs=libs \
+	  -t env_helper \
+	  -f projects/env_helper/Dockerfile \
+	  projects/env_helper/
 	docker run --rm -it -v "$(PWD)/out":/tmp/out env_helper
 	cp out/.env .env
 	rm -r out/
