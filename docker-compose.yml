@@ -1,3 +1,10 @@
+x-env-file: &env-file
+  - path: .env
+    required: false
+  # For Portainer
+  - path: stack.env
+    required: false
+
 volumes:
   html:
   acme:
@@ -6,32 +13,7 @@ services:
     build:
       context: .
       dockerfile: projects/env_validator/Dockerfile
-    environment:
-      - VK_TOKEN=${VK_TOKEN}
-      - VK_COMMUNITY_ID=${VK_COMMUNITY_ID}
-      - VK_COMMUNITY_TOKEN=${VK_COMMUNITY_TOKEN}
-      - VK_SERVER_TITLE=${VK_SERVER_TITLE}
-      - SERVER_URL=${SERVER_URL}
-      - TGM_API_ID=${TGM_API_ID}
-      - TGM_API_HASH=${TGM_API_HASH}
-      - TGM_BOT_TOKEN=${TGM_BOT_TOKEN}
-      - TGM_BOT_SESSION=${TGM_BOT_SESSION}
-      - TGM_CLIENT_PHONE=${TGM_CLIENT_PHONE}
-      - TGM_CLIENT_SESSION=${TGM_CLIENT_SESSION}
-      - TGM_CHANNEL_ID=${TGM_CHANNEL_ID}
-      - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
-      - VTT_LANGUAGE=${VTT_LANGUAGE}
-      - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
-
-      # Proxy envs
-      - TGM_PROXY_TYPE=${TGM_PROXY_TYPE:-}
-      - TGM_PROXY_ADDR=${TGM_PROXY_ADDR:-}
-      - TGM_PROXY_PORT=${TGM_PROXY_PORT:-}
-      - TGM_PROXY_RDNS=${TGM_PROXY_RDNS:-true}
-      - TGM_PROXY_USER=${TGM_PROXY_USER:-}
-      - TGM_PROXY_PASS=${TGM_PROXY_PASS:-}
-      - TGM_PROXY_MTPROTO_SECRET=${TGM_PROXY_MTPROTO_SECRET:-}
-      - TGM_PROXY_MTPROTO_CONNECTION=${TGM_PROXY_MTPROTO_CONNECTION:-randomized_intermediate}
+    env_file: *env-file
   redis:
     image: redis:7.2.3-alpine3.19
     restart: always
@@ -48,12 +30,8 @@ services:
       context: .
       dockerfile: projects/cb_receiver/Dockerfile
     restart: always
+    env_file: *env-file
     environment:
-      - VK_COMMUNITY_ID=${VK_COMMUNITY_ID}
-      - VK_COMMUNITY_TOKEN=${VK_COMMUNITY_TOKEN}
-      - VK_SERVER_TITLE=${VK_SERVER_TITLE}
-      - SERVER_URL=${SERVER_URL}
-      - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
       - CELERY_BROKER_URL=redis://redis/0
       - CELERY_RESULT_BACKEND=redis://redis/0
 
@@ -72,28 +50,10 @@ services:
       dockerfile: projects/worker/Dockerfile
     restart: always
     command: celery -A app.main worker -n worker-main -Q vtt-wall -c 1 -l INFO
+    env_file: *env-file
     environment:
       - CELERY_BROKER_URL=redis://redis/0
       - CELERY_RESULT_BACKEND=redis://redis/0
-      - VK_TOKEN=${VK_TOKEN}
-      - TGM_API_ID=${TGM_API_ID}
-      - TGM_API_HASH=${TGM_API_HASH}
-      - TGM_BOT_TOKEN=${TGM_BOT_TOKEN}
-      - TGM_BOT_SESSION=${TGM_BOT_SESSION}
-      - TGM_CHANNEL_ID=${TGM_CHANNEL_ID}
-      - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
-      - VTT_LANGUAGE=${VTT_LANGUAGE}
-      - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
-
-      # Proxy envs
-      - TGM_PROXY_TYPE=${TGM_PROXY_TYPE:-}
-      - TGM_PROXY_ADDR=${TGM_PROXY_ADDR:-}
-      - TGM_PROXY_PORT=${TGM_PROXY_PORT:-}
-      - TGM_PROXY_RDNS=${TGM_PROXY_RDNS:-true}
-      - TGM_PROXY_USER=${TGM_PROXY_USER:-}
-      - TGM_PROXY_PASS=${TGM_PROXY_PASS:-}
-      - TGM_PROXY_MTPROTO_SECRET=${TGM_PROXY_MTPROTO_SECRET:-}
-      - TGM_PROXY_MTPROTO_CONNECTION=${TGM_PROXY_MTPROTO_CONNECTION:-randomized_intermediate}
     depends_on:
       env_validator:
         condition: service_completed_successfully
@@ -104,28 +64,10 @@ services:
       context: .
       dockerfile: projects/worker/Dockerfile
     command: celery -A app.main worker -n worker-pl -Q vtt-playlist -c 1 -l INFO
+    env_file: *env-file
     environment:
       - CELERY_BROKER_URL=redis://redis/0
       - CELERY_RESULT_BACKEND=redis://redis/0
-      - VK_TOKEN=${VK_TOKEN}
-      - TGM_API_ID=${TGM_API_ID}
-      - TGM_API_HASH=${TGM_API_HASH}
-      - TGM_BOT_TOKEN=${TGM_BOT_TOKEN}
-      - TGM_BOT_SESSION=${TGM_BOT_SESSION}
-      - TGM_CHANNEL_ID=${TGM_CHANNEL_ID}
-      - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
-      - VTT_LANGUAGE=${VTT_LANGUAGE}
-      - VTT_IGNORE_ADS=${VTT_IGNORE_ADS}
-
-      # Proxy envs
-      - TGM_PROXY_TYPE=${TGM_PROXY_TYPE:-}
-      - TGM_PROXY_ADDR=${TGM_PROXY_ADDR:-}
-      - TGM_PROXY_PORT=${TGM_PROXY_PORT:-}
-      - TGM_PROXY_RDNS=${TGM_PROXY_RDNS:-true}
-      - TGM_PROXY_USER=${TGM_PROXY_USER:-}
-      - TGM_PROXY_PASS=${TGM_PROXY_PASS:-}
-      - TGM_PROXY_MTPROTO_SECRET=${TGM_PROXY_MTPROTO_SECRET:-}
-      - TGM_PROXY_MTPROTO_CONNECTION=${TGM_PROXY_MTPROTO_CONNECTION:-randomized_intermediate}
     depends_on:
       env_validator:
         condition: service_completed_successfully
@@ -138,29 +80,10 @@ services:
       context: .
       dockerfile: projects/tgm_bot/Dockerfile
     restart: always
+    env_file: *env-file
     environment:
       - CELERY_BROKER_URL=redis://redis/0
       - CELERY_RESULT_BACKEND=redis://redis/0
-      - VK_TOKEN=${VK_TOKEN}
-      - TGM_API_ID=${TGM_API_ID}
-      - TGM_API_HASH=${TGM_API_HASH}
-      - TGM_BOT_TOKEN=${TGM_BOT_TOKEN}
-      - TGM_BOT_SESSION=${TGM_BOT_SESSION}
-      - TGM_CLIENT_PHONE=${TGM_CLIENT_PHONE}
-      - TGM_CLIENT_SESSION=${TGM_CLIENT_SESSION}
-      - TGM_CHANNEL_ID=${TGM_CHANNEL_ID}
-      - TGM_PL_CHANNEL_ID=${TGM_PL_CHANNEL_ID}
-      - VTT_LANGUAGE=${VTT_LANGUAGE}
-
-      # Proxy envs
-      - TGM_PROXY_TYPE=${TGM_PROXY_TYPE:-}
-      - TGM_PROXY_ADDR=${TGM_PROXY_ADDR:-}
-      - TGM_PROXY_PORT=${TGM_PROXY_PORT:-}
-      - TGM_PROXY_RDNS=${TGM_PROXY_RDNS:-true}
-      - TGM_PROXY_USER=${TGM_PROXY_USER:-}
-      - TGM_PROXY_PASS=${TGM_PROXY_PASS:-}
-      - TGM_PROXY_MTPROTO_SECRET=${TGM_PROXY_MTPROTO_SECRET:-}
-      - TGM_PROXY_MTPROTO_CONNECTION=${TGM_PROXY_MTPROTO_CONNECTION:-randomized_intermediate}
     depends_on:
       env_validator:
         condition: service_completed_successfully
