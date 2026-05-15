@@ -29,7 +29,7 @@ async def is_playlist_exists(
         if access_key:
             pl_full_id += f"_{access_key}"
 
-        logger.warning(f"Failed to get playlist (https://vk.ru/music/album/{pl_full_id}): {error.error_msg}")
+        logger.warning("Failed to get playlist (https://vk.ru/music/album/{}): {}", pl_full_id, error.error_msg)
 
         return False
 

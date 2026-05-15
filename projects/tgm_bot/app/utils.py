@@ -41,7 +41,7 @@ async def is_user_authorized(event: NewMessageEvent) -> bool:
     try:
         perm = await client.get_permissions(settings.TGM_CHANNEL_ID, sender)
     except RPCError as error:
-        logger.warning(f"Failed to check permissions: {error.message}")
+        logger.warning("Failed to check permissions: {}", error.message)
         await event.respond(PERMISSION_CHECK_FAILED, buttons=Button.clear())
         return False
 

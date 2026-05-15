@@ -4,6 +4,7 @@ import re
 from typing import TYPE_CHECKING, cast
 from urllib.parse import parse_qs, urlparse
 
+from loguru import logger
 from telethon import events
 from telethon.events import StopPropagation
 from telethon.tl.custom.button import Button
@@ -70,7 +71,7 @@ def _get_playlist_full_id(message: str) -> str | None:
     return full_id
 
 
-async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api: API) -> None:  # noqa: C901
+async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api: API) -> None:  # noqa: C901, PLR0915
     # Callback for playlist button in main channel
     @bot.on(events.CallbackQuery(data=b"wait_for_pl_link"))  # type: ignore[untyped-decorator]
     async def wait_for_pl_link(event: events.CallbackQuery.Event) -> None:
@@ -83,6 +84,13 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
             raise events.StopPropagation
 
         data = state_manager.get_info(event.sender_id)[1]
+        logger.info(
+            "User {} confirmed playlist {}_{} (access_key={})",
+            event.sender_id,
+            data["owner_id"],
+            data["playlist_id"],
+            data.get("access_key"),
+        )
         celery_app.send_task(
             "app.main.forward_playlist",
             task_id=f"{VttTaskType.playlist}_{data['owner_id']}_{data['playlist_id']}",
@@ -102,10 +110,12 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
         if not await is_user_authorized(event):
             raise events.StopPropagation
 
+        logger.info("User {} sent a playlist link", event.sender_id)
         await event.respond(PL_SEARCHING)
         sender = event.sender_id
         full_id = _get_playlist_full_id(message=event.message.message)
         if not full_id or not (match := PLAYLIST_FULL_ID.fullmatch(full_id)):
+            logger.warning("User {} sent an unparseable playlist link: {}", event.sender_id, event.message.message)
             await event.respond("Icorrect link!")
             raise StopPropagation
 
@@ -114,9 +124,14 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
         playlist_id = int(groupdict["playlist_id"])
         access_key = groupdict.get("access_key")
 
+        logger.info("Parsed playlist: owner_id={}, playlist_id={}, access_key={}", owner_id, playlist_id, access_key)
+
         if not await is_playlist_exists(vk_api, owner_id, playlist_id, access_key):
+            logger.warning("Playlist {}_{} not found in VK", owner_id, playlist_id)
             await event.respond(PL_NOT_FOUND_IN_VK)
             raise StopPropagation
+
+        logger.debug("Playlist {}_{} confirmed in VK", owner_id, playlist_id)
 
         queued_task = get_queued_task(
             backend=celery_app.backend,
@@ -125,6 +140,7 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
             post_id=playlist_id,
         )
         if queued_task and queued_task["status"] in {"SENT", "STARTED"}:
+            logger.info("Playlist {}_{} already {} in queue", owner_id, playlist_id, queued_task["status"])
             waiting_text = PL_ALREADY_IN_THE_QUEUE if queued_task["status"] == "SENT" else PL_ALREADY_STARTED
             message = await event.respond(
                 waiting_text,
@@ -145,8 +161,13 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
             )
             raise StopPropagation
 
+        logger.debug("Playlist {}_{} not in queue, checking Telegram channel", owner_id, playlist_id)
         peer = await get_tgm_channel_entity(client, settings.TGM_PL_CHANNEL_ID)
         if peer is None:
+            logger.error(
+                "Could not resolve Telegram channel entity for TGM_PL_CHANNEL_ID={}",
+                settings.TGM_PL_CHANNEL_ID,
+            )
             message = await event.respond(PL_UNKNOWN_CHANNEL)
             state_manager.clear_info(event.sender_id)
             raise StopPropagation
@@ -170,8 +191,11 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
         waiting_text = PL_NOT_FOUND_IN_TGM
         if search_result.messages:
             waiting_text = PL_FOUND_IN_TGM
+            logger.info("Playlist {}_{} already exists in Telegram channel, forwarding to user", owner_id, playlist_id)
             message = cast("Message", search_result.messages[0])
             await bot.forward_messages(sender, message.id, from_peer=message.chat_id)
+        else:
+            logger.info("Playlist {}_{} not found in Telegram channel", owner_id, playlist_id)
 
         message = await event.respond(
             waiting_text,
@@ -181,6 +205,7 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
             ],
         )
 
+        logger.debug("Playlist {}_{} awaiting user confirmation (message_id={})", owner_id, playlist_id, message.id)
         state_manager.set_info(
             sender,
             State.WAITING_FOR_CHOISE,
