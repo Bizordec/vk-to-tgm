@@ -21,6 +21,10 @@ def async_to_sync[**P, Ret](func: Callable[P, Coroutine[None, None, Ret]]) -> Ca
         if loop.is_running():
             return loop.create_task(coro).result()
 
-        return loop.run_until_complete(coro)
+        try:
+            return loop.run_until_complete(coro)
+        finally:
+            loop.run_until_complete(loop.shutdown_asyncgens())
+            loop.close()
 
     return wrapper
