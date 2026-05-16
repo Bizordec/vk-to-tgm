@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class AudioPlaylistPhoto(BaseModel):
-    photo_1200: str
+    photo_1200: str | None = None
 
 
 class AudioPlaylistMainArtist(BaseModel):
