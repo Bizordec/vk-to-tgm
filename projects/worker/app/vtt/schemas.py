@@ -7,7 +7,7 @@ from telethon.extensions import html
 from telethon.utils import split_text as telethon_split_text
 
 if TYPE_CHECKING:
-    from telethon.tl.types import InputMediaPoll, TypeMessageEntity
+    from telethon.tl.types import TypeMessageEntity
     from vkbottle_types.objects import AudioAudio, WallGeo
 
 
@@ -127,7 +127,7 @@ class VttAttachments:
     video_ids: list[str] = field(default_factory=list)
     videos: list[VttVideo] = field(default_factory=list)
     documents: list[VttDocument] = field(default_factory=list)
-    poll: InputMediaPoll | None = None
+    poll: VttPoll | None = None
     market: VttMarket | None = None
     link: VttLink | None = None
     geo: WallGeo | None = None

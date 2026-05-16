@@ -5,7 +5,15 @@ from typing import TYPE_CHECKING, cast
 from loguru import logger
 from telethon.extensions import html
 from telethon.tl.custom.button import Button
-from telethon.tl.types import Channel, InputGeoPoint, InputMediaGeoLive
+from telethon.tl.types import (
+    Channel,
+    InputGeoPoint,
+    InputMediaGeoLive,
+    InputMediaPoll,
+    Poll,
+    PollAnswer,
+    TextWithEntities,
+)
 
 from app.config import _, settings
 from app.services.downloader import Downloader
@@ -164,9 +172,21 @@ class TelegramWallSender:
 
         if attachments.poll:
             logger.info("Sending poll...")
+            poll = attachments.poll
             await self.tgm_client.send_file(
                 self.channel_id,
-                file=attachments.poll,
+                file=InputMediaPoll(
+                    poll=Poll(
+                        id=0,
+                        hash=0,
+                        question=TextWithEntities(text=poll.question, entities=[]),
+                        answers=[
+                            PollAnswer(text=TextWithEntities(text=answer, entities=[]), option=bytes([i]))
+                            for i, answer in enumerate(poll.answers)
+                        ],
+                        multiple_choice=poll.multiple_choice,
+                    ),
+                ),
                 reply_to=first_message_id,
             )
 
