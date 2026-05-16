@@ -24,9 +24,3 @@ task_acks_late = True
 # How many messages to prefetch at a time
 # multiplied by the number of concurrent processes.
 worker_prefetch_multiplier = 1
-
-# A list of routers used to route tasks to queues.
-task_routes = {
-    "app.celery_worker.forward_wall": {"queue": "vtt-wall"},
-    "app.celery_worker.forward_playlist": {"queue": "vtt-playlist"},
-}
