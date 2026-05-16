@@ -13,16 +13,7 @@ if TYPE_CHECKING:
     from vkbottle.api import API
     from vkbottle.api.abc import ABCAPI
     from vkbottle_types.codegen.responses.wall import WallGetByIdExtendedResponseModel
-    from vkbottle_types.objects import VideoVideoFiles, VideoVideoFull
-
-
-def get_video_url(formats: VideoVideoFiles | None) -> str | None:
-    if not formats:
-        return None
-
-    return (
-        formats.mp4_720 or formats.mp4_480 or formats.mp4_360 or formats.mp4_240 or formats.mp4_144 or formats.flv_320
-    )
+    from vkbottle_types.objects import VideoVideoFull
 
 
 class VkService:
@@ -133,17 +124,14 @@ class VkService:
             is_live = _video.live is BasePropertyExists.PROPERTY_EXISTS
             if is_live:
                 logger.warning("Found live stream.")
-                url = f"https://vk.ru/video{_video.owner_id}_{_video.id}"
+                url = f"https://vkvideo.ru/video{_video.owner_id}_{_video.id}"
             elif _video.platform:
                 url = _video.files.external if _video.files else None
                 if not url:
                     logger.warning("External video url not found.")
                     continue
             else:
-                url = get_video_url(_video.files)
-                if not url:
-                    logger.warning("VK video url not found.")
-                    continue
+                url = f"https://vkvideo.ru/video{_video.owner_id}_{_video.id}"
             vtt_videos.append(
                 VttVideo(
                     title=_video.title or "",

@@ -17,6 +17,7 @@ dependencies = [
     "hachoir>=3.3.0,<4",
     "mutagen>=1.47.0,<2",
     "pathvalidate>=3.3.1,<4",
+    "yt-dlp>=2026.3.17,<2027",
 ]
 
 [dependency-groups]
@@ -24,6 +25,7 @@ dev = [
     "vtt_common[test]",
     "babel>=2.18.0,<3",
     "types-aiofiles>=24.1.0.20250822,<25",
+    "types-yt-dlp>=2026.3.17.20260510",
 ]
 
 [tool.uv]

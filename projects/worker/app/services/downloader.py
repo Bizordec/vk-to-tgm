@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-import re
 import tempfile
-from email.message import EmailMessage
-from mimetypes import guess_extension
 from pathlib import Path
 from secrets import randbelow
 from typing import TYPE_CHECKING, Any, Self
@@ -16,6 +13,8 @@ from aiohttp import ClientSession, ClientTimeout
 from loguru import logger
 from mutagen.easyid3 import EasyID3
 from pathvalidate import sanitize_filename
+from yt_dlp import YoutubeDL
+from yt_dlp.utils import DownloadError
 
 from app.exceptions import VttError
 
@@ -60,45 +59,33 @@ class Downloader:
                     await file.write(chunk)
         return filepath
 
-    async def download_video(self, url: str, title: str) -> Path | None:
-        logger.info(f'Downloading video "{title}" from URL: {url}')
+    async def download_video(self, video: VttVideo) -> Path | None:
+        logger.info(f'Downloading video "{video.title}" from URL: {video.url}')
 
-        filepath = None
+        name = sanitize_filename(video.title)
+        outtmpl = str(Path(tempfile.gettempdir(), f"{name}.%(ext)s"))
 
-        await asyncio.sleep(randbelow(3))
-        async with self.session.get(url) as response:
-            if not title:
-                content_disposition = response.headers.get("Content-Disposition")
-                if not content_disposition:
-                    logger.warning("Header 'Content-Disposition' not found.")
-                    return None
+        def download_by_ytdlp() -> str:
+            with YoutubeDL(
+                {
+                    "quiet": True,
+                    "no_warnings": True,
+                    "noprogress": True,
+                    "format": "best",
+                    "outtmpl": outtmpl,
+                },
+            ) as ydl:
+                info = ydl.extract_info(video.url, download=True)
+                return info.get("ext") or "mp4"
 
-                msg = EmailMessage()
-                msg["Content-Disposition"] = content_disposition
-                filename = msg.get_filename()
-                if not filename:
-                    logger.warning("Filename not found in Content-Disposition header.")
-                    return None
-            else:
-                content_type = response.headers.get("content-type")
-                if not content_type:
-                    logger.warning("Header 'content-type' not found.")
-                    return None
+        try:
+            ext = await asyncio.to_thread(download_by_ytdlp)
+        except DownloadError as error:
+            logger.warning("yt-dlp failed for {}: {}", video.title, error)
+            return None
 
-                extension = guess_extension(content_type)
-                if not extension:
-                    logger.warning(f"Unknown video extension for content-type '{content_type}'.")
-                    return None
-
-                name = title.strip().replace(" ", "_")
-                name = re.sub(r"(?u)[^-\w.]", "", name)
-                filename = name + extension
-
-            filepath = Path(tempfile.gettempdir(), filename)
-            async with aiofiles.open(filepath, "w+b") as file:
-                async for chunk, _ in response.content.iter_chunks():
-                    await file.write(chunk)
-
+        filepath = Path(outtmpl.rpartition("%(ext)s")[0] + ext)
+        self.file_paths.append(filepath)
         return filepath
 
     async def download_audio(
@@ -176,7 +163,7 @@ class Downloader:
         if audios:
             coros.extend(self.download_audio(audio) for audio in audios)
         if videos:
-            coros.extend(self.download_video(video.url, video.title) for video in videos)
+            coros.extend(self.download_video(video) for video in videos)
 
         file_paths = [path for path in await asyncio.gather(*coros) if path is not None]
         if not file_paths:
