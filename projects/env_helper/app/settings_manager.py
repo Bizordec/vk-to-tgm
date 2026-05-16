@@ -89,8 +89,8 @@ class SettingsManager:
     async def prompt_tgm_playlist_channel(self, tgm_bot_auth: BotAuth) -> None:
         tgm_playlist_channel = PlaylistChannel(
             client=tgm_bot_auth.client,
-            name=self.settings.TGM_CHANNEL_USERNAME,
-            channel_id=self.settings.TGM_CHANNEL_ID,
+            name=self.settings.TGM_PL_CHANNEL_USERNAME,
+            channel_id=self.settings.TGM_PL_CHANNEL_ID,
         )
         await tgm_playlist_channel.prompt_all()
 
