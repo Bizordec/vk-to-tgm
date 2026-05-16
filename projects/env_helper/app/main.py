@@ -55,7 +55,10 @@ async def main(arg_list: list[str] | None = None) -> int:
         if use_ssl:
             await settings_manager.prompt_vtt_ssl()
     except KeyboardInterrupt, FloodControlError:
-        console.print("\nInterrupted...")
+        console.print("\nConfig incomplete. Saving partial progress...")
+        settings_manager.save_env(env_file=Path(args.env_file))
+        console.print("WARNING: .env is incomplete. Do NOT start the stack until you complete the setup.")
+        return 1
 
     console.rule()
 
