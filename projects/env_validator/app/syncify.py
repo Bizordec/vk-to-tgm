@@ -19,7 +19,7 @@ def async_to_sync[**P, Ret](func: Callable[P, Coroutine[None, None, Ret]]) -> Ca
 
         coro = func(*args, **kwargs)
         if loop.is_running():
-            return loop.create_task(coro).result()
+            return asyncio.run_coroutine_threadsafe(coro, loop).result()
 
         try:
             return loop.run_until_complete(coro)

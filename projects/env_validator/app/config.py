@@ -163,8 +163,8 @@ class Settings(BaseSettings):
         values = self.model_dump()
         async with await client.start(bot_token=self.TGM_BOT_TOKEN):
             for channel_id_key in ("TGM_CHANNEL_ID", "TGM_PL_CHANNEL_ID"):
-                channel_id: int = values[channel_id_key]
-                if channel_id_key == "TGM_PL_CHANNEL_ID" and channel_id is not None:
+                channel_id: int | None = values[channel_id_key]
+                if channel_id is None:
                     continue
 
                 try:
@@ -221,7 +221,7 @@ class Settings(BaseSettings):
         async with await client.start(phone=lambda: self.TGM_CLIENT_PHONE):
             for channel_id_key in ("TGM_CHANNEL_ID", "TGM_PL_CHANNEL_ID"):
                 channel_id = values[channel_id_key]
-                if channel_id_key == "TGM_PL_CHANNEL_ID" and channel_id is not None:
+                if channel_id is None:
                     continue
 
                 try:
