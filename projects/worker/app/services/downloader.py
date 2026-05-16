@@ -11,6 +11,7 @@ import aiofiles
 import ffmpeg
 from aiohttp import ClientSession, ClientTimeout
 from loguru import logger
+from mutagen._util import MutagenError
 from mutagen.easyid3 import EasyID3
 from pathvalidate import sanitize_filename
 from yt_dlp import YoutubeDL
@@ -24,13 +25,11 @@ if TYPE_CHECKING:
 
     from vkbottle_types.objects import AudioAudio
 
-    from app.services.vk import VkService
     from app.vtt.schemas import VttVideo
 
 
 class Downloader:
-    def __init__(self, vk_service: VkService) -> None:
-        self.vk_service = vk_service
+    def __init__(self) -> None:
         self.session = ClientSession(timeout=ClientTimeout(total=3600))
         self.file_paths: list[Path] = []
 
@@ -91,8 +90,6 @@ class Downloader:
     async def download_audio(
         self,
         audio: AudioAudio,
-        *,
-        try_fallback: bool = True,
     ) -> Path | None:
         url = audio.url
         audio_full_id = f"{audio.owner_id}_{audio.id}_{audio.access_key}"
@@ -127,27 +124,16 @@ class Downloader:
                 await temp.write(out)
 
         # Setting audio metadata
-        audiofile = EasyID3(filepath)  # type: ignore[no-untyped-call]
-        if audiofile is not None:
+        try:
+            audiofile = EasyID3(filepath)  # type: ignore[no-untyped-call]
             audiofile["artist"] = audio.artist
             audiofile["title"] = audio.title
             audiofile.save()
-        elif try_fallback:
-            logger.warning(f"Broken audio [{audio_full_id}] [{audio_full_title}], trying with another token...")
-            fallback_audio = next(
-                iter(await self.vk_service.get_audio_by_ids(audio_ids=[audio_full_id])),
-                None,
-            )
-            if not fallback_audio:
-                logger.warning("Unable to get audio by fallback token.")
-                return None
-            filepath = await self.download_audio(fallback_audio, try_fallback=False)
-        else:
-            logger.warning("Unable to download audio.")
+        except MutagenError:
+            logger.warning(f"Broken audio [{audio_full_id}] [{audio_full_title}]")
             return None
 
-        if filepath:
-            logger.info(f"Audio succesfully downloaded: [{audio_full_id}] [{audio_full_title}]")
+        logger.info(f"Audio succesfully downloaded: [{audio_full_id}] [{audio_full_title}]")
         return filepath
 
     async def download_files(

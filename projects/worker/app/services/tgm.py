@@ -17,7 +17,6 @@ if TYPE_CHECKING:
     from telethon.tl.types import TypeMessageEntity
     from vkbottle_types.objects import AudioAudio
 
-    from app.services.vk import VkService
     from app.vtt.schemas import VttAttachments, VttAudioPlaylist, VttMessage
 
 GO_TO_POST = _("GO_TO_POST")
@@ -26,10 +25,8 @@ PL_OUT_OF = _("PL_OUT_OF")
 
 
 class TelegramWallSender:
-    def __init__(self, tgm_client: TelegramClient, vk_service: VkService, channel_id: int) -> None:
+    def __init__(self, tgm_client: TelegramClient, channel_id: int) -> None:
         self.tgm_client = tgm_client
-        self.vk_service = vk_service
-
         self.channel_id = channel_id
 
     async def _send_first_main_message(
@@ -51,7 +48,7 @@ class TelegramWallSender:
 
         is_caption = False
 
-        async with Downloader(vk_service=self.vk_service) as downloader:
+        async with Downloader() as downloader:
             if attachments.photos:
                 is_caption = True
                 files = await downloader.download_files(urls=attachments.photos)
@@ -173,7 +170,7 @@ class TelegramWallSender:
                 reply_to=first_message_id,
             )
 
-        async with Downloader(vk_service=self.vk_service) as downloader:
+        async with Downloader() as downloader:
             if attachments.audios:
                 logger.info("Sending audios...")
                 current_audios = await downloader.download_files(audios=attachments.audios)
@@ -334,16 +331,13 @@ class TelegramPlaylistSender:
     def __init__(
         self,
         tgm_client: TelegramClient,
-        vk_service: VkService,
         pl_channel_id: int,
         wall_channel_id: int | None = None,
         wall_message_id: int | None = None,
     ) -> None:
         self.tgm_client = tgm_client
-        self.vk_service = vk_service
 
         self.pl_channel_id = pl_channel_id
-
         self.wall_channel_id = wall_channel_id
         self.wall_message_id = wall_message_id
 
@@ -394,7 +388,7 @@ class TelegramPlaylistSender:
 
         is_caption = False
 
-        async with Downloader(vk_service=self.vk_service) as downloader:
+        async with Downloader() as downloader:
             if not vtt_playlist.photo:
                 message, entities = next(iter(vtt_playlist.text.message), ("", None))
                 downloaded_photo = None
@@ -456,7 +450,7 @@ class TelegramPlaylistSender:
             pl_audio_caption = [""] * (current_audios_count - 1) + [
                 f"{i + 1}-{i + current_audios_count} {PL_OUT_OF} {full_audios_count}",
             ]
-            async with Downloader(vk_service=self.vk_service) as downloader:
+            async with Downloader() as downloader:
                 current_audios_paths = await downloader.download_files(audios=current_audios)
                 await self.tgm_client.send_file(
                     self.pl_channel_id,

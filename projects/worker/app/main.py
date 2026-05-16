@@ -56,7 +56,6 @@ async def forward_wall(owner_id: int, wall_id: int) -> str:
         async with await tgm_bot.start(bot_token=settings.TGM_BOT_TOKEN):
             tgm_service = TelegramWallSender(
                 tgm_client=tgm_bot,
-                vk_service=vk_service,
                 channel_id=settings.TGM_CHANNEL_ID,
             )
             try:
@@ -122,7 +121,6 @@ async def forward_playlist(
         async with await tgm_bot.start(bot_token=settings.TGM_BOT_TOKEN):
             tgm_service = TelegramPlaylistSender(
                 tgm_client=tgm_bot,
-                vk_service=vk_service,
                 pl_channel_id=settings.TGM_PL_CHANNEL_ID,
                 wall_channel_id=reply_channel_id,
                 wall_message_id=reply_message_id,
