@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING
 
 from loguru import logger
@@ -68,15 +67,13 @@ async def _get_confirmation_code(vk_group: GroupsCategory, group_id: int) -> str
 
 
 async def _set_callback_settings(vk_group: GroupsCategory, group_id: int, server_id: int) -> None:
-    task = asyncio.create_task(
-        vk_group.set_callback_settings(
-            group_id=group_id,
-            server_id=server_id,
-            api_version=API_VERSION,
-            wall_post_new=True,
-        ),
+    await vk_group.set_callback_settings(
+        group_id=group_id,
+        server_id=server_id,
+        api_version=API_VERSION,
+        wall_post_new=True,
     )
-    task.add_done_callback(lambda _: logger.info("Callback server settings has been set."))
+    logger.info("Callback server settings has been set.")
 
 
 async def setup_vk_server(settings: Settings | None = None) -> str:
