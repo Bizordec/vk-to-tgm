@@ -50,24 +50,30 @@ class Channel(ABC):
         )
 
     async def is_channel_valid(self, entity: str | int) -> bool:
+        invalid_msg = (
+            f"[prompt.invalid]{self.channel_type} Telegram channel is invalid. "
+            "If your channel is private, make sure to add your bot as an admin."
+        )
+
+        console.print(f"Checking if {self.channel_type} Telegram channel is valid...")
+
         try:
-            console.print(
-                f"Checking if {self.channel_type} Telegram channel is valid...",
-            )
             channel_entity = await self._client.get_input_entity(peer=entity)
-            console.print(f"{self.channel_type} Telegram channel is valid.")
-
-            if isinstance(channel_entity, InputPeerChannel):
-                self._channel_id = f"-100{channel_entity.channel_id}"
-            elif isinstance(channel_entity, TelethonChannel):
-                self._channel_id = f"-100{channel_entity.id}"
-
         except ValueError:
-            console.print(
-                f"[prompt.invalid]{self.channel_type} Telegram channel is invalid. "
-                "If your channel is private, make sure to add your bot as an admin.",
-            )
+            console.print(invalid_msg)
             return False
+
+        console.print(f"{self.channel_type} Telegram channel is valid.")
+
+        match channel_entity:
+            case InputPeerChannel() as channel:
+                self._channel_id = f"-100{channel.channel_id}"
+            case TelethonChannel() as channel:
+                self._channel_id = f"-100{channel.id}"
+            case _:
+                console.print(invalid_msg)
+                return False
+
         return True
 
     async def prompt_all(self) -> None:
