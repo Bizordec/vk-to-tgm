@@ -1,5 +1,31 @@
 # Changelog
 
+## v2.1.0 (2026-05-16)
+
+### Feat
+
+- **worker**: enable streaming playback for video sends
+
+### Fix
+
+- **env_helper**: reject non-channel entities in is_channel_valid
+- **tgm_bot**: ensure vk_api.http_client is closed on exception
+- **env_helper**: use playlist channel defaults in prompt_tgm_playlist_channel
+- **worker**: handle None access_key in VttAudioPlaylist.full_id
+- **worker**: make AudioPlaylistPhoto.photo_1200 optional
+- **vtt_common**: warn and skip mtproto proxy when secret is missing
+- **cb_receiver**: await set_callback_settings instead of fire-and-forget
+- **env_helper**: save partial config on interrupt with clear warning
+- **worker**: handle VttError in forward_playlist
+- **env_validator**: fix inverted channel validation and unsafe .result() call
+- **tgm_bot**: correct playlist queue and celery kwarg typo
+- **worker**: correctly forward VK polls to Telegram
+- **worker**: use yt-dlp for video downloads
+
+### Refactor
+
+- **worker**: remove unused audio fallback
+
 ## v2.0.0 (2026-05-15)
 
 ### BREAKING CHANGE
