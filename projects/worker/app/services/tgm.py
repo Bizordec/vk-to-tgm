@@ -65,6 +65,7 @@ class TelegramWallSender:
                             file=files,
                             caption=first_caption_html,
                             video_note=True,
+                            supports_streaming=True,
                             link_preview=has_link_preview,
                             reply_to=reply_to_message_id,
                         )
@@ -81,6 +82,7 @@ class TelegramWallSender:
                             file=current_videos,
                             caption=first_caption_html,
                             video_note=True,
+                            supports_streaming=True,
                             link_preview=has_link_preview,
                             reply_to=reply_to_message_id,
                         )
