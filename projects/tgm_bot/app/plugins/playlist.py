@@ -94,10 +94,10 @@ async def add_event_handlers(bot: TelegramClient, client: TelegramClient, vk_api
         celery_app.send_task(
             "app.main.forward_playlist",
             task_id=f"{VttTaskType.playlist}_{data['owner_id']}_{data['playlist_id']}",
-            queue="vtt-wall",
+            queue="vtt-playlist",
             kwargs={
                 "owner_id": data["owner_id"],
-                "playlist_id_id": data["playlist_id"],
+                "playlist_id": data["playlist_id"],
                 "access_key": data["access_key"],
             },
         )
