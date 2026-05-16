@@ -125,4 +125,9 @@ async def forward_playlist(
                 wall_channel_id=reply_channel_id,
                 wall_message_id=reply_message_id,
             )
-            return await tgm_service.send_vtt_playlist(vtt_playlist=vtt_playlist)
+            try:
+                return await tgm_service.send_vtt_playlist(vtt_playlist=vtt_playlist)
+            except VttError as error:
+                error_msg = error.message
+                logger.warning(f"Playlist was not sent to Telegram. Reason: '{error_msg}'")
+                return error_msg
