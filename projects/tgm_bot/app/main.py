@@ -66,8 +66,11 @@ async def main() -> None:
         await plugins.add_event_handlers(bot=bot, client=client, vk_api=vk_api)
 
         logger.info("Starting bot event loop")
-        await bot.run_until_disconnected()
-        await vk_api.http_client.close()
+        try:
+            await bot.run_until_disconnected()
+        finally:
+            await vk_api.http_client.close()
+
         logger.info("Bot disconnected, shutting down")
 
 
