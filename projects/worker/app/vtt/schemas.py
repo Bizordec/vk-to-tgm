@@ -106,7 +106,8 @@ class VttAudioPlaylist:
 
     @property
     def full_id(self) -> str:
-        return f"{self.owner_id}_{self.id}_{self.access_key}"
+        base = f"{self.owner_id}_{self.id}"
+        return f"{base}_{self.access_key}" if self.access_key else base
 
 
 @dataclass(slots=True, frozen=True)
