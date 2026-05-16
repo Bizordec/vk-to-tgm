@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from loguru import logger
 from telethon import connection
 
 if TYPE_CHECKING:
@@ -34,6 +35,10 @@ def get_tgm_proxy_config(
 
 
     if proxy_type == "mtproto":
+        if not proxy_mtproto_secret:
+            logger.warning("MTProto proxy secret is not set, skipping proxy")
+            return {}
+
         proxy_connection = connection.ConnectionTcpMTProxyRandomizedIntermediate
         match proxy_mtproto_connection:
             case "abridged":
@@ -41,7 +46,7 @@ def get_tgm_proxy_config(
             case "intermediate":
                 proxy_connection = connection.ConnectionTcpMTProxyIntermediate
         return {
-            "proxy": (proxy_addr, proxy_port, proxy_mtproto_secret or "00000000000000000000000000000000"),
+            "proxy": (proxy_addr, proxy_port, proxy_mtproto_secret),
             "connection": proxy_connection,
         }
 
