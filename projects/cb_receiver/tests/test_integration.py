@@ -2,12 +2,19 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import docker
 import pytest
 from celery.app.task import Context
+from docker.errors import DockerException
 from fastapi.testclient import TestClient
 
 from app.main import create_app
 from tests.utils import get_settings_override
+
+try:
+    docker.from_env().ping()
+except DockerException:
+    pytest.skip("Docker is not available", allow_module_level=True)
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture

@@ -55,6 +55,7 @@ async def test_create_new_vk_server(mock_vk: aioresponses, caplog: LogCaptureFix
         "groups.addCallbackServer",
         payload={"server_id": 1},
     )
+    mock_vk.post("groups.setCallbackSettings", payload=1)
 
     confirmation_code = await setup_vk_server(settings=get_settings_override())
 
@@ -85,6 +86,7 @@ async def test_use_existing_vk_server(mock_vk: aioresponses, caplog: LogCaptureF
         },
     )
     mock_vk.post("groups.editCallbackServer", payload=1)
+    mock_vk.post("groups.setCallbackSettings", payload=1)
 
     confirmation_code = await setup_vk_server(settings=get_settings_override())
 
@@ -118,6 +120,7 @@ async def test_create_new_vk_server_if_not_found_by_title(mock_vk: aioresponses,
         "groups.addCallbackServer",
         payload={"server_id": 2},
     )
+    mock_vk.post("groups.setCallbackSettings", payload=1)
 
     confirmation_code = await setup_vk_server(settings=get_settings_override())
 
@@ -138,6 +141,7 @@ def test_confirmation(mock_vk: aioresponses) -> None:
         "groups.addCallbackServer",
         payload={"server_id": 1},
     )
+    mock_vk.post("groups.setCallbackSettings", payload=1)
 
     with client:
         response = client.post(
