@@ -1,0 +1,93 @@
+name: PR checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [env_helper, env_validator, cb_receiver, worker, tgm_bot]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+        working-directory: projects/${{ matrix.project }}
+      - run: uv run ruff check --diff
+        working-directory: projects/${{ matrix.project }}
+      - run: uv run ruff format --check --diff
+        working-directory: projects/${{ matrix.project }}
+
+  types:
+    name: Types (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [env_helper, env_validator, cb_receiver, worker, tgm_bot]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+        working-directory: projects/${{ matrix.project }}
+      - run: uv run mypy .
+        working-directory: projects/${{ matrix.project }}
+
+  test:
+    name: Test (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [env_helper, env_validator, cb_receiver]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+        working-directory: projects/${{ matrix.project }}
+      - run: uv run pytest --cov
+        working-directory: projects/${{ matrix.project }}
+
+  build:
+    name: Build (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [env_helper, env_validator, cb_receiver, worker, tgm_bot]
+    steps:
+      - uses: actions/checkout@v4
+      - run: >
+          docker buildx build
+          --build-context libs=${{ github.workspace }}/libs
+          -t ${{ matrix.project }}
+          -f Dockerfile .
+        working-directory: projects/${{ matrix.project }}
+
+  commits:
+    name: Conventional commits check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: commitizen-tools/commitizen-action@master
+        with:
+          check: true
+          rev_range: origin/${{ github.base_ref }}..HEAD
