@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.1.1 (2026-05-17)
+
+### Fix
+
+- **vtt_common**: allow tuple proxy type for mtproto connections
+- **tgm_bot**: add type annotation for level variable
+
 ## v2.1.0 (2026-05-16)
 
 ### Feat
