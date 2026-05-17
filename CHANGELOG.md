@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.1.2 (2026-05-17)
+
+### Fix
+
+- **cb_receiver**: add missing mock and skip integration tests without docker
+- **env_validator**: add missing mock side_effect values in tests
+
 ## v2.1.1 (2026-05-17)
 
 ### Fix
