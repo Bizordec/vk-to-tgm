@@ -1,0 +1,19 @@
+name: Update prek hooks
+on:
+  schedule:
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: j178/prek-action@v2
+        with:
+          install-only: true
+      - run: prek auto-update
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "chore: update prek hooks"
+          title: "chore: update prek hooks"
+          branch: chore/update-prek-hooks
