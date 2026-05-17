@@ -39,6 +39,7 @@ def set_task_sent_state_handler(backend: BaseKeyValueStoreBackend) -> None:
             **kwargs,
         )
 
+
 def get_queued_task(
     backend: BaseKeyValueStoreBackend,
     task_type: VttTaskType,

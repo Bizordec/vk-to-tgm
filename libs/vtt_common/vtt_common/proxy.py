@@ -9,8 +9,9 @@ if TYPE_CHECKING:
     from typing import Any, Literal, NotRequired, TypedDict
 
     class TgmProxyConfig(TypedDict):
-        proxy: NotRequired[dict[str, Any]]
+        proxy: NotRequired[dict[str, Any] | tuple[str, int, str]]
         connection: NotRequired[connection.Connection]
+
 
 def get_tgm_proxy_config(
     proxy_addr: str,
@@ -32,7 +33,6 @@ def get_tgm_proxy_config(
 
     if not proxy_type:
         proxy_type = "socks5"
-
 
     if proxy_type == "mtproto":
         if not proxy_mtproto_secret:
