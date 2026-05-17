@@ -76,6 +76,8 @@ def setup_telegram_mocks(mocker: MockerFixture) -> None:
         side_effect=[
             InputPeerChannel(765432, "access_hash"),
             InputPeerChannel(654321, "access_hash"),
+            InputPeerChannel(765432, "access_hash"),
+            InputPeerChannel(654321, "access_hash"),
         ],
     )
     mocker.patch(
@@ -88,7 +90,7 @@ def setup_telegram_mocks(mocker: MockerFixture) -> None:
 
     mocker.patch(
         "telethon.client.telegramclient.TelegramClient.get_permissions",
-        side_effect=[permissions_mock],
+        side_effect=[permissions_mock, permissions_mock],
     )
 
 
