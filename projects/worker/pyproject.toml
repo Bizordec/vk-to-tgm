@@ -24,7 +24,7 @@ dependencies = [
 dev = [
     "vtt_common[test]",
     "babel>=2.18.0,<3",
-    "types-aiofiles>=25.1.0.20260508,<26",
+    "types-aiofiles>=25.1.0.20260518,<26",
     "types-yt-dlp>=2026.3.17.20260518",
 ]
 
