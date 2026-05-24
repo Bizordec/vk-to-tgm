@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.1.3 (2026-05-24)
+
+### Fix
+
+- sync uv.lock ruff specifier with vtt_common across all sub-projects
+
 ## v2.1.2 (2026-05-17)
 
 ### Fix
