@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.1.4 (2026-05-29)
+
+### Perf
+
+- **cb_receiver**: remove vkbottle to reduce memory consumption
+
 ## v2.1.3 (2026-05-24)
 
 ### Fix
