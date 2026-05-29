@@ -1,67 +1,48 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
-from aiohttp import ClientResponse, hdrs
-from aioresponses import aioresponses
 from loguru import logger
 from pytest_celery import CeleryBackendCluster, CeleryBrokerCluster
+from pytest_mock import MockerFixture
 
 from app.logging import format_record
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Generator
-    from re import Pattern
-    from typing import Any
+    from collections.abc import Generator
 
     from _pytest.logging import LogCaptureFixture
     from pytest_celery import RedisTestBackend, RedisTestBroker
-    from yarl import URL
+    from pytest_mock import MockerFixture
 
 
-class VkMockClient(aioresponses):
-    def add(
-        self,
-        url: URL | str | Pattern[str],
-        method: str = hdrs.METH_GET,
-        status: int = 200,
-        body: str | bytes = "",
-        exception: Exception | None = None,
-        content_type: str = "application/json",
-        payload: dict[str, Any] | None = None,
-        headers: dict[str, Any] | None = None,
-        response_class: type[ClientResponse] | None = None,
-        repeat: bool | int = False,  # noqa: FBT002
-        timeout: bool = False,  # noqa: FBT002
-        reason: str | None = None,
-        callback: Callable[..., Any] | None = None,
-    ) -> None:
-        url = f"https://api.vk.ru/method/{url}?access_token=vk-community-token&v=5.199"
-        if payload is not None:
-            payload = {"response": payload}
+class VkMock:
+    def __init__(self) -> None:
+        self._responses: dict[str, Any] = {}
 
-        return super().add(
-            url,
-            method,
-            status,
-            body,
-            exception,
-            content_type,
-            payload,
-            headers,
-            response_class,
-            repeat,
-            timeout,
-            reason,
-            callback,
-        )
+    def post(self, method: str, payload: Any) -> None:  # noqa: ANN401
+        self._responses[method] = payload
 
 
 @pytest.fixture
-def mock_vk() -> Generator[aioresponses]:
-    with VkMockClient() as m:
-        yield m
+def mock_vk(mocker: MockerFixture) -> VkMock:
+    mock = VkMock()
+
+    async def handler(
+        method: str,
+        params: dict[str, Any] | None = None,  # noqa: ARG001
+        *,
+        data: dict[str, Any] | None = None,  # noqa: ARG001
+    ) -> object:
+        if method not in mock._responses:
+            msg = f"No mock registered for VK API method: {method}"
+            raise RuntimeError(msg)
+        return mock._responses[method]
+
+    mocker.patch("app.utils._vk_api_request", side_effect=handler)
+
+    return mock
 
 
 @pytest.fixture

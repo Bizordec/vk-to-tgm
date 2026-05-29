@@ -10,7 +10,7 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-    "vtt_common[vk,celery]",
+    "vtt_common[celery]",
     "fastapi>=0.136.3,<0.137",
     "uvicorn[standard]>=0.47.0,<0.48",
 ]

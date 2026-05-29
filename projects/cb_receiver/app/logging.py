@@ -52,7 +52,6 @@ def format_record(record: Record) -> str:
 
 
 def init_logging() -> None:
-    logger.disable("vkbottle")
     logging.getLogger("asyncio").setLevel(logging.WARNING)
 
     loggers = (logging.getLogger(name) for name in logging.root.manager.loggerDict if name.startswith("uvicorn."))

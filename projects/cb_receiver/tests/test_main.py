@@ -11,8 +11,9 @@ from tests.utils import get_settings_override
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
-    from aioresponses import aioresponses
     from pytest_mock import MockerFixture
+
+    from tests.conftest import VkMock
 
 
 app = create_app(settings=get_settings_override())
@@ -42,7 +43,7 @@ def test_body_without_secret() -> None:
 
 
 @pytest.mark.asyncio
-async def test_create_new_vk_server(mock_vk: aioresponses, caplog: LogCaptureFixture) -> None:
+async def test_create_new_vk_server(mock_vk: VkMock, caplog: LogCaptureFixture) -> None:
     mock_vk.post(
         "groups.getCallbackConfirmationCode",
         payload={"code": "test_code"},
@@ -64,7 +65,7 @@ async def test_create_new_vk_server(mock_vk: aioresponses, caplog: LogCaptureFix
 
 
 @pytest.mark.asyncio
-async def test_use_existing_vk_server(mock_vk: aioresponses, caplog: LogCaptureFixture) -> None:
+async def test_use_existing_vk_server(mock_vk: VkMock, caplog: LogCaptureFixture) -> None:
     mock_vk.post(
         "groups.getCallbackConfirmationCode",
         payload={"code": "test_code"},
@@ -95,7 +96,7 @@ async def test_use_existing_vk_server(mock_vk: aioresponses, caplog: LogCaptureF
 
 
 @pytest.mark.asyncio
-async def test_create_new_vk_server_if_not_found_by_title(mock_vk: aioresponses, caplog: LogCaptureFixture) -> None:
+async def test_create_new_vk_server_if_not_found_by_title(mock_vk: VkMock, caplog: LogCaptureFixture) -> None:
     mock_vk.post(
         "groups.getCallbackConfirmationCode",
         payload={"code": "test_code"},
@@ -128,7 +129,7 @@ async def test_create_new_vk_server_if_not_found_by_title(mock_vk: aioresponses,
     assert "No callback server found by title 'vk-to-tgm', added new." in caplog.text
 
 
-def test_confirmation(mock_vk: aioresponses) -> None:
+def test_confirmation(mock_vk: VkMock) -> None:
     mock_vk.post(
         "groups.getCallbackConfirmationCode",
         payload={"code": "test_code"},
