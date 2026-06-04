@@ -19,7 +19,7 @@ dependencies = [
 
 [project.optional-dependencies]
 vk = [
-    "vkbottle>=4.8.2,<5"
+    "vkbottle>=4.9.0,<5"
 ]
 tgm = [
     "telethon>=1.43.2,<2",
