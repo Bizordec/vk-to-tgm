@@ -1011,14 +1011,14 @@ wheels = [
 
 [[package]]
 name = "types-yt-dlp"
-version = "2026.3.17.20260518"
+version = "2026.3.17.20260605"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/35/b1/cf2392c74b8b195cd78e9330bf2bb148c848ae825dca13eeda7fe6cbc32a/types_yt_dlp-2026.3.17.20260518.tar.gz", hash = "sha256:4ad1c2490281aaae30f8382bbd11c84311b2c381aa79de0ad198728083e1c60c", size = 43701, upload-time = "2026-05-18T06:07:20.49Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/97/ba/1cca7e6aa92360c3ead3b74fb88401addb124804a1fe0821e1fe4068a8f4/types_yt_dlp-2026.3.17.20260605.tar.gz", hash = "sha256:c4af5008b5e2206519dd45e0c8957d8423aa7d867bd9a6afbd7855a6c753e94b", size = 43734, upload-time = "2026-06-05T06:10:40.278Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bf/17/16e21206439337d4f4fb6d1442f1179afe704d40b4c19c4f852b7fac125f/types_yt_dlp-2026.3.17.20260518-py3-none-any.whl", hash = "sha256:76c0aa878749e063ba1e6b2796186d6c7bd3e6886f1db8bd874223434de39c91", size = 58218, upload-time = "2026-05-18T06:07:19.587Z" },
+    { url = "https://files.pythonhosted.org/packages/a6/07/1f63e16f8bfd17ef9c4e8448c73705b9ec127c087de9de4d72e43f1c9f03/types_yt_dlp-2026.3.17.20260605-py3-none-any.whl", hash = "sha256:9d95c8b5fbf1ccfc6a4a6479e13663db49e8ec8f4563585af83e3bf7740513f2", size = 58260, upload-time = "2026-06-05T06:10:39.128Z" },
 ]
 
 [[package]]
@@ -1258,7 +1258,7 @@ requires-dist = [
 dev = [
     { name = "babel", specifier = ">=2.18.0,<3" },
     { name = "types-aiofiles", specifier = ">=25.1.0.20260518,<26" },
-    { name = "types-yt-dlp", specifier = ">=2026.3.17.20260518" },
+    { name = "types-yt-dlp", specifier = ">=2026.3.17.20260605" },
     { name = "vtt-common", extras = ["test"], directory = "../../libs/vtt_common" },
 ]
 
