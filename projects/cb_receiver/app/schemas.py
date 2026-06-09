@@ -31,9 +31,14 @@ class CallbackType(StrEnum):
 
 class WallPostType(StrEnum):
     POST = "post"
+    COPY = "copy"
     REPLY = "reply"
+    POSTPONE = "postpone"
+    SUGGEST = "suggest"
+    POST_ADS = "post_ads"
     PHOTO = "photo"
     VIDEO = "video"
+    CLIP = "clip"
 
 
 class WallWallpostDonut(BaseModel):
