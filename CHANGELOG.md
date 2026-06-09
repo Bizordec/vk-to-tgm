@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.1.5 (2026-06-09)
+
+### Fix
+
+- **cb_receiver**: add missing types in WallPostType
+
 ## v2.1.4 (2026-05-29)
 
 ### Perf
