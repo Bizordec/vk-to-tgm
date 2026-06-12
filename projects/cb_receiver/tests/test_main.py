@@ -6,7 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import create_app
-from app.utils import setup_vk_server
+from app.utils import configure_callback_server, get_confirmation_code
 from tests.utils import get_settings_override
 
 if TYPE_CHECKING:
@@ -58,7 +58,9 @@ async def test_create_new_vk_server(mock_vk: VkMock, caplog: LogCaptureFixture) 
     )
     mock_vk.post("groups.setCallbackSettings", payload=1)
 
-    confirmation_code = await setup_vk_server(settings=get_settings_override())
+    settings = get_settings_override()
+    confirmation_code = await get_confirmation_code(group_id=settings.VK_COMMUNITY_ID)
+    await configure_callback_server(settings=settings)
 
     assert confirmation_code == "test_code"
     assert "Added new callback server 'vk-to-tgm'" in caplog.text
@@ -89,7 +91,9 @@ async def test_use_existing_vk_server(mock_vk: VkMock, caplog: LogCaptureFixture
     mock_vk.post("groups.editCallbackServer", payload=1)
     mock_vk.post("groups.setCallbackSettings", payload=1)
 
-    confirmation_code = await setup_vk_server(settings=get_settings_override())
+    settings = get_settings_override()
+    confirmation_code = await get_confirmation_code(group_id=settings.VK_COMMUNITY_ID)
+    await configure_callback_server(settings=settings)
 
     assert confirmation_code == "test_code"
     assert "Using existing callback server 'vk-to-tgm'" in caplog.text
@@ -123,7 +127,9 @@ async def test_create_new_vk_server_if_not_found_by_title(mock_vk: VkMock, caplo
     )
     mock_vk.post("groups.setCallbackSettings", payload=1)
 
-    confirmation_code = await setup_vk_server(settings=get_settings_override())
+    settings = get_settings_override()
+    confirmation_code = await get_confirmation_code(group_id=settings.VK_COMMUNITY_ID)
+    await configure_callback_server(settings=settings)
 
     assert confirmation_code == "test_code"
     assert "No callback server found by title 'vk-to-tgm', added new." in caplog.text

@@ -119,7 +119,7 @@ async def _find_or_create_server(
     return server_id
 
 
-async def _get_confirmation_code(group_id: int) -> str:
+async def get_confirmation_code(group_id: int) -> str:
     confirmation = cast(
         "GetConfirmationCodeResponse",
         await _vk_api_request(
@@ -145,15 +145,13 @@ async def _set_callback_settings(group_id: int, server_id: int) -> None:
     logger.info("Callback server settings has been set.")
 
 
-async def setup_vk_server(settings: Settings | None = None) -> str:
+async def configure_callback_server(settings: Settings | None = None) -> None:
     if not settings:
         settings = get_settings()
 
     logger.info("Setting up callback server...")
 
     group_id = settings.VK_COMMUNITY_ID
-
-    confirmation_code = await _get_confirmation_code(group_id=group_id)
 
     server_id = await _find_or_create_server(
         group_id=group_id,
@@ -166,5 +164,3 @@ async def setup_vk_server(settings: Settings | None = None) -> str:
         group_id=group_id,
         server_id=server_id,
     )
-
-    return confirmation_code

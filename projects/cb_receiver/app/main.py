@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Annotated
 
@@ -11,7 +12,7 @@ from vtt_common.tasks import get_queued_task
 from app.config import Settings, get_settings
 from app.logging import init_logging
 from app.schemas import CallbackType, VkCallback, WallPostType, WallWallpostFull
-from app.utils import setup_vk_server
+from app.utils import configure_callback_server, get_confirmation_code
 from app.worker import create_worker
 
 if TYPE_CHECKING:
@@ -113,7 +114,11 @@ def vk_callback(
 def create_app(settings: Settings | None = None, celery_app: Celery | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncGenerator[Mapping[str, Any]]:
-        yield {"confirmation_code": await setup_vk_server(settings=settings)}
+        _settings = settings or get_settings()
+        confirmation_code = await get_confirmation_code(group_id=_settings.VK_COMMUNITY_ID)
+        _cb_setup_task = asyncio.create_task(configure_callback_server(settings=_settings))
+        yield {"confirmation_code": confirmation_code}
+        await _cb_setup_task
 
     app = FastAPI(lifespan=lifespan)
     app.add_api_route("/", methods=["POST"], endpoint=vk_callback)
