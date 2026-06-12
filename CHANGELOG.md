@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.1.6 (2026-06-12)
+
+### Fix
+
+- **cb_receiver**: split VK server setup to avoid startup race condition
+
 ## v2.1.5 (2026-06-09)
 
 ### Fix
