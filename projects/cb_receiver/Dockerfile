@@ -16,7 +16,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --locked --no-dev --no-editable
 
 
-FROM python:3.14.5-alpine3.23
+FROM python:3.14.6-alpine3.23
 
 ARG UID=1000
 ARG GID=1000
