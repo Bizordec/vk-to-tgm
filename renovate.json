@@ -4,7 +4,7 @@
   "labels": ["dependencies"],
   "packageRules": [
     {
-      "matchManagers": ["pep621"],
+      "matchManagers": ["uv"],
       "addLabels": ["python"]
     },
     {
@@ -18,13 +18,10 @@
     {
       "matchManagers": ["npm"],
       "addLabels": ["npm"]
+    },
+    {
+      "matchPackageNames": ["*"],
+      "groupName": "{{{packageName}}}"
     }
-  ],
-  "postUpgradeTasks": {
-    "commands": [
-      "for dir in libs/vtt_common projects/*/; do (cd \"$dir\" && uv lock); done"
-    ],
-    "fileFilters": ["**/uv.lock"],
-    "executionMode": "update"
-  }
+  ]
 }
