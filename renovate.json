@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "matchManagers": ["pep621"],
+      "addLabels": ["python"]
+    },
+    {
+      "matchManagers": ["dockerfile"],
+      "addLabels": ["docker"]
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "addLabels": ["ci"]
+    },
+    {
+      "matchManagers": ["npm"],
+      "addLabels": ["npm"]
+    }
+  ],
+  "postUpgradeTasks": {
+    "commands": [
+      "for dir in libs/vtt_common projects/*/; do (cd \"$dir\" && uv lock); done"
+    ],
+    "fileFilters": ["**/uv.lock"],
+    "executionMode": "update"
+  }
+}
