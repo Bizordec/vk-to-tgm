@@ -19,7 +19,7 @@ jobs:
         project: [env_helper, env_validator, cb_receiver, worker, tgm_bot]
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@v8.2.0
         with:
           enable-cache: true
       - run: uv sync --locked
@@ -38,7 +38,7 @@ jobs:
         project: [env_helper, env_validator, cb_receiver, worker, tgm_bot]
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@v8.2.0
         with:
           enable-cache: true
       - run: uv sync --locked
@@ -55,7 +55,7 @@ jobs:
         project: [env_helper, env_validator, cb_receiver]
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@v8.2.0
         with:
           enable-cache: true
       - run: uv sync --locked
