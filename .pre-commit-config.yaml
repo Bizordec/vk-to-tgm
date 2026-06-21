@@ -23,3 +23,9 @@ repos:
         entry: python3 -m py_compile
         language: system
         types: [python]
+      - id: lib-sync-locks
+        name: Sync dependent project lock files on lib changes
+        entry: bash -c 'for dir in projects/*; do (cd "$dir" && uv lock); done'
+        language: system
+        files: ^libs/[^/]+/(pyproject\.toml|uv\.lock)$
+        pass_filenames: false

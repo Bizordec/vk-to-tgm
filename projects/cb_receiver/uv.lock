@@ -67,16 +67,17 @@ wheels = [
 ]
 
 [[package]]
-name = "aioresponses"
-version = "0.7.8"
+name = "aiointercept"
+version = "0.1.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
-    { name = "packaging" },
+    { name = "multidict" },
+    { name = "yarl" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/de/03/532bbc645bdebcf3b6af3b25d46655259d66ce69abba7720b71ebfabbade/aioresponses-0.7.8.tar.gz", hash = "sha256:b861cdfe5dc58f3b8afac7b0a6973d5d7b2cb608dd0f6253d16b8ee8eaf6df11", size = 40253, upload-time = "2025-01-19T18:14:03.222Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/43/de/637bd02b6d6ab6ff3b11e3726b0bbbf7878e7acc649b509ad91026a1a838/aiointercept-0.1.7.tar.gz", hash = "sha256:b9681ec590457e062159c8bdb1d77f17b9a80521a95c779010d55bd8c5d585cc", size = 156459, upload-time = "2026-06-12T09:31:38.518Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/12/b7/584157e43c98aa89810bc2f7099e7e01c728ecf905a66cf705106009228f/aioresponses-0.7.8-py2.py3-none-any.whl", hash = "sha256:b73bd4400d978855e55004b23a3a84cb0f018183bcf066a85ad392800b5b9a94", size = 12518, upload-time = "2025-01-19T18:13:59.633Z" },
+    { url = "https://files.pythonhosted.org/packages/a7/be/34c2ae1347845e87fbb613ce4f9ea0492c680feace356cd7e2a24c33e1bc/aiointercept-0.1.7-py3-none-any.whl", hash = "sha256:953d3c2d27e93e710d655ea47d191376e2966ca432a99fcfe2c780f9965e1212", size = 18010, upload-time = "2026-06-12T09:31:37.286Z" },
 ]
 
 [[package]]
@@ -1243,7 +1244,7 @@ celery = [
     { name = "celery", extra = ["redis"] },
 ]
 test = [
-    { name = "aioresponses" },
+    { name = "aiointercept" },
     { name = "mypy" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
@@ -1255,7 +1256,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "aioresponses", marker = "extra == 'test'", specifier = ">=0.7.8,<0.8" },
+    { name = "aiointercept", marker = "extra == 'test'", specifier = ">=0.1.7,<0.2" },
     { name = "celery", extras = ["redis"], marker = "extra == 'celery'", specifier = ">=5.6.3,<6" },
     { name = "cryptg", marker = "extra == 'tgm'", specifier = ">=0.6.0,<0.7" },
     { name = "loguru", specifier = ">=0.7.3,<0.8" },
