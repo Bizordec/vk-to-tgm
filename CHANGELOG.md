@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.1.7 (2026-06-21)
+
+### Fix
+
+- **deps**: update uvicorn to >=0.49,<0.50
+
 ## v2.1.6 (2026-06-12)
 
 ### Fix
