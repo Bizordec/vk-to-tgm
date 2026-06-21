@@ -16,7 +16,7 @@ services:
         libs: ./libs
     env_file: *env-file
   redis:
-    image: redis:7.2.3-alpine3.19
+    image: redis:7.2.5-alpine3.19
     restart: always
     healthcheck:
       test: sh -c "redis-cli ping | grep PONG"
