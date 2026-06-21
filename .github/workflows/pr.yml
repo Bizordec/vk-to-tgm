@@ -18,7 +18,7 @@ jobs:
       matrix:
         project: [env_helper, env_validator, cb_receiver, worker, tgm_bot]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
@@ -37,7 +37,7 @@ jobs:
       matrix:
         project: [env_helper, env_validator, cb_receiver, worker, tgm_bot]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
@@ -54,7 +54,7 @@ jobs:
       matrix:
         project: [env_helper, env_validator, cb_receiver]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
@@ -71,7 +71,7 @@ jobs:
       matrix:
         project: [env_helper, env_validator, cb_receiver, worker, tgm_bot]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: >
           docker buildx build
           --build-context libs=${{ github.workspace }}/libs
