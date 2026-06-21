@@ -14,7 +14,7 @@ from app.main import main
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from aioresponses import aioresponses
+    from aiointercept import aiointercept
     from pytest_mock import MockerFixture
 
 
@@ -28,8 +28,8 @@ def _get_vk_method_url(method: str, access_token: str = "", **kwargs: str) -> st
     return f"https://api.vk.ru/method/{method}?{urlencode(params)}"
 
 
-def _setup_vk_2fa_sms_mocks(mock_aioresponse: aioresponses, sid: str, token: str) -> None:
-    mock_aioresponse.post(
+def _setup_vk_2fa_sms_mocks(mock_http: aiointercept, sid: str, token: str) -> None:
+    mock_http.post(
         "https://oauth.vk.ru/token",
         payload={
             "error": "need_validation",
@@ -41,7 +41,7 @@ def _setup_vk_2fa_sms_mocks(mock_aioresponse: aioresponses, sid: str, token: str
         },
     )
 
-    mock_aioresponse.get(
+    mock_http.get(
         _get_vk_method_url("auth.validatePhone", lang="en", sid=sid),
         payload={
             "response": {
@@ -56,7 +56,7 @@ def _setup_vk_2fa_sms_mocks(mock_aioresponse: aioresponses, sid: str, token: str
         },
     )
 
-    mock_aioresponse.post(
+    mock_http.post(
         "https://oauth.vk.ru/token",
         payload={
             "access_token": token,
@@ -66,14 +66,14 @@ def _setup_vk_2fa_sms_mocks(mock_aioresponse: aioresponses, sid: str, token: str
 
 async def test_main(
     mocker: MockerFixture,
-    mock_aioresponse: aioresponses,
+    mock_http: aiointercept,
     tmp_path: Path,
 ) -> None:
     # VK_TOKEN
-    _setup_vk_2fa_sms_mocks(mock_aioresponse, "2fa_735098214_5367109_3c8f2a9bde514ee781", "vk-token")
+    _setup_vk_2fa_sms_mocks(mock_http, "2fa_735098214_5367109_3c8f2a9bde514ee781", "vk-token")
 
     # VK_COMMUNITY_TOKEN
-    mock_aioresponse.post(
+    mock_http.post(
         _get_vk_method_url("groups.getTokenPermissions", access_token="vk-community-token"),  # noqa: S106
         payload={
             "response": {
@@ -89,7 +89,7 @@ async def test_main(
     )
 
     # VK_COMMUNITY_ID
-    mock_aioresponse.post(
+    mock_http.post(
         _get_vk_method_url("groups.getCallbackServers", access_token="vk-community-token"),  # noqa: S106
         payload={
             "response": {

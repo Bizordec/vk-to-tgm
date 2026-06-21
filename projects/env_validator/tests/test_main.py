@@ -15,7 +15,7 @@ from app.main import main
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from aioresponses import aioresponses
+    from aiointercept import aiointercept
     from pytest_mock import MockerFixture
 
 
@@ -29,9 +29,9 @@ def _get_vk_method_url(method: str, access_token: str = "", **kwargs: str) -> st
     return f"https://api.vk.ru/method/{method}?{urlencode(params)}"
 
 
-def setup_vk_mocks(mock_aioresponse: aioresponses) -> None:
+def setup_vk_mocks(mock_http: aiointercept) -> None:
     # VK_TOKEN
-    mock_aioresponse.post(
+    mock_http.post(
         _get_vk_method_url("audio.get", access_token="vk-token"),  # noqa: S106
         payload={
             "response": {
@@ -42,7 +42,7 @@ def setup_vk_mocks(mock_aioresponse: aioresponses) -> None:
     )
 
     # VK_COMMUNITY_TOKEN
-    mock_aioresponse.post(
+    mock_http.post(
         _get_vk_method_url("groups.getTokenPermissions", access_token="vk-community-token"),  # noqa: S106
         payload={
             "response": {
@@ -58,7 +58,7 @@ def setup_vk_mocks(mock_aioresponse: aioresponses) -> None:
     )
 
     # VK_COMMUNITY_ID
-    mock_aioresponse.post(
+    mock_http.post(
         _get_vk_method_url("groups.getCallbackServers", access_token="vk-community-token"),  # noqa: S106
         payload={
             "response": {
@@ -96,11 +96,11 @@ def setup_telegram_mocks(mocker: MockerFixture) -> None:
 
 def test_main(
     mocker: MockerFixture,
-    mock_aioresponse: aioresponses,
+    mock_http: aiointercept,
     tmp_path: Path,
 ) -> None:
     # VK env vars
-    setup_vk_mocks(mock_aioresponse)
+    setup_vk_mocks(mock_http)
 
     # TGM env vars
     setup_telegram_mocks(mocker)
