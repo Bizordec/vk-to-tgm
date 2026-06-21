@@ -46,6 +46,9 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
+      nginx-proxy-acme:
+        condition: service_healthy
+        required: false
   worker_main:
     build:
       context: projects/worker
@@ -99,6 +102,7 @@ services:
       context: ./nginx
     ports:
       - "${NGINX_HTTP_PORT:-80}:8080"
+    env_file: *env-file
     environment:
       - NGINX_PROXY_PASS=http://cb_receiver:8000
     depends_on:
@@ -111,6 +115,7 @@ services:
     ports:
       - "${NGINX_HTTP_PORT:-80}:80"
       - "${NGINX_HTTPS_PORT:-443}:443"
+    env_file: *env-file
     volumes:
       - ./certs:/etc/nginx/certs
       - html:/usr/share/nginx/html
@@ -124,8 +129,15 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - acme:/etc/acme.sh
+    env_file: *env-file
     environment:
       - DEFAULT_EMAIL=${SSL_EMAIL}
+    healthcheck:
+      test: "test -f /etc/nginx/certs/${NGINX_SERVER_NAME}/fullchain.pem"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
     profiles:
       - https
       - acme
