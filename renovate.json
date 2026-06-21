@@ -21,6 +21,7 @@
     },
     {
       "matchPackageNames": ["*"],
+      "semanticCommitType": "chore",
       "groupName": "{{{packageName}}}"
     }
   ]
