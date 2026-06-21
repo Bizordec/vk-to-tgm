@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1.25
 
 FROM ghcr.io/astral-sh/uv:python3.14-alpine3.23 AS build-stage
 
