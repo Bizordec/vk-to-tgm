@@ -3,7 +3,7 @@ name = "env-validator"
 version = "0.1.0"
 description = "Service that validates required environment variables"
 authors = [{ name = "Ilia Boyazitov" }]
-requires-python = ">=3.14,<4"
+requires-python = ">=3.14.6,<4"
 readme = "README.md"
 license = "GPL-3.0-or-later"
 classifiers = [
