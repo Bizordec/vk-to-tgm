@@ -1,0 +1,28 @@
+name: Sync project lockfiles
+on:
+  pull_request:
+    paths:
+      - 'libs/**/pyproject.toml'
+      - 'libs/**/uv.lock'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    if: github.actor == 'renovate[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: astral-sh/setup-uv@v8.2.0
+      - name: Regenerate project lockfiles
+        run: |
+          for dir in projects/*; do
+            (cd "$dir" && uv lock)
+          done
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: sync project lockfiles"
+          branch: ${{ github.head_ref }}
