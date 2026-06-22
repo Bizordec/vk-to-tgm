@@ -23,7 +23,8 @@
     {
       "matchPackageNames": ["*"],
       "semanticCommitType": "chore",
-      "groupName": "{{{packageName}}}"
+      "groupName": "{{{packageName}}}",
+      "commitMessageExtra": "to {{{newVersion}}}"
     }
   ]
 }
