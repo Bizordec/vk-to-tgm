@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "envfile": "^7.0.0",
+    "envfile": "^7.1.0",
     "tunnelmole": "^2.2.13"
   }
 }
