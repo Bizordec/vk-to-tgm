@@ -22,7 +22,7 @@ jobs:
           for dir in projects/*; do
             (cd "$dir" && uv lock)
           done
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore: sync project lockfiles"
           branch: ${{ github.head_ref }}
