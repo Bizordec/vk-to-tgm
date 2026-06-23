@@ -22,7 +22,7 @@ vk = [
     "vkbottle>=4.9.0,<5"
 ]
 tgm = [
-    "telethon>=1.43.2,<2",
+    "telethon>=1.44.0,<2",
     "cryptg>=0.6.0,<0.7",
     "pillow>=12.2.0,<13"
 ]
