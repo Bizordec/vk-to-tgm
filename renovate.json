@@ -24,7 +24,7 @@
       "matchPackageNames": ["*"],
       "semanticCommitType": "chore",
       "groupName": "{{{packageName}}}",
-      "commitMessageExtra": "to {{{newVersion}}}"
+      "commitMessageSuffix": "to {{{newVersion}}}"
     }
   ]
 }
