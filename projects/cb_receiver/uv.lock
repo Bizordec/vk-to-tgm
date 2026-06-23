@@ -1008,11 +1008,11 @@ wheels = [
 
 [[package]]
 name = "python-socks"
-version = "2.8.1"
+version = "2.8.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/36/0b/cd77011c1bc01b76404f7aba07fca18aca02a19c7626e329b40201217624/python_socks-2.8.1.tar.gz", hash = "sha256:698daa9616d46dddaffe65b87db222f2902177a2d2b2c0b9a9361df607ab3687", size = 38909, upload-time = "2026-02-16T05:24:00.745Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/db/ad/5bbfab3d3a266963cca0c09e23a725bbf5f0535d21c8bd1d5272e4430771/python_socks-2.8.2.tar.gz", hash = "sha256:ffc493951854fa3fc0551e0434a09a7b9f9047f9ad666dce42cb94a52e8a34b6", size = 39656, upload-time = "2026-06-23T05:22:01.994Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/15/fe/9a58cb6eec633ff6afae150ca53c16f8cc8b65862ccb3d088051efdfceb7/python_socks-2.8.1-py3-none-any.whl", hash = "sha256:28232739c4988064e725cdbcd15be194743dd23f1c910f784163365b9d7be035", size = 55087, upload-time = "2026-02-16T05:23:59.147Z" },
+    { url = "https://files.pythonhosted.org/packages/3d/18/23b981b1cf58c1e7b7e36fa1392daf12878b6a3c26c5e4248601647a6d09/python_socks-2.8.2-py3-none-any.whl", hash = "sha256:7cf785d0631e0659384a773b3c402bc22cccdc23894ba1d65f8524748ace1193", size = 55501, upload-time = "2026-06-23T05:22:00.658Z" },
 ]
 
 [[package]]
@@ -1277,7 +1277,7 @@ requires-dist = [
     { name = "pytest-mock", marker = "extra == 'test'", specifier = ">=3.15.1,<4" },
     { name = "pytest-socket", marker = "extra == 'test'", specifier = ">=0.8.0,<0.9" },
     { name = "python-dotenv", specifier = ">=1.2.2,<2" },
-    { name = "python-socks", extras = ["asyncio"], specifier = ">=2.8.1,<3" },
+    { name = "python-socks", extras = ["asyncio"], specifier = ">=2.8.2,<3" },
     { name = "ruff", marker = "extra == 'test'", specifier = ">=0.15.14,<0.16" },
     { name = "telethon", marker = "extra == 'tgm'", specifier = ">=1.43.2,<2" },
     { name = "vkbottle", marker = "extra == 'vk'", specifier = ">=4.9.0,<5" },
