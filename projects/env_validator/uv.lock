@@ -841,7 +841,7 @@ wheels = [
 
 [[package]]
 name = "vkbottle"
-version = "4.9.0"
+version = "4.10.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiofiles" },
@@ -853,9 +853,9 @@ dependencies = [
     { name = "vbml" },
     { name = "vkbottle-types" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f3/1c/2e5cc93e9c59e0f1672b2fae6b1b95ab83fa0368576577cd670db06bd8bb/vkbottle-4.9.0.tar.gz", hash = "sha256:614dd4acab448e1c8032aa43c6e0c3ea3f143c18bc6598b81d5e83df4cd036e0", size = 66655, upload-time = "2026-06-03T12:07:16.629Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/60/5c/588b9d874dcaa582cfab5f35fd4788a10305843750eab3724958dc0f314d/vkbottle-4.10.0.tar.gz", hash = "sha256:5b03dee5c925df612b114ff7bd4f556328684b11361bc8bfa28260c03eda0425", size = 69573, upload-time = "2026-06-24T17:19:52.014Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ec/52/f524d6c15c1bd6ebebc06c23f09507d511412074fcc64fa1ac281acd72a6/vkbottle-4.9.0-py3-none-any.whl", hash = "sha256:a933b1c9aebd14db40d3b5242eceb800a17681f60c773cfa021a20b18ea524ba", size = 121042, upload-time = "2026-06-03T12:07:14.98Z" },
+    { url = "https://files.pythonhosted.org/packages/f0/1e/59d6af13d968c5c7afd92ce3b49aa07c37a7065327f080aef4d2d2a9c366/vkbottle-4.10.0-py3-none-any.whl", hash = "sha256:81344d6f0e3e2cc356c2209d9c479c8c3785aed4c02bb95fe5bd0902881ded5a", size = 124006, upload-time = "2026-06-24T17:19:50.36Z" },
 ]
 
 [[package]]
@@ -924,7 +924,7 @@ requires-dist = [
     { name = "python-socks", extras = ["asyncio"], specifier = ">=2.8.2,<3" },
     { name = "ruff", marker = "extra == 'test'", specifier = ">=0.15.19,<0.16" },
     { name = "telethon", marker = "extra == 'tgm'", specifier = ">=1.44.0,<2" },
-    { name = "vkbottle", marker = "extra == 'vk'", specifier = ">=4.9.0,<5" },
+    { name = "vkbottle", marker = "extra == 'vk'", specifier = ">=4.10.0,<5" },
 ]
 provides-extras = ["vk", "tgm", "celery", "test"]
 
