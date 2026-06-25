@@ -3,7 +3,7 @@ name = "env-helper"
 version = "0.1.0"
 description = "Service that helps to set environment variables in .env file"
 authors = [{ name = "Ilia Boyazitov" }]
-requires-python = ">=3.14,<4"
+requires-python = ">=3.14.6,<4"
 readme = "README.md"
 license = "GPL-3.0-or-later"
 classifiers = [
