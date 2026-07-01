@@ -24,7 +24,7 @@ vk = [
 tgm = [
     "telethon>=1.44.0,<2",
     "cryptg>=0.6.0,<0.7",
-    "pillow>=12.2.0,<13"
+    "pillow>=12.3.0,<13"
 ]
 celery = [
     "celery[redis]>=5.6.3,<6"
