@@ -11,7 +11,7 @@ classifiers = [
 ]
 dependencies = [
     "vtt_common[celery]",
-    "fastapi>=0.138,<0.139",
+    "fastapi>=0.139.0,<0.140",
     "uvicorn[standard]>=0.49,<0.50",
 ]
 
