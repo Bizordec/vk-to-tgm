@@ -12,7 +12,7 @@ classifiers = [
 ]
 dependencies = [
     "vtt_common[vk,tgm,celery]",
-    "aiofiles>=24.1.0,<25",
+    "aiofiles>=25.1.0,<26",
     "ffmpeg-python>=0.2.0,<0.3",
     "hachoir>=3.3.0,<4",
     "mutagen>=1.48.1,<2",
