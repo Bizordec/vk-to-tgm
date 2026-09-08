@@ -36,7 +36,7 @@ test = [
     "pytest-cov>=7.1.0,<8",
     "pytest-mock>=3.15.1,<4",
     "pytest-asyncio>=1.4.0,<2",
-    "pytest-socket>=0.8.0,<0.9",
+    "pytest-socket>=0.8.1,<0.9",
     "aiointercept>=0.1.8,<0.2",
 ]
 
