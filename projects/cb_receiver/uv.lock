@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.14, <4"
 resolution-markers = [
     "python_full_version >= '3.15'",
@@ -1265,7 +1265,7 @@ test = [
 requires-dist = [
     { name = "aiointercept", marker = "extra == 'test'", specifier = ">=0.1.8,<0.2" },
     { name = "celery", extras = ["redis"], marker = "extra == 'celery'", specifier = ">=5.6.3,<6" },
-    { name = "cryptg", marker = "extra == 'tgm'", specifier = ">=0.6.0,<0.7" },
+    { name = "cryptg", marker = "extra == 'tgm'", specifier = ">=0.6.1,<0.7" },
     { name = "loguru", specifier = ">=0.7.3,<0.8" },
     { name = "mypy", marker = "extra == 'test'", specifier = ">=2.1.0,<3" },
     { name = "pillow", marker = "extra == 'tgm'", specifier = ">=12.2.0,<13" },
